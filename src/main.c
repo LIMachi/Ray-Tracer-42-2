@@ -18,16 +18,15 @@ void		rt(t_env *e)
 	calc_vpul(&e->cam);
 	update_kernel_args();
 	if (e->cmd.output != NULL)
-		direct_output(e->cmd.output);
+		direct_output(&e->out, &e->argn, e->cmd.output);
 	ftx_new_window(ft_point(e->argn.screen_size.x, e->argn.screen_size.y),
 		"RT", NULL);
-	ftx_key_hook(KEY_EXIT, cb_exit, NULL);
-	ftx_key_hook(KEY_P, cb_exit, NULL);
-	update(1);
-	ftx_loop_hook(&keys, e);
-	mlx_hook(ftx_data()->focused_window->win, 4, 1, mouse_click, NULL);
-	mlx_hook(ftx_data()->focused_window->win, 5, 1, mouse_off, NULL);
-	mlx_hook(ftx_data()->focused_window->win, 6, 1, mouse_move, NULL);
+	keys(e);
+	update(e, 1);
+	ftx_loop_hook((t_ftx_loop_cb)keys, e, &e->keys.updated);
+	mlx_hook(ftx_data()->focused_window->win, 4, 1, mouse_click, e);
+	mlx_hook(ftx_data()->focused_window->win, 5, 1, mouse_off, &e->mouse);
+	mlx_hook(ftx_data()->focused_window->win, 6, 1, mouse_move, e);
 	ftx_start();
 }
 

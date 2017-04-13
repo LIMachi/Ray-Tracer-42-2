@@ -57,7 +57,7 @@ static int	sf_button_press_hook(int key, int x, int y, void *p)
 	k->status = FTX_KEY_STATUS_PRESSED;
 	k->tick = ftx_data()->tick;
 	if (k->callback != NULL)
-		return (k->callback(key, k->status, k->data));
+		return (k->callback(key, k->status, k->data[4]));
 	return (0);
 }
 
@@ -73,13 +73,12 @@ static int	sf_button_release_hook(int key, int x, int y, void *p)
 	k->status = FTX_KEY_STATUS_RELEASED;
 	k->tick = ftx_data()->tick;
 	if (k->callback != NULL)
-		return (k->callback(key, k->status, k->data));
+		return (k->callback(key, k->status, k->data[4]));
 	((t_mice*)p)->click_pos = ft_point(!0, !0);
 	return (0);
 }
 
-int			ftx_hook_mice_move(t_window *window, int (*callback)(t_point pos,
-								t_point click_pos, void *data), void *data)
+int			ftx_hook_mice_move(t_window *window, t_ftx_m_cb callback, void *data)
 {
 	t_mice	*mice;
 
@@ -98,7 +97,7 @@ int			ftx_hook_mice_move(t_window *window, int (*callback)(t_point pos,
 }
 
 int			ftx_hook_mice_button(t_window *window, int button,
-				int (*callback)(int key, int status, void *data), void *data)
+	t_ftx_mice callback, void *data)
 {
 	t_key_data	*k;
 
@@ -116,7 +115,7 @@ int			ftx_hook_mice_button(t_window *window, int button,
 	k->status = FTX_KEY_STATUS_RELEASED;
 	k->tick = !0u;
 	k->callback = callback;
-	k->data = data;
+	k->data[4] = data;
 	mlx_hook(window->win, 4, (1L << 2), &sf_button_press_hook,
 				(void*)window);
 	mlx_hook(window->win, 5, (1L << 3), &sf_button_release_hook,

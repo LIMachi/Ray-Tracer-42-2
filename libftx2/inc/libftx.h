@@ -64,6 +64,8 @@ struct						s_image
 */
 
 typedef int					(*t_ftx_key)(int, void *);
+typedef int					(*t_ftx_mice)(int, int, void *);
+typedef int					(*t_ftx_m_cb)(t_point, t_point, void *);
 
 struct						s_key_data
 {
@@ -71,7 +73,8 @@ struct						s_key_data
 	t_ftx_key		press;
 	t_ftx_key		hold;
 	t_ftx_key		release;
-	void			*data;
+	t_ftx_mice		callback;
+	void			*data[5];
 	unsigned int	tick;
 };
 
@@ -88,7 +91,7 @@ struct						s_mice
 {
 	t_point			pos;
 	t_point			click_pos;
-	int				(*callback)(t_point pos, t_point click_pos, void *data);
+	t_ftx_m_cb		callback;
 	void			*data;
 	t_key_data		keymap[10];
 };
@@ -131,6 +134,7 @@ struct						s_ftx_data
 	int					(*loop_callback)(void *data);
 	t_key_data			keymap[KEYMAP_SIZE];
 	void				*user_data;
+	int					*updated;
 };
 
 /*
@@ -350,5 +354,6 @@ t_image						*ftx_set_cursor(t_image *img, int x, int y);
 t_image						*ftx_put_ubmp_img(t_image *out, const t_point pos,
 												const t_ubmp *img, int mask);
 
-int							ftx_loop_hook(t_ftx_loop_cb cb, void *data);
+int							ftx_loop_hook(t_ftx_loop_cb cb, void *data,
+	int *updated);
 #endif

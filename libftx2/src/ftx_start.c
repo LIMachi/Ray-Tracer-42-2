@@ -32,24 +32,31 @@ static int	sf_tick(void *data)
 
 #else
 
-static void	sf_run_keys(t_key_data *pkey)
+static int	sf_run_keys(t_key_data *pkey)
 {
 	int		i;
+	int		u;
 
 	i = 0;
+	u = 0;
 	while (i < KEYMAP_SIZE)
 	{
-		if (pkey->status == FTX_KEY_STATUS_HOLD && pkey->hold)
-			pkey->hold(pkey->data);
+		if (pkey->status == FTX_KEY_STATUS_HOLD && pkey->hold && ++u)
+			pkey->hold(i, pkey->data[FTX_KEY_STATUS_HOLD]);
 		pkey++;
 		i++;
 	}
+	return (u);
 }
 
 static int	sf_tick(t_ftx_data *data)
 {
+	int		u;
+
 	++data->tick;
-	sf_run_keys(data->keymap);
+	u = sf_run_keys(data->keymap);
+	if (data->updated)
+		*data->updated = u;
 	if (data->loop_callback != NULL)
 		data->loop_callback(data->user_data);
 	return (data->tick);

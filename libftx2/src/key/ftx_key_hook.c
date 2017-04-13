@@ -13,7 +13,7 @@
 #include <libft.h>
 #include <libftx.h>
 
-int	ftx_set_key(int key, int state, t_ftx_key cb)
+int	ftx_set_key(int key, int state, t_ftx_key cb, void *p)
 {
 	t_key_data	*data;
 
@@ -29,5 +29,6 @@ int	ftx_set_key(int key, int state, t_ftx_key cb)
 		data[key].hold = cb;
 	else if (state == FTX_KEY_STATUS_RELEASED)
 		data[key].release = cb;
+	data[key].data[state] = p;
 	return (0);
 }

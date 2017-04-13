@@ -13,7 +13,7 @@
 #include <libft.h>
 #include <libftx.h>
 
-int	ftx_loop_hook(t_ftx_loop_cb cb, void *user_data)
+int	ftx_loop_hook(t_ftx_loop_cb cb, void *user_data, int *updated)
 {
 	t_ftx_data	*data;
 
@@ -22,7 +22,8 @@ int	ftx_loop_hook(t_ftx_loop_cb cb, void *user_data)
 		return (-1);
 	if (data->loop_callback != NULL)
 		return (1);
-	data->loop_callback = loop_callback;
+	data->loop_callback = cb;
 	data->user_data = user_data;
+	data->updated = updated;
 	return (0);
 }

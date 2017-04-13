@@ -157,6 +157,12 @@ typedef struct		s_cmd
 	int				progress_bar_toggle;
 }					t_cmd;
 
+typedef struct		s_keys
+{
+	int				ctrl;
+	int				updated;
+}					t_keys;
+
 typedef struct		s_env
 {
 	t_light				*lights;
@@ -168,6 +174,8 @@ typedef struct		s_env
 	t_camera			cam;
 	t_ubmp				out;
 	t_ubmp				prim_map;
+	t_keys				keys;
+	t_mouse				mouse;
 }					t_env;
 
 /*DOOMED */t_primitive			**prim(void);
@@ -180,19 +188,20 @@ typedef struct		s_env
 /*DOOMED */t_material_holder	*materials(void);
 /*DOOMED */t_camera			*cam(void);
 
-void				rt(void);
-void				update(int c);
+void				rt(t_env *e);
+void				update(t_env *e, int u);
+
+int					keys(t_env *e);
 
 int					command_line(t_cmd *cmd, int argc, char **argv);
 
 void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);
 void				direct_output(t_ubmp *out, t_argn *argn, char *path);
 
-int					cb_exit(int k, int s, void *p);
 int					keys(t_env *data);
-int					mouse_click(int key, int x, int y, void *data);
-int					mouse_move(int x, int y, void *data);
-int					mouse_off(int key, int x, int y, void *data);
+int					mouse_click(int key, int x, int y, t_env *e);
+int					mouse_move(int x, int y, t_env *e);
+int					mouse_off(int key, int x, int y, t_mouse *m);
 
 void				rotate_cam(t_camera *cam, double angle, t_vector axe);
 void				calc_vpul(t_camera *cam);
