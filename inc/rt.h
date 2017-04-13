@@ -189,7 +189,7 @@ void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);
 void				direct_output(t_ubmp *out, t_argn *argn, char *path);
 
 int					cb_exit(int k, int s, void *p);
-int					keys(t_ftx_data *data);
+int					keys(t_env *data);
 int					mouse_click(int key, int x, int y, void *data);
 int					mouse_move(int x, int y, void *data);
 int					mouse_off(int key, int x, int y, void *data);

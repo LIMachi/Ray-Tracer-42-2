@@ -13,18 +13,21 @@
 #include <libft.h>
 #include <libftx.h>
 
-int	ftx_key_hook(int key, int (*callback)(int key, int status, void *data),
-				void *data)
+int	ftx_set_key(int key, int state, t_ftx_key cb)
 {
+	t_key_data	*data;
+
 	if (key >= KEYMAP_SIZE)
 	{
-		ft_error(EINVAL, "ftx_key_hook got wrong key code\n");
-		return (-1);
+		ft_error(EINVAL, "ftx_set_key got wrong key code\n");
+		return (-1);	
 	}
-	ftx_data()->keymap[key] = (t_key_data){
-		.status = FTX_KEY_STATUS_RELEASED,
-		.callback = callback,
-		.data = data,
-		.tick = !0u};
+	data = ftx_data()->keymap;
+	if (state == FTX_KEY_STATUS_PRESSED)
+		data[key].press = cb;
+	else if (state == FTX_KEY_STATUS_HOLD)
+		data[key].hold = cb;
+	else if (state == FTX_KEY_STATUS_RELEASED)
+		data[key].release = cb;
 	return (0);
 }

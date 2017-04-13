@@ -32,12 +32,27 @@ static int	sf_tick(void *data)
 
 #else
 
-static int	sf_tick(void *data)
+static void	sf_run_keys(t_key_data *pkey)
 {
-	++((t_ftx_data*)data)->tick;
-	if (((t_ftx_data*)data)->loop_callback != NULL)
-		((t_ftx_data*)data)->loop_callback((t_ftx_data*)data);
-	return (((t_ftx_data*)data)->tick);
+	int		i;
+
+	i = 0;
+	while (i < KEYMAP_SIZE)
+	{
+		if (pkey->status == FTX_KEY_STATUS_HOLD && pkey->hold)
+			pkey->hold(pkey->data);
+		pkey++;
+		i++;
+	}
+}
+
+static int	sf_tick(t_ftx_data *data)
+{
+	++data->tick;
+	sf_run_keys(data->keymap);
+	if (data->loop_callback != NULL)
+		data->loop_callback(data->user_data);
+	return (data->tick);
 }
 
 #endif
@@ -57,6 +72,6 @@ void		ftx_start(void)
 		return ;
 	ft_atend(&sf_end);
 	mlx_do_key_autorepeatoff(data->mlx);
-	mlx_loop_hook(data->mlx, &sf_tick, (void*)data);
+	mlx_loop_hook(data->mlx, (int (*)(void *))sf_tick, (void*)data);
 	mlx_loop(data->mlx);
 }

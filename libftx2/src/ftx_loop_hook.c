@@ -13,12 +13,16 @@
 #include <libft.h>
 #include <libftx.h>
 
-int	ftx_loop_hook(int (*loop_callback)(t_ftx_data *data))
+int	ftx_loop_hook(t_ftx_loop_cb cb, void *user_data)
 {
-	if (ftx_data() == NULL)
+	t_ftx_data	*data;
+
+	data = ftx_data();
+	if (data == NULL)
 		return (-1);
-	if (ftx_data()->loop_callback != NULL)
+	if (data->loop_callback != NULL)
 		return (1);
-	ftx_data()->loop_callback = loop_callback;
+	data->loop_callback = loop_callback;
+	data->user_data = user_data;
 	return (0);
 }

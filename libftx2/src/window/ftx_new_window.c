@@ -22,10 +22,10 @@ static int	sf_call_keydown(int key)
 	if (pkey->tick - ftx_data()->tick < FTX_DOUBLETAP_TICK)
 		pkey->status = FTX_KEY_STATUS_DOUBLED;
 	else
-		pkey->status = FTX_KEY_STATUS_PRESSED;
+		pkey->status = FTX_KEY_STATUS_HOLD;
 	pkey->tick = ftx_data()->tick;
-	if (pkey->callback != NULL)
-		return (pkey->callback(key, pkey->status, pkey->data));
+	if (pkey->press)
+		return (pkey->press(key, pkey->data));
 	return (0);
 }
 
@@ -35,8 +35,8 @@ static int	sf_call_keyup(int key)
 
 	pkey = &ftx_data()->keymap[key];
 	pkey->status = FTX_KEY_STATUS_RELEASED;
-	if (pkey->callback != NULL)
-		return (pkey->callback(key, FTX_KEY_STATUS_RELEASED, pkey->data));
+	if (pkey->release != NULL)
+		return (pkey->release(key, pkey->data));
 	return (0);
 }
 
