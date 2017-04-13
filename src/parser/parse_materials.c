@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/13 06:07:51 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:44:13 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ inline static t_material	parse_material_0(t_json_value *m, t_material out,
 	return (out);
 }
 
-inline static t_material	parse_material(t_json_value *m, t_material out,
+t_material					parse_material(t_json_value *m, t_material out,
 											t_textures_holder *textures_holder)
 {
 	t_json_value	*v[2];
