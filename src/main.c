@@ -31,6 +31,23 @@ void		rt(t_env *e)
 	ftx_start();
 }
 
+void		init(t_env *e, char *src)
+{
+	int		fd;
+
+	if ((fd = open(e->cmd.scene, O_RDONLY)) == -1)
+		ft_end(-1);
+	e->cam.orientation.r = 1;
+	parser(e, src = ft_readfile(fd));
+	close(fd);
+	ft_free(src);
+	if ((fd = open(OCL_SOURCE_PATH, O_RDONLY)) == -1)
+		ft_end(-1);
+	ftocl_make_program(ft_str_to_id64("rt"),
+			src = ft_str_clear_commentaries(ft_readfile(fd)), NULL);
+	close(fd);	
+}
+
 int			main(const int argc, char **argv, char **env)
 {
 	t_env	e;
@@ -45,17 +62,7 @@ int			main(const int argc, char **argv, char **env)
 		ft_path_name(argv[0]));
 		ft_end(0);
 	}
-	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
-		ft_end(-1);
-	e.cam.orientation.r = 1;
-	parser(&e, src = ft_readfile(fd));
-	close(fd);
-	ft_free(src);
-	if ((fd = open(OCL_SOURCE_PATH, O_RDONLY)) == -1)
-		ft_end(-1);
-	ftocl_make_program(ft_str_to_id64("rt"),
-			src = ft_str_clear_commentaries(ft_readfile(fd)), NULL);
-	close(fd);
+	init(&e, src);
 	if (!(fd = ftocl_set_current_kernel(ft_str_to_id64("rt_kernel"))))
 		rt(&e);
 	ft_free(src);
