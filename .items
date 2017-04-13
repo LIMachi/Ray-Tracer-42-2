@@ -1,0 +1,22 @@
+ITEMS = 	cam \
+	cl_float4_operations \
+	cl_vector_from_json_array \
+	cmd \
+	direct_output \
+	ft_vector_thales \
+	main \
+	mouse \
+	parser/check_parsed_data \
+	parser/default_material \
+	parser/parse_camera \
+	parser/parse_images \
+	parser/parse_lights \
+	parser/parse_materials \
+	parser/parse_objects \
+	parser/parse_render_options \
+	parser/parse_texture \
+	parser/parser \
+	ray_plane \
+	rt \
+	singletons \
+	update_kernel_args

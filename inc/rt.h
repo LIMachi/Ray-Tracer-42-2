@@ -194,8 +194,8 @@ int					mouse_click(int key, int x, int y, void *data);
 int					mouse_move(int x, int y, void *data);
 int					mouse_off(int key, int x, int y, void *data);
 
-void				rotate_cam(t_cam *cam, double angle, t_vector axe);
-void				calc_vpul(const t_cam *cam);
+void				rotate_cam(t_camera *cam, double angle, t_vector axe);
+void				calc_vpul(t_camera *cam);
 
 void				update_kernel_args(void);
 

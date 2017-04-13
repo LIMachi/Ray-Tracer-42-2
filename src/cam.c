@@ -12,7 +12,7 @@
 
 #include <rt.h>
 
-void		calc_vpul(const t_cam *cam)
+void		calc_vpul(t_camera *cam)
 {
 	float	y;
 	float	x;
@@ -38,7 +38,7 @@ cl_float4	vector_to_cl_float4(t_vector v)
 	return ((cl_float4){.x = v.x, .y = v.y, .z = v.z, .w = 0.0f});
 }
 
-void		rotate_cam(t_cam *cam, double angle, t_vector axe)
+void		rotate_cam(t_camera *cam, double angle, t_vector axe)
 {
 	t_quaternion	q;
 	t_matrix		*mat;
