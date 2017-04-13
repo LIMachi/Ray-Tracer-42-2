@@ -13,7 +13,7 @@
 #include <rt.h>
 #include <stdio.h>
 
-void				parser(const char *src)
+void				parser(t_env *e, const char *src)
 {
 	t_json_value	*root;
 	t_json_value	*v;
@@ -38,6 +38,6 @@ void				parser(const char *src)
 	if (!check_parsed_data())
 		ft_error(EINTERN, "Invalid json values\n");
 	ft_json_free(root);
-	argn()->nb_info = textures_holder()->nb_info;
-	argn()->nb_materials = materials()->nb_materials;
+	e->argn.nb_info = e->texs.nb_info;
+	e->argn.nb_materials = e->mats.nb_materials;
 }

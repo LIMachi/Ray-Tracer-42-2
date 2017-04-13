@@ -33,16 +33,21 @@ void		rt(void)
 
 int			main(const int argc, char **argv, char **env)
 {
+	t_env	e;
 	int		fd;
 	char	*src;
 
+	ft_bzero(&e, sizeof(t_env));
 	ft_init(env);
-	if (command_line(argc, argv))
-		ft_end(0 /* ft_printf("\nUsage: \t%s/%s <scene.json>\n\n", ft_pwd(),
-					ft_path_name(argv[0]))*/);
-	if ((fd = open(cmd()->scene, O_RDONLY)) == -1)
+	if (command_line(&e.cmd, argc, argv))
+	{
+		ft_printf("\nUsage: \t%s/%s <scene.json>\n\n", ft_pwd(),
+		ft_path_name(argv[0]));
+		ft_end(0);
+	}
+	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
-	parser(src = ft_readfile(fd));
+	parser(&e, src = ft_readfile(fd));
 	close(fd);
 	ft_free(src);
 	if ((fd = open(OCL_SOURCE_PATH, O_RDONLY)) == -1)

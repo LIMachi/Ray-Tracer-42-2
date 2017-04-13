@@ -157,39 +157,62 @@ typedef struct		s_cmd
 	int				progress_bar_toggle;
 }					t_cmd;
 
-int					cb_exit(int k, int s, void *p);
-int					keys(t_ftx_data *data);
-int					command_line(int argc, char **argv);
-void				direct_output(char *path);
+typedef struct		s_env
+{
+	t_light				*lights;
+	t_primitive			*prims;
+	t_material_holder	mats;
+	t_textures_holder	texs;
+	t_cmd				cmd;
+	t_argn				argn;
+	t_camera			cam;
+	t_ubmp				out;
+	t_ubmp				prim_map;
+}					t_env;
+
+/*DOOMED */t_primitive			**prim(void);
+/*DOOMED */t_argn				*argn(void);
+/*DOOMED */t_ubmp				*out(void);
+/*DOOMED */t_ubmp				*prim_map(void);
+/*DOOMED */t_cmd				*cmd(void);
+/*DOOMED */t_light				**lights(void);
+/*DOOMED */t_textures_holder	*textures_holder(void);
+/*DOOMED */t_material_holder	*materials(void);
+/*DOOMED */t_camera			*cam(void);
+
 void				rt(void);
 void				update(int c);
-t_camera			*cam(void);
-void				rotate_cam(double angle, t_vector axe);
-void				calc_vpul(void);
+
+int					command_line(t_cmd *cmd, int argc, char **argv);
+
+void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);
+void				direct_output(t_ubmp *out, t_argn *argn, char *path);
+
+int					cb_exit(int k, int s, void *p);
+int					keys(t_ftx_data *data);
+int					mouse_click(int key, int x, int y, void *data);
+int					mouse_move(int x, int y, void *data);
+int					mouse_off(int key, int x, int y, void *data);
+
+void				rotate_cam(t_cam *cam, double angle, t_vector axe);
+void				calc_vpul(const t_cam *cam);
+
 void				update_kernel_args(void);
-t_primitive			**prim(void);
-t_argn				*argn(void);
-t_ubmp				*out(void);
-t_ubmp				*prim_map(void);
-t_cmd				*cmd(void);
-t_light				**lights(void);
-void				parser(const char *src);
-void				init_output(void);
-cl_float4			cl_vector_from_json_array(t_json_value *node,
-						cl_float4 default_return);
-t_textures_holder	*textures_holder(void);
-void				parse_images(t_json_value *root);
-t_material_holder	*materials(void);
-t_material			default_material(void);
+
+void				parser(t_env *e, const char *src);
+int					check_parsed_data(void);
 void				parse_images(t_json_value *root);
 void				parse_camera(t_json_value *c);
-int					check_parsed_data(void);
 void				parse_lights(t_json_value *l);
 void				parse_objects(t_json_value *o);
 void				parse_render_options(t_json_value *ro);
 t_texture			parse_texture(t_json_value *t, t_texture default_return);
 void				*parse_materials(t_json_value *m);
 t_material			parse_material(t_json_value *m, t_material out);
+t_material			default_material(void);
+cl_float4			cl_vector_from_json_array(t_json_value *node,
+	cl_float4 default_return);
+
 cl_float4			cl_float4_normalize(cl_float4 v);
 cl_float4			cl_float4_add(cl_float4 a, cl_float4 b);
 void				cl_float4_p_add(cl_float4 *a, cl_float4 b);
@@ -197,8 +220,5 @@ cl_float4			cl_float4_scale(cl_float4 v, cl_float s);
 cl_float4			cl_float4_sub(cl_float4 a, cl_float4 b);
 cl_float4			ft_vector_thales(cl_float4 origin, cl_float4 v1,
 						cl_float4 v2, cl_float4 r);
-int					mouse_click(int key, int x, int y, void *data);
-int					mouse_move(int x, int y, void *data);
-int					mouse_off(int key, int x, int y, void *data);
 
 #endif

@@ -1167,6 +1167,7 @@ t_quaternion			ft_quat_rotation_build(double angle,
 												const t_vector vector);
 int						ft_quat_equal(const t_quaternion a,
 									const t_quaternion b);
+void					ft_quat_conjugation(const t_quaternion q, t_vector *v);
 
 /*
 ** conversion functions

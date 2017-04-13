@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 0000/00/00 00:00:00 by hmartzol          #+#    #+#             */
-/*   Updated: 2016/12/18 23:52:52 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/13 04:03:35 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ t_quaternion			ft_quat_rotation_build(double angle,
 		return ((t_quaternion){.r = -42});
 	angle /= 2;
 	out.r = ft_cos(angle);
-	if ((t = vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
-																		!= 1)
+	if ((t = ft_vector_dot_product(vector, vector)) != 1)
 		t = ft_sin(angle) / ft_sqrtd(t);
 	else
 		t = ft_sin(angle);
