@@ -6,26 +6,28 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:17:24 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/29 23:32:54 by pbondoer         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:05:50 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
 
-void		parse_texture_0(t_texture *out, t_json_value *v, char buf[PATH_MAX])
+inline static void	parse_texture_0(t_texture *out, t_json_value *v,
+									char buf[PATH_MAX],
+									t_textures_holder *textures_holder)
 {
 	v = ft_json_search_pair_in_object(v,
 		(t_json_string){.length = 4, .ptr = "file"});
 	out->info_index = -1;
 	if (v != NULL && v->type == string && v->ptr != NULL)
-		while (++out->info_index < (unsigned long)textures_holder()->nb_info)
-			if (!ft_strcmp(textures_holder()->path[out->info_index],
+		while (++out->info_index < (unsigned long)textures_holder->nb_info)
+			if (!ft_strcmp(textures_holder->path[out->info_index],
 					ft_realpath(((t_json_string*)v->ptr)->ptr, buf)))
 				break ;
 }
 
-void		parse_texture_1(t_texture *out, t_json_value *t,
-							t_json_value_type *paf)
+inline static void	parse_texture_1(t_texture *out, t_json_value *t,
+									t_json_value_type *paf)
 {
 	t_json_value *v;
 
@@ -42,7 +44,8 @@ void		parse_texture_1(t_texture *out, t_json_value *t,
 	}
 }
 
-t_texture	parse_texture(t_json_value *t, t_texture default_return)
+t_texture			parse_texture(t_json_value *t, t_texture default_return,
+								t_textures_holder *textures_holder)
 {
 	t_json_value		*v;
 	t_json_value_type	*paf_paf_paf_la_norm;
@@ -64,6 +67,6 @@ t_texture	parse_texture(t_json_value *t, t_texture default_return)
 			(cl_float) * (double*)((t_json_array*)v->ptr)->value[1]->ptr;
 	}
 	parse_texture_1(&out, t, paf_paf_paf_la_norm);
-	parse_texture_0(&out, t, buff);
+	parse_texture_0(&out, t, buff, textures_holder);
 	return (out);
 }

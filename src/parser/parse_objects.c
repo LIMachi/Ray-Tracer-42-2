@@ -6,14 +6,15 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:02:23 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/30 14:35:42 by pbondoer         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:01:39 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <float.h>
 #include <rt.h>
 
-cl_uint				parse_object_material(t_json_value *o)
+inline static cl_uint	parse_object_material(t_json_value *o,
+											t_material_holder *materials)
 {
 	int	i;
 
@@ -21,27 +22,27 @@ cl_uint				parse_object_material(t_json_value *o)
 		return (0);
 	if (o->type == object)
 	{
-		materials()->materials = ft_reallocf(materials()->materials,
-			sizeof(t_material) * materials()->nb_materials,
-			sizeof(t_material) * (materials()->nb_materials + 1));
-		materials()->name = ft_reallocf(materials()->name,
-			sizeof(char *) * materials()->nb_materials,
-			sizeof(char *) * (materials()->nb_materials + 1));
-		materials()->name[materials()->nb_materials] = NULL;
-		materials()->materials[materials()->nb_materials] =
+		materials->materials = ft_reallocf(materials->materials,
+			sizeof(t_material) * materials->nb_materials,
+			sizeof(t_material) * (materials->nb_materials + 1));
+		materials->name = ft_reallocf(materials->name,
+			sizeof(char *) * materials->nb_materials,
+			sizeof(char *) * (materials->nb_materials + 1));
+		materials->name[materials->nb_materials] = NULL;
+		materials->materials[materials->nb_materials] =
 			parse_material(o, default_material());
-		return (materials()->nb_materials++);
+		return (materials->nb_materials++);
 	}
 	else if (o->type == string && ((t_json_string*)o->ptr)->ptr != NULL &&
 			(i = -1))
-		while (++i < materials()->nb_materials)
-			if (materials()->name[i] != NULL &&
-				!ft_strcmp(((t_json_string*)o->ptr)->ptr, materials()->name[i]))
+		while (++i < materials->nb_materials)
+			if (materials->name[i] != NULL &&
+				!ft_strcmp(((t_json_string*)o->ptr)->ptr, materials->name[i]))
 				return (i + 1);
 	return (0);
 }
 
-cl_float4			parse_limit(t_json_value *v, cl_float nc)
+inline static cl_float4		parse_limit(t_json_value *v, cl_float nc)
 {
 	t_json_value		**ar;
 	cl_float4			out;
@@ -70,7 +71,7 @@ cl_float4			parse_limit(t_json_value *v, cl_float nc)
 	return ((cl_float4){.x = out.x, .y = out.y, .z = out.z, .w = 0.0f});
 }
 
-t_primitive			parse_object_0(t_json_value *o, t_primitive p)
+inline static t_primitive	parse_object_0(t_json_value *o, t_primitive p)
 {
 	t_json_value	*v[2];
 
@@ -97,7 +98,8 @@ t_primitive			parse_object_0(t_json_value *o, t_primitive p)
 	return (p);
 }
 
-t_primitive			parse_object(t_json_value *o)
+inline static t_primitive	parse_object(t_json_value *o,
+										t_material_holder *materials)
 {
 	t_json_value	*v;
 	t_primitive		p;
@@ -112,7 +114,7 @@ t_primitive			parse_object(t_json_value *o)
 		ft_error(EINTERN, "Parser encountered invalid object\n");
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 8, .ptr = "material"});
-	p.material = parse_object_material(v);
+	p.material = parse_object_material(v, materials);
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 6, .ptr = "radius"});
 	if (v != NULL && (v->type == integer || v->type == number) &&
@@ -124,18 +126,20 @@ t_primitive			parse_object(t_json_value *o)
 	return (parse_object_0(o, p));
 }
 
-void				parse_objects(t_json_value *o)
+void						parse_objects(t_json_value *o,
+										t_material_holder *materials,
+										t_primitive **prim, t_argn *argn)
 {
 	t_json_array	*ar;
 	unsigned long	i;
 
 	if (o == NULL || o->type != array || (ar = (t_json_array*)o->ptr) == NULL ||
 		ar->nb_values == 0 || ar->value == NULL ||
-		(*prim() = (t_primitive*)ft_malloc(sizeof(t_primitive) * ar->nb_values))
+		(*prim = (t_primitive*)ft_malloc(sizeof(t_primitive) * ar->nb_values))
 		== NULL)
 		return ;
-	argn()->nb_objects = ar->nb_values;
+	argn->nb_objects = ar->nb_values;
 	i = -1;
 	while (++i < ar->nb_values)
-		(*prim())[i] = parse_object(ar->value[i]);
+		(*prim)[i] = parse_object(ar->value[i], materials);
 }

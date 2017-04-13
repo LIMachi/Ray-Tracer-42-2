@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/30 17:32:45 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:22:45 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,7 @@ void				calc_vpul(t_camera *cam);
 void				update_kernel_args(void);
 
 void				parser(t_env *e, const char *src);
+/*
 int					check_parsed_data(void);
 void				parse_images(t_json_value *root);
 void				parse_camera(t_json_value *c);
@@ -210,6 +211,7 @@ t_texture			parse_texture(t_json_value *t, t_texture default_return);
 void				*parse_materials(t_json_value *m);
 t_material			parse_material(t_json_value *m, t_material out);
 t_material			default_material(void);
+*/
 cl_float4			cl_vector_from_json_array(t_json_value *node,
 	cl_float4 default_return);
 
