@@ -201,7 +201,7 @@ void				direct_output(t_ubmp *out, t_argn *argn, char *path);
 int					keys(t_env *data);
 int					mouse_click(int key, int x, int y, t_env *e);
 int					mouse_move(int x, int y, t_env *e);
-int					mouse_off(int key, int x, int y, t_mouse *m);
+int					mouse_off(int key, int x, int y, t_env *e);
 
 void				rotate_cam(t_camera *cam, double angle, t_vector axe);
 void				calc_vpul(t_camera *cam);

@@ -26,7 +26,7 @@ void		rt(t_env *e)
 	update(e);
 	ftx_loop_hook((t_ftx_loop_cb)update, e, &e->keys.updated);
 	mlx_hook(ftx_data()->focused_window->win, 4, 1, mouse_click, e);
-	mlx_hook(ftx_data()->focused_window->win, 5, 1, mouse_off, &e->mouse);
+	mlx_hook(ftx_data()->focused_window->win, 5, 1, mouse_off, e);
 	mlx_hook(ftx_data()->focused_window->win, 6, 1, mouse_move, e);
 	ftx_start();
 }
@@ -47,6 +47,7 @@ int			main(const int argc, char **argv, char **env)
 	}
 	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
+	e.cam.orientation.r = 1;
 	parser(&e, src = ft_readfile(fd));
 	close(fd);
 	ft_free(src);

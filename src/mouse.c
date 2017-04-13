@@ -29,16 +29,16 @@ int			mouse_click(int key, int x, int y, t_env *e)
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 3, sizeof(t_primitive) *
 		e->argn.nb_objects, (void*)e->prim);
 	e->keys.updated = 1;
-	update(e);
 	return (0);
 }
 
-int			mouse_off(int key, int x, int y, t_mouse *mouse)
+int			mouse_off(int key, int x, int y, t_env *e)
 {
 	(void)x;
 	(void)y;
 	if (key == 1)
-		mouse->is_select = 0;
+		e->mouse.is_select = 0;
+	e->keys.updated = 1;
 	return (0);
 }
 
@@ -58,30 +58,24 @@ void		new_pos(cl_float4 *item_pos, int x, int y, t_env *e)
 
 int			mouse_move(int x, int y, t_env *e)
 {
-	static int upd = 0;
-
 	if (!e->mouse.is_select)
-		return (0);
-	upd++;
-	if (upd != UPD || (upd = 0))
 		return (0);
 	if (e->mouse.is_select > 0)
 	{
 		new_pos(&e->prim[e->mouse.is_select - 1].position, x, y, e);
 		ftocl_clear_current_kernel_arg(3);
 		ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 3, sizeof(t_primitive) *
-		e->argn.nb_objects, (void*)*prim());
+		e->argn.nb_objects, (void*)e->prim);
 	}
 	else
 	{
-		new_pos(&lights()[0][-e->mouse.is_select - 1].position, x, y, e);
+		new_pos(&e->lights[-e->mouse.is_select - 1].position, x, y, e);
 		ftocl_clear_current_kernel_arg(4);
 		ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 4, sizeof(t_light) *
-			e->argn.nb_lights, (void*)*lights());
+			e->argn.nb_lights, (void*)e->lights);
 	}
 	e->mouse.x = x;
 	e->mouse.y = y;
 	e->keys.updated = 1;
-	update(e);
 	return (0);
 }
