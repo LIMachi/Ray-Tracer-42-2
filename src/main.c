@@ -13,22 +13,56 @@
 #include <rt.h>
 #include "mlx.h"
 
+void	display_fps(t_env *e, GLFWwindow *win, char *name)
+{
+	static int		frames = 0;
+	static double	t0 = 0;
+	double			t1;
+
+	t1 = glfwGetTime();
+	frames++;
+	if (t1 - t0 > 1.0)
+	{
+		t0 = t1;
+		if (e->glfw.fps != frames)
+		{
+			name = ft_strjoin(name, " : ");
+			name = ft_strmergeflag(name, ft_itoa(frames), 3);
+			name = ft_strmergeflag(name, " fps", 1);
+			glfwSetWindowTitle(win, name);
+			ft_free(name);
+			e->glfw.fps = frames;
+		}
+		frames = 0;
+	}
+}
+
 void		rt(t_env *e)
 {
 	calc_vpul(&e->cam);
 	update_kernel_args(e);
 	if (e->cmd.output != NULL)
 		direct_output(&e->out, &e->argn, e->cmd.output);
-	ftx_new_window(ft_point(e->argn.screen_size.x, e->argn.screen_size.y),
-		"RT", NULL);
-	keys(e);
+	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
+	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
+	// ftx_new_window(e->window, "RT", NULL);
 	e->keys.updated = 1;
-	update(e);
-	ftx_loop_hook((t_ftx_loop_cb)update, e, &e->keys.updated);
-	mlx_hook(ftx_data()->focused_window->win, 4, 1, mouse_click, e);
-	mlx_hook(ftx_data()->focused_window->win, 5, 1, mouse_off, e);
-	mlx_hook(ftx_data()->focused_window->win, 6, 1, mouse_move, e);
-	ftx_start();
+	// update(e);
+	glfwGetCursorPos(e->glfw.win, &e->mouse.x, &e->mouse.y);
+	while (!glfwWindowShouldClose(e->glfw.win))
+	{
+		display_fps(e, e->glfw.win, e->glfw.win_name);
+		// printf("\r%f %f %f | %f %f %f", e->cam.p.x, e->cam.p.y, e->cam.p.z, e->cam.d.x, e->cam.d.y, e->cam.d.z);
+		glfwPollEvents();
+		// handle_keys(e->keys, e);
+		// opencl_render(e);
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		// glBindVertexArray(e->vao);
+		// glUseProgram(e->program);
+		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glfwSwapBuffers(e->glfw.win);
+	}
 }
 
 void		init(t_env *e, char *src)
@@ -38,6 +72,7 @@ void		init(t_env *e, char *src)
 	if ((fd = open(e->cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
 	e->cam.orientation.r = 1;
+	e->glfw.fps = 60;
 	parser(e, src = ft_readfile(fd));
 	close(fd);
 	ft_free(src);
@@ -45,7 +80,7 @@ void		init(t_env *e, char *src)
 		ft_end(-1);
 	ftocl_make_program(ft_str_to_id64("rt"),
 			src = ft_str_clear_commentaries(ft_readfile(fd)), NULL);
-	close(fd);	
+	close(fd);
 }
 
 int			main(const int argc, char **argv, char **env)
@@ -54,6 +89,7 @@ int			main(const int argc, char **argv, char **env)
 	int		fd;
 	char	*src;
 
+	src = NULL;
 	ft_bzero(&e, sizeof(t_env));
 	ft_init(env);
 	if (command_line(&e.cmd, argc, argv))
@@ -65,7 +101,6 @@ int			main(const int argc, char **argv, char **env)
 	init(&e, src);
 	if (!(fd = ftocl_set_current_kernel(ft_str_to_id64("rt_kernel"))))
 		rt(&e);
-	ft_free(src);
 	if (fd == 1)
 		ft_end(0 /* ft_printf("kernel was not found\n")*/);
 	ft_end(0);

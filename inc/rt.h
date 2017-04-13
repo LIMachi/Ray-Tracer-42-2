@@ -13,11 +13,8 @@
 #ifndef RT_H
 # define RT_H
 
-# include <libft.h>
-# include <libftx.h>
-# include <libftocl.h>
-# include <libftjson.h>
-
+# include <rt_incs.h>
+# include <rt_types.h>
 # define OCL_SOURCE_PATH "./scl/raytracer.cl"
 # define NONE 0
 # define UPD 1
@@ -146,8 +143,8 @@ typedef struct		s_argn
 typedef struct		s_mouse
 {
 	int				is_select;
-	int				x;
-	int				y;
+	double			x;
+	double			y;
 }					t_mouse;
 
 typedef struct		s_cmd
@@ -163,6 +160,26 @@ typedef struct		s_keys
 	int				updated;
 }					t_keys;
 
+typedef struct		s_key
+{
+	int		keycode;
+	int		pressed;
+	void	(*press)(t_env *, int);
+	void	(*repeat)(t_env *, int);
+	void	(*release)(t_env *, int);
+}					t_key;
+
+typedef struct		s_ctx_glfw
+{
+	GLFWwindow		*win;
+	char			*win_name;
+	int				fps;
+	t_key			*keys;
+	int				nkeys;
+	t_key			*mkeys;
+	int				nmkeys;
+}					t_ctx_glfw;
+
 typedef struct		s_env
 {
 	t_light				*lights;
@@ -176,6 +193,8 @@ typedef struct		s_env
 	t_ubmp				prim_map;
 	t_keys				keys;
 	t_mouse				mouse;
+	t_point				window;
+	t_ctx_glfw			glfw;
 }					t_env;
 
 /*DOOMED */t_primitive			**prim(void);
@@ -188,10 +207,20 @@ typedef struct		s_env
 /*DOOMED */t_material_holder	*materials(void);
 /*DOOMED */t_camera			*cam(void);
 
+
+void				die(int err, char *msg, const char *err_log, ...);
+
 void				rt(t_env *e);
 void				update(t_env *e);
 
-int					keys(t_env *e);
+void				save(t_env *e, int keycode);
+t_env				*glfw_env(t_env *e);
+GLFWwindow			*glfw_init(t_env *e, char *name, int w, int h);
+void				key_callback(GLFWwindow* win, int key, int scan,
+	int action, int mods);
+void				mouse_callback(GLFWwindow* window, double x, double y);
+
+void				set_keys(t_env *e);
 
 int					command_line(t_cmd *cmd, int argc, char **argv);
 
@@ -199,11 +228,17 @@ void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);
 void				direct_output(t_ubmp *out, t_argn *argn, char *path);
 
 int					keys(t_env *data);
-int					mouse_click(int key, int x, int y, t_env *e);
-int					mouse_move(int x, int y, t_env *e);
-int					mouse_off(int key, int x, int y, t_env *e);
+void				mouse_click(t_env *e, int key);
+void				mouse_callback(GLFWwindow* window, double x, double y);
+void				mouse_scroll_callback(GLFWwindow* window, double dx,
+	double dy);
+void 				mouse_button_callback(GLFWwindow* window, int button,
+	int action, int mods);
+void				mouse_off(t_env *e, int key);
 
 void				rotate_cam(t_camera *cam, double angle, t_vector axe);
+t_vector			cl_float4_to_vector(cl_float4 v);
+cl_float4			vector_to_cl_float4(t_vector v);
 void				calc_vpul(t_camera *cam);
 
 void				update_kernel_args(t_env *e);

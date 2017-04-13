@@ -1,23 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_quat_conjugation.c                              :+:      :+:    :+:   */
+/*   rt_incs.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/13 04:01:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 04:01:59 by cchaumar         ###   ########.fr       */
+/*   Created: 2017/04/13 23:30:23 by cchaumar          #+#    #+#             */
+/*   Updated: 2017/04/13 23:30:24 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
+#ifndef RT_INCS_H
+# define RT_INCS_H
 
-void	ft_quat_conjugation(const t_quaternion q, t_vector *v)
-{
-	t_quaternion	p;
-	
-	p = ft_quat(0, v->x, v->y, v->z);
-	p = ft_quat_multiply(p, ft_quat_inverse(q));
-	p = ft_quat_multiply(q, p);
-	*v = ft_vector_normalize((t_vector){p.i, p.j, p.k});
-}
+# include <libft.h>
+# include "GL/glew.h"
+# include <GLFW/glfw3.h>
+# include <libftx.h>
+# include <libftocl.h>
+# include <libftjson.h>
+# include <rt_types.h>
+# include <gl_handler.h>
+
+#endif

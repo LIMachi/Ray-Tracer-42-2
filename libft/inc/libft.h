@@ -102,6 +102,8 @@
 ** # include <sys/stat.h>
 */
 
+# include <stdarg.h>
+
 # ifdef S_IDEFAULT
 #  undef S_IDEFAULT
 # endif
@@ -952,6 +954,8 @@ t_2list					*ft_2lstdelnode(t_2list *lst, void (*del)(void *,
 ** table related functions
 */
 
+void					ft_pushback(void **data, size_t size, int count,
+	void *o);
 void					**ft_tab_alloc(int x, int y, size_t block);
 void					ft_tab_free(void **tab, int y);
 void					***ft_tab3d_alloc(int x, int y, int z, size_t block);
@@ -1020,7 +1024,7 @@ char					*ft_stracat(char *str1, char *str2);
 char					*ft_strndup(const char *s, size_t n);
 char					*ft_strpdup(const char *s, const char *e);
 int						ft_strcchr(const char *str, int c);
-
+char					*ft_strmergeflag(char *a, char *b, int flag);
 /*
 ** files related functions
 */
@@ -1287,6 +1291,9 @@ char					*ft_pwd(void);
 char					*ft_path_name(char *path);
 
 extern int				ft_printf(const char *format, ...);
+extern int				ft_dprintf(int fd, const char *format, ...);
+extern int				ft_vaprintf(const char *format, va_list va);
+extern int				ft_vadprintf(int fd, const char *format, va_list va);
 
 int						ft_isinset(const char c, const char *set);
 size_t					ft_strcspn(const char *str, const char *reject);

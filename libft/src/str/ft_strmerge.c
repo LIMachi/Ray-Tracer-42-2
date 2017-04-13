@@ -21,3 +21,15 @@ char	*ft_strmerge(char *a, char *b)
 	ft_strdel(&b);
 	return (ret);
 }
+
+char	*ft_strmergeflag(char *a, char *b, int flag)
+{
+	char	*ret;
+
+	ret = ft_strjoin(a, b);
+	if (flag & 1)
+		ft_strdel(&a);
+	if (flag & 2)
+		ft_strdel(&b);
+	return (ret);
+}

@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_quat_conjugation.c                              :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/13 04:01:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 04:01:59 by cchaumar         ###   ########.fr       */
+/*   Created: 2017/04/13 23:18:37 by cchaumar          #+#    #+#             */
+/*   Updated: 2017/04/13 23:18:38 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
+#include <rt.h>
 
-void	ft_quat_conjugation(const t_quaternion q, t_vector *v)
+void	die(int err, char *msg, const char *err_log, ...)
 {
-	t_quaternion	p;
-	
-	p = ft_quat(0, v->x, v->y, v->z);
-	p = ft_quat_multiply(p, ft_quat_inverse(q));
-	p = ft_quat_multiply(q, p);
-	*v = ft_vector_normalize((t_vector){p.i, p.j, p.k});
+	va_list	va;
+
+	va_start(va, err_log);
+	if (err_log)
+		ft_vadprintf(2, err_log, va);
+	ft_error(err, msg);
 }

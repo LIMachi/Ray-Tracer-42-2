@@ -249,7 +249,7 @@ ifeq ($(suffix $(NAME)), .a)
 	@echo " ✔"
 else
 	@printf "\ncompiling executable '$(NAME)'"
-	@$(CC) $(CFLAGS) $(LARGS) $(INCLUDES) $(DOTO) $(LIB) -o $(NAME)
+	$(CC) $(CFLAGS) $(LARGS) $(INCLUDES) $(DOTO) $(LIB) -o $(NAME)
 	@echo " ✔"
 endif
 

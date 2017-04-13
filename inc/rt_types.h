@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_quat_conjugation.c                              :+:      :+:    :+:   */
+/*   rt_types.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/13 04:01:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 04:01:59 by cchaumar         ###   ########.fr       */
+/*   Created: 2017/04/13 23:30:05 by cchaumar          #+#    #+#             */
+/*   Updated: 2017/04/13 23:30:08 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
+#ifndef RT_TYPES_H
+# define RT_TYPES_H
 
-void	ft_quat_conjugation(const t_quaternion q, t_vector *v)
-{
-	t_quaternion	p;
-	
-	p = ft_quat(0, v->x, v->y, v->z);
-	p = ft_quat_multiply(p, ft_quat_inverse(q));
-	p = ft_quat_multiply(q, p);
-	*v = ft_vector_normalize((t_vector){p.i, p.j, p.k});
-}
+# include <rt_incs.h>
+# include <rt_def.h>
+
+typedef struct s_env	t_env;
+typedef void			(*t_key_f)(t_env *, int);
+
+#endif

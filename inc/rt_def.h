@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_quat_conjugation.c                              :+:      :+:    :+:   */
+/*   rt_def.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/13 04:01:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 04:01:59 by cchaumar         ###   ########.fr       */
+/*   Created: 2017/04/13 23:44:17 by cchaumar          #+#    #+#             */
+/*   Updated: 2017/04/13 23:44:20 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
+#ifndef RT_DEF_H
+# define RT_DEF_H
 
-void	ft_quat_conjugation(const t_quaternion q, t_vector *v)
-{
-	t_quaternion	p;
-	
-	p = ft_quat(0, v->x, v->y, v->z);
-	p = ft_quat_multiply(p, ft_quat_inverse(q));
-	p = ft_quat_multiply(q, p);
-	*v = ft_vector_normalize((t_vector){p.i, p.j, p.k});
-}
+# include <rt_incs.h>
+
+# define PRESS			GLFW_PRESS
+# define REPEAT			GLFW_REPEAT
+# define RELEASE		GLFW_RELEASE
+
+# define SPEED			5
+# define ROT			0.05
+# define SCROLL			0.02
+
+#endif
