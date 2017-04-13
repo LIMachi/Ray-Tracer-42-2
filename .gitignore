@@ -33,3 +33,7 @@
 *.su
 
 *.d
+.dep
+.items
+auteur
+log.txt
