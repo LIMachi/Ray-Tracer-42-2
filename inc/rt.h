@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/30 17:32:45 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:45:10 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,19 +206,27 @@ int					mouse_off(int key, int x, int y, t_mouse *m);
 void				rotate_cam(t_camera *cam, double angle, t_vector axe);
 void				calc_vpul(t_camera *cam);
 
-void				update_kernel_args(void);
+void				update_kernel_args(t_env *e);
 
 void				parser(t_env *e, const char *src);
-int					check_parsed_data(void);
-void				parse_images(t_json_value *root);
-void				parse_camera(t_json_value *c);
-void				parse_lights(t_json_value *l);
-void				parse_objects(t_json_value *o);
-void				parse_render_options(t_json_value *ro);
-t_texture			parse_texture(t_json_value *t, t_texture default_return);
-void				*parse_materials(t_json_value *m);
-t_material			parse_material(t_json_value *m, t_material out);
+
+int					check_parsed_data(const t_argn *argn, const t_camera *cam);
+void				parse_images(t_json_value *root,
+								t_textures_holder *textures_holder);
+void				parse_camera(t_json_value *c, t_camera *cam);
+void				parse_lights(t_json_value *l, const t_argn *argn,
+								t_light **lights);
+void				parse_objects(t_json_value *o, t_material_holder *materials,
+								t_primitive **prim, t_argn *argn);
+void				parse_render_options(t_json_value *ro, t_argn *argn);
+t_texture			parse_texture(t_json_value *t, t_texture default_return,
+								t_textures_holder *textures_holder);
+void				*parse_materials(t_json_value *m,
+									t_material_holder *materials,
+									t_textures_holder *textures_holder);
+//t_material			parse_material(t_json_value *m, t_material out);
 t_material			default_material(void);
+
 cl_float4			cl_vector_from_json_array(t_json_value *node,
 	cl_float4 default_return);
 
