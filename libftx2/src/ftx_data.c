@@ -75,8 +75,8 @@ void		*sf_protected_mlx_init(void)
 t_ftx_data	*ftx_data(void)
 {
 	static t_ftx_data	data = {.mlx = NULL, .windows = NULL, .images = NULL,
-
-	.focused_window = NULL, .tick = 0, .loop_callback = NULL};
+		.focused_window = NULL, .tick = 0, .loop_callback = NULL,
+		.user_data = NULL};
 	if (data.mlx == NULL)
 		data.mlx = sf_protected_mlx_init();
 	return (&data);

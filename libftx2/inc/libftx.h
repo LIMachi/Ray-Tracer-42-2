@@ -63,10 +63,14 @@ struct						s_image
 ** tick:		tick of the last update
 */
 
+typedef int					(*t_ftx_key)(int, void *);
+
 struct						s_key_data
 {
 	int				status;
-	int				(*callback)(int key, int status, void *data);
+	t_ftx_key		press;
+	t_ftx_key		hold;
+	t_ftx_key		release;
 	void			*data;
 	unsigned int	tick;
 };
@@ -124,8 +128,9 @@ struct						s_ftx_data
 	t_2list				*images;
 	t_window			*focused_window;
 	unsigned int		tick;
-	int					(*loop_callback)(t_ftx_data *data);
+	int					(*loop_callback)(void *data);
 	t_key_data			keymap[KEYMAP_SIZE];
+	void				*user_data;
 };
 
 /*
@@ -157,7 +162,10 @@ typedef struct				s_ftx_line_data
 ** when called for the first time, it will initialize it's mlx pointer
 */
 
+typedef int 				(*t_ftx_loop_cb)(void *);
+
 t_ftx_data					*ftx_data(void);
+
 
 /*
 ** ftx_color_lerp: do a linear interpolation betwen f (front) and b (back)
@@ -290,8 +298,8 @@ int							ftx_refresh_window(t_window *win);
 ** parameter (void *data)
 */
 
-int							ftx_key_hook(int key, int (*callback)(int key,
-										int status, void *data), void *data);
+int							ftx_set_key(int key, int state, t_ftx_key cb,
+	void *data);
 
 /*
 ** ftx_key_status return a pointer to the status older of keycode
@@ -342,6 +350,5 @@ t_image						*ftx_set_cursor(t_image *img, int x, int y);
 t_image						*ftx_put_ubmp_img(t_image *out, const t_point pos,
 												const t_ubmp *img, int mask);
 
-int							ftx_loop_hook(
-										int (*loop_callback)(t_ftx_data *data));
+int							ftx_loop_hook(t_ftx_loop_cb cb, void *data);
 #endif
