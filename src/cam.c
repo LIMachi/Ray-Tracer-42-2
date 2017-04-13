@@ -40,21 +40,21 @@ cl_float4	vector_to_cl_float4(t_vector v)
 
 void		rotate_cam(t_camera *cam, double angle, t_vector axe)
 {
+	t_vector		t[3];
 	t_quaternion	q;
 	t_matrix		*mat;
-	t_vector		*tva;
 
 	q = ft_quat_rotation_build(angle, axe);
 	q = ft_quat_multiply(cam->orientation, q);
 	cam->orientation = q;
 	mat = ft_quat_rotation_to_matrix(NULL, q);
-	tva = ft_matrix_multply_vector_array((t_vector[3]) {
-			cam->origin_dir,
-			cam->origin_up,
-			cam->origin_right}, 3, mat);
-	cam->dir = vector_to_cl_float4(tva[0]);
-	cam->up = vector_to_cl_float4(tva[1]);
-	cam->right = vector_to_cl_float4(tva[2]);
+	t[0] = cam->origin_dir;
+	t[1] = cam->origin_up;
+	t[2] = cam->origin_right;
+	ft_matrix_multply_vector_array(t, 3, mat);
+	cam->dir = vector_to_cl_float4(t[0]);
+	cam->up = vector_to_cl_float4(t[1]);
+	cam->right = vector_to_cl_float4(t[2]);
 	ft_matrix_free(mat);
 	calc_vpul(cam);
 }

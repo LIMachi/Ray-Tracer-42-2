@@ -56,7 +56,7 @@ static int	sf_tick(t_ftx_data *data)
 	++data->tick;
 	u = sf_run_keys(data->keymap);
 	if (data->updated)
-		*data->updated = u;
+		*data->updated += u;
 	if (data->loop_callback != NULL)
 		data->loop_callback(data->user_data);
 	return (data->tick);

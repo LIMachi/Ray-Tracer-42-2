@@ -18,7 +18,7 @@ static int	e_move(int key, t_camera *cam)
 	const int	dir[] = {
 		-1, 1, -1, 1, -1, 1};
 	const int	keys[] = {
-		KEY_SHIFT_LEFT, KEY_SPACE, KEY_D, KEY_A, KEY_W, KEY_S};
+		KEY_SHIFT_LEFT, KEY_SPACE, KEY_A, KEY_D, KEY_S, KEY_W};
 	const int	v[] = {
 		1, 1, 2, 2, 3, 3};
 	cl_float4	vects[4];
@@ -56,7 +56,7 @@ static int	e_rotate(int key, t_camera *cam)
 	while (i < 6)
 	{
 		if (keys[i] == key)
-			rotate_cam(cam, 0.05 * (dir[i] < 0 ? -1 : 1), vects[v[i]]);
+			rotate_cam(cam, 0.05 * (double)dir[i], vects[v[i]]);
 		i++;
 	}
 	return (0);

@@ -36,7 +36,8 @@ inline static void	parse_render_options_0(t_json_value *ro, t_argn *argn)
 		ft_clampd(*(double*)v[1]->ptr, 0.0, 1.0) : 0.0f);
 }
 
-void				parse_render_options(t_json_value *ro, t_argn *argn)
+void				parse_render_options(t_json_value *ro, t_argn *argn,
+	t_textures_holder *textures)
 {
 	t_json_value	*v;
 
@@ -60,5 +61,5 @@ void				parse_render_options(t_json_value *ro, t_argn *argn)
 		*(int*)v->ptr : 0);
 	v = ft_json_search_pair_in_object(ro,
 		(t_json_string){.length = 6, .ptr = "skybox"});
-	argn->skybox = parse_texture(v, argn->skybox);
+	argn->skybox = parse_texture(v, argn->skybox, textures);
 }

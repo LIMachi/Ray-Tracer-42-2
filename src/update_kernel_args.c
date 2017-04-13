@@ -17,13 +17,13 @@ inline static void	update_kernel_args_0(t_env *e)
 {
 	ftocl_clear_current_kernel_arg(6);
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 6, sizeof(t_img_info) *
-		e->argn.nb_info + 1, (void*)e->textures_holder.info);
+		e->argn.nb_info + 1, (void*)e->textures.info);
 	ftocl_clear_current_kernel_arg(7);
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 7, sizeof(t_material) *
 		e->argn.nb_materials, (void*)e->materials.materials);
 	ftocl_clear_current_kernel_arg(8);
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 8, sizeof(cl_int) *
-	e->textures_holder.total_raw_size + 1, (void*)e->textures_holder.raw_bmp);
+	e->textures.total_raw_size + 1, (void*)e->textures.raw_bmp);
 }
 
 void				update_kernel_args(t_env *e)

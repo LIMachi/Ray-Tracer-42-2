@@ -13,16 +13,15 @@
 #include <rt.h>
 #include <mlx.h>
 
-void		percent_callback(int percent, void *data)
+void		percent_callback(int percent, t_env *e)
 {
 	int y;
 	int chunk;
 
-	(void)data;
-	if (cmd()->progress_bar_toggle)
+	if (e->cmd.progress_bar_toggle)
 	{
 		y = 0;
-		chunk = (int)(argn()->screen_size.x / 100);
+		chunk = (int)(e->argn.screen_size.x / 100);
 		while (y < 16)
 		{
 			ftx_horizontal_line(ftx_data()->focused_window->vbuffer,
@@ -38,22 +37,24 @@ void		percent_callback(int percent, void *data)
 	}
 }
 
-void		update(t_env *e, int u)
+void		update(t_env *e)
 {
 	size_t size;
 
-	if (u <= 0)
+	if (e->keys.updated <= 0)
 		return ;
-	if (out()->data == NULL)
-		init_output();
-	size = out()->size.x * out()->size.y;
+	e->keys.updated = 0;
+	if (e->out.data == NULL)
+		init_output(&e->out, &e->argn, &e->prim_map);
+	size = e->out.size.x * e->out.size.y;
 	ftocl_clear_current_kernel_arg(5);
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 5, sizeof(t_camera),
-			(void*)cam());
-	ftocl_run_percent_callback(size, 9, percent_callback, NULL);
-	ftocl_read_current_kernel_arg(0, out()->data);
-	ftocl_read_current_kernel_arg(1, prim_map()->data);
-	ftx_put_ubmp_img(ftx_data()->focused_window->vbuffer, ft_point(0, 0), out(),
-		NOMASK);
+		(void*)&e->cam);
+	ftocl_run_percent_callback(size, 9, (void (*)(int, void *))percent_callback,
+		e);
+	ftocl_read_current_kernel_arg(0, e->out.data);
+	ftocl_read_current_kernel_arg(1, e->prim_map.data);
+	ftx_put_ubmp_img(ftx_data()->focused_window->vbuffer, ft_point(0, 0),
+		&e->out, NOMASK);
 	ftx_refresh_window(ftx_data()->focused_window);
 }

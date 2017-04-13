@@ -12,8 +12,8 @@
 
 #include <rt.h>
 
-void				parse_lights(t_json_value *l, const t_argn *argn,
-								t_light **lights)
+void				parse_lights(t_json_value *l, t_argn *argn,
+	t_light **lights)
 {
 	t_json_array	*ar;
 	unsigned long	i;

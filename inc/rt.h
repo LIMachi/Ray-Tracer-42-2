@@ -166,9 +166,9 @@ typedef struct		s_keys
 typedef struct		s_env
 {
 	t_light				*lights;
-	t_primitive			*prims;
-	t_material_holder	mats;
-	t_textures_holder	texs;
+	t_primitive			*prim;
+	t_material_holder	materials;
+	t_textures_holder	textures;
 	t_cmd				cmd;
 	t_argn				argn;
 	t_camera			cam;
@@ -189,7 +189,7 @@ typedef struct		s_env
 /*DOOMED */t_camera			*cam(void);
 
 void				rt(t_env *e);
-void				update(t_env *e, int u);
+void				update(t_env *e);
 
 int					keys(t_env *e);
 
@@ -214,17 +214,18 @@ int					check_parsed_data(const t_argn *argn, const t_camera *cam);
 void				parse_images(t_json_value *root,
 								t_textures_holder *textures_holder);
 void				parse_camera(t_json_value *c, t_camera *cam);
-void				parse_lights(t_json_value *l, const t_argn *argn,
-								t_light **lights);
-void				parse_objects(t_json_value *o, t_material_holder *materials,
-								t_primitive **prim, t_argn *argn);
-void				parse_render_options(t_json_value *ro, t_argn *argn);
+void				parse_lights(t_json_value *l, t_argn *argn,
+	t_light **lights);
+void				parse_objects(t_json_value *o, t_env *e);
+void				parse_render_options(t_json_value *ro, t_argn *argn,
+	t_textures_holder *h);
 t_texture			parse_texture(t_json_value *t, t_texture default_return,
 								t_textures_holder *textures_holder);
 void				*parse_materials(t_json_value *m,
 									t_material_holder *materials,
 									t_textures_holder *textures_holder);
-//t_material			parse_material(t_json_value *m, t_material out);
+t_material			parse_material(t_json_value *m, t_material out,
+	t_textures_holder *textures_holder);
 t_material			default_material(void);
 
 cl_float4			cl_vector_from_json_array(t_json_value *node,

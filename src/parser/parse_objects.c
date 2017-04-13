@@ -14,7 +14,7 @@
 #include <rt.h>
 
 inline static cl_uint	parse_object_material(t_json_value *o,
-											t_material_holder *materials)
+	t_material_holder *materials, t_textures_holder *textures)
 {
 	int	i;
 
@@ -30,7 +30,7 @@ inline static cl_uint	parse_object_material(t_json_value *o,
 			sizeof(char *) * (materials->nb_materials + 1));
 		materials->name[materials->nb_materials] = NULL;
 		materials->materials[materials->nb_materials] =
-			parse_material(o, default_material());
+			parse_material(o, default_material(), textures);
 		return (materials->nb_materials++);
 	}
 	else if (o->type == string && ((t_json_string*)o->ptr)->ptr != NULL &&
@@ -99,7 +99,7 @@ inline static t_primitive	parse_object_0(t_json_value *o, t_primitive p)
 }
 
 inline static t_primitive	parse_object(t_json_value *o,
-										t_material_holder *materials)
+	t_material_holder *materials, t_textures_holder *textures)
 {
 	t_json_value	*v;
 	t_primitive		p;
@@ -114,7 +114,7 @@ inline static t_primitive	parse_object(t_json_value *o,
 		ft_error(EINTERN, "Parser encountered invalid object\n");
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 8, .ptr = "material"});
-	p.material = parse_object_material(v, materials);
+	p.material = parse_object_material(v, materials, textures);
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 6, .ptr = "radius"});
 	if (v != NULL && (v->type == integer || v->type == number) &&
@@ -126,20 +126,18 @@ inline static t_primitive	parse_object(t_json_value *o,
 	return (parse_object_0(o, p));
 }
 
-void						parse_objects(t_json_value *o,
-										t_material_holder *materials,
-										t_primitive **prim, t_argn *argn)
+void						parse_objects(t_json_value *o, t_env *e)
 {
 	t_json_array	*ar;
 	unsigned long	i;
 
 	if (o == NULL || o->type != array || (ar = (t_json_array*)o->ptr) == NULL ||
 		ar->nb_values == 0 || ar->value == NULL ||
-		(*prim = (t_primitive*)ft_malloc(sizeof(t_primitive) * ar->nb_values))
+		(e->prim = (t_primitive*)ft_malloc(sizeof(t_primitive) * ar->nb_values))
 		== NULL)
 		return ;
-	argn->nb_objects = ar->nb_values;
+	e->argn.nb_objects = ar->nb_values;
 	i = -1;
 	while (++i < ar->nb_values)
-		(*prim)[i] = parse_object(ar->value[i], materials);
+		e->prim[i] = parse_object(ar->value[i], &e->materials, &e->textures);
 }

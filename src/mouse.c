@@ -20,15 +20,16 @@ int			mouse_click(int key, int x, int y, t_env *e)
 		return (0);
 	check = e->prim_map.data[e->prim_map.size.x * y + x];
 	if (check > 0 && key == 4)
-		e->prims[check - 1].radius *= 1.04f;
+		e->prim[check - 1].radius *= 1.04f;
 	if (check > 0 && key == 5)
-		e->prims[check - 1].radius /= 1.04f;
+		e->prim[check - 1].radius /= 1.04f;
 	if (key == 1)
 		e->mouse.is_select = check;
 	ftocl_clear_current_kernel_arg(3);
 	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 3, sizeof(t_primitive) *
-		e->argn.nb_objects, (void*)e->prims);
-	update(e, 1);
+		e->argn.nb_objects, (void*)e->prim);
+	e->keys.updated = 1;
+	update(e);
 	return (0);
 }
 
@@ -66,7 +67,7 @@ int			mouse_move(int x, int y, t_env *e)
 		return (0);
 	if (e->mouse.is_select > 0)
 	{
-		new_pos(&e->prims[e->mouse.is_select - 1].position, x, y, e);
+		new_pos(&e->prim[e->mouse.is_select - 1].position, x, y, e);
 		ftocl_clear_current_kernel_arg(3);
 		ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 3, sizeof(t_primitive) *
 		e->argn.nb_objects, (void*)*prim());
@@ -80,6 +81,7 @@ int			mouse_move(int x, int y, t_env *e)
 	}
 	e->mouse.x = x;
 	e->mouse.y = y;
-	update(e, 1);
+	e->keys.updated = 1;
+	update(e);
 	return (0);
 }

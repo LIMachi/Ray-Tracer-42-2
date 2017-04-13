@@ -8,7 +8,7 @@ SRCDIR = src
 INCDIRS = inc
 OBJDIR = .obj
 
-CFLAGS = -Wall -Wextra -Werror -Wno-deprecated -Wno-deprecated-declarations -g -O2
+CFLAGS = -Wall -Wextra -Werror -Wno-deprecated -Wno-deprecated-declarations -g
 PINC = libft/inc libftx2/inc libftocl/inc libftjson/inc
 LPINC = minilibx_X11
 MPINC = minilibx_macos
