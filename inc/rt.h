@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 13:54:18 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 14:17:22 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ typedef struct		s_texture
 typedef struct		s_material
 {
 	cl_float4		color;
-	cl_float		diffuse;
-	cl_float		specular;
+	cl_float4		diffuse;
+	cl_float4		specular;
 	cl_float		reflection;
 	cl_float		refraction;
 	cl_float		brightness;
