@@ -496,12 +496,10 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, fl
 			n = DOT(obj->direction, obj->position - point) * obj->direction + (point - obj->position);
 			break;
 		case CONE:
-
-			r = DOT(ray->direction, obj->direction) * ray->dist + DOT(ray->origin - obj->position, obj->direction);
-			n = point - obj->position - (1.0f + pow((float)tan(obj->radius * M_PI / 180.0f), 2)) * obj->direction * r;
-/*
-			r = obj->radius * M_PI / 180.0f;
-			n = point - obj->position + (obj->direction * -DOT(point, obj->direction) / pow(COS(r), 2));*/
+			point -= obj->position;
+			r = cos(obj->radius * M_PI / 180.0);
+			r = r * r;
+			n = point - obj->direction * dot(point, obj->direction) / r;
 			break;
 		case PARABOLOID:
 			n = point - obj->position - obj->direction * obj->radius;
@@ -839,6 +837,7 @@ __kernel void	rt_kernel(
 			ray.weight = 1.0f;
 			ray.color = (float4)(0, 0, 0, 0);
 
+			count++;
 			PUSH_RAY(queue, ray, queue_pos);
 
 			while (queue_pos > 0)
@@ -864,7 +863,6 @@ __kernel void	rt_kernel(
 						color += cur_color * cur_ray.weight * cur_ray.color;
 						break;
 				}
-				count++;
 
 				if (cur_ray.depth >= argn->bounce_depth || cur_id == -1)
 					continue;
