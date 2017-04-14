@@ -103,7 +103,7 @@ void		init(t_env *e)
 	init_shaders(e->glfw.vao, &e->glfw.program, "shaders/lemin.vs",
 		"shaders/lemin.fs");
 	init_texture(e->glfw.vao, &e->glfw.tex, e->window.x, e->window.y);
-	e->glfw.cl_ctx = init_cl_context("scl/raytracer2.cl", NULL,
+	e->glfw.cl_ctx = init_cl_context("scl/raytracer.cl", NULL,
 		CL_DEVICE_TYPE_GPU, INTEROP_TRUE);
 	kernel_init(e);
 //	if (e->cmd.output != NULL)
