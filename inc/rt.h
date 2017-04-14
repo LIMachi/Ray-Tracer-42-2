@@ -230,6 +230,7 @@ void				mouse_callback(GLFWwindow* window, double x, double y);
 
 void				set_keys(t_env *e);
 void				handle_keys(t_key *keys, t_env *e);
+int					key_match(int keycode, int action, t_key *key);
 
 void				opencl_render(t_env *e);
 void				process_ker_ret(t_env *e, t_cl_param *params, int n);
