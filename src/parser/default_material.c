@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:00:39 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 14:21:34 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 14:37:07 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,7 @@ t_material			default_material(void)
 	out.perturbation.color = NONE;
 	out.texture.info_index = -1;
 	out.texture.stretch = (cl_float2){.x = 1.0f, .y = 1.0f};
+	out.normal_map.info_index = -1;
+	out.normal_map.stretch = (cl_float2){.x = 1.0f, .y = 1.0f};
 	return (out);
 }
