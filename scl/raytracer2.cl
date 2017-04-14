@@ -48,7 +48,8 @@ typedef struct		s_material
 	float			diffuse;
 	float			specular;
 	float			reflection;
-	float			transparency;
+	float			refraction;
+//	float			transparency;
 	t_perturbation	perturbation;
 	t_texture		texture;
 	t_texture		normal_map;
@@ -873,7 +874,7 @@ __kernel void	rt_kernel(
 				float4 normal = get_normal(&objects[cur_id], mat, collision, &cur_ray);
 
 				float refl = mat->reflection;
-				float refr = mat->transparency;
+				float refr = mat->refraction;
 				if (refl > EPSILON && refr < EPSILON)
 				{
 					float4 reflect = NORMALIZE(cur_ray.direction - 2.0f * DOT(cur_ray.direction, normal) * normal);

@@ -33,6 +33,7 @@
 			"diffuse": 1.0,
 			"specular": 1.0,
 			"reflection": 1.0,
+			"refraction": 1.0,
 			"perturbation":
 			{
 				"normal": 1.0,

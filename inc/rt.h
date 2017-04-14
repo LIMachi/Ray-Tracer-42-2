@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 08:29:45 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 10:07:13 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct		s_material
 	cl_float		diffuse;
 	cl_float		specular;
 	cl_float		reflection;
+	cl_float		refraction;
 	t_perturbation	perturbation;
 	t_texture		texture;
 	t_texture		normal_map;
