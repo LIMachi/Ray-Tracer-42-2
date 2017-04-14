@@ -41,9 +41,8 @@ void	init_shaders(GLuint vao, GLuint *program, char *vs, char *fs)
 	glBindVertexArray(0);
 }
 
-void	init_texture(GLuint vao, GLuint *tex, int w, int h)
+void	init_texture(GLuint *tex, int w, int h)
 {
-	glBindVertexArray(vao);
 	glGenTextures(1, tex);
 	glBindTexture(GL_TEXTURE_2D, *tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -52,7 +51,6 @@ void	init_texture(GLuint vao, GLuint *tex, int w, int h)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, 0);
-	glBindVertexArray(0);
 }
 
 void	init_vao(GLuint *vao)
