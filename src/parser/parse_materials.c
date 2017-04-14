@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 08:29:53 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 10:19:02 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,10 @@ t_material					parse_material(t_json_value *m, t_material out,
 
 	if (m == NULL || m->type != object || m->ptr == NULL)
 		return (out);
+	v[0] = ft_json_search_pair_in_object(m,
+		(t_json_string){.length = 12, .ptr = "refraction"});
+	(v[0] != NULL && v[0]->type == number && v[0]->ptr != NULL) ?
+		out.refraction = (cl_float) * (double*)v[0]->ptr : 0;
 	v[0] = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 12, .ptr = "perturbation"});
 	v[1] = ft_json_search_pair_in_object(v[0],
