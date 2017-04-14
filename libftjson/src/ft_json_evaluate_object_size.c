@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 17:51:27 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/27 07:55:34 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 08:06:07 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,5 @@ unsigned long	ft_json_evaluate_object_size(const char *src, const unsigned
 			c[3] ^= 1;
 		++pos;
 	}
-	return ((ccount != count) ? (unsigned long)-1 : count);
+	return ((ccount != count) ? -1ul : count);
 }

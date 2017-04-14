@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/14 18:48:15 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/08 23:31:35 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 07:51:32 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ struct							s_json_string
 **  -parent: pointer to the parent value containing the current value, or a
 **   pointer to himself if the value is the root of all values
 **  -type: enum of all type that can be pointed by ptr
+**  -error: eventual error code
 **  -ptr: pointer to the data contained
 */
 
@@ -58,6 +59,7 @@ struct							s_json_value
 {
 	t_json_value		*parent;
 	t_json_value_type	type;
+	unsigned			error;
 	void				*ptr;
 };
 

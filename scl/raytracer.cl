@@ -203,7 +203,7 @@ inline float	local_length(float4 v)
 
 // maximum ray count
 #ifndef MAX_RAY_COUNT
-# define MAX_RAY_COUNT (1 << 32)
+# define MAX_RAY_COUNT (1 << 4)
 #endif
 
 // minimum direct lighting coefficient
@@ -757,10 +757,9 @@ __kernel void	rt_kernel(
 				int result;
 				int cur_id = raytrace(&cur_ray, &cur_color, &collision, &result, objects, lights, argn, materials, img_info, raw_bmp);
 
-				if (cur_ray.depth == 0 && argn->map_primitives)
-				{
+				if (cur_ray.depth == 0 /*&& argn->map_primitives*/)
 					prim_map[i + l * j] = cur_id + 1;
-				}
+
 				// do things based on ray type
 				switch (cur_ray.type)
 				{
@@ -832,6 +831,5 @@ __kernel void	rt_kernel(
 	// apply color filter
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);
-
 	write_imagef(out, (int2)(i, j), (float4)(color.xyz, 1.0));
 }

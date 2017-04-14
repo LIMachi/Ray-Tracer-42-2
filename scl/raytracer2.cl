@@ -51,6 +51,7 @@ typedef struct		s_material
 	float			transparency;
 	t_perturbation	perturbation;
 	t_texture		texture;
+	t_texture		normal_map;
 }					t_material;
 
 typedef struct		s_img_info
@@ -474,7 +475,7 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	// dp = max(obj->limit.low.z - point.z, 0.0f);
 	// *dist += dp;
 	// point += dp * ray->direction;
-		
+
 	return (i);
 }
 
@@ -891,7 +892,7 @@ __kernel void	rt_kernel(
 				}
 
 				// beautiful refractions
-				
+
 				if (refr > EPSILON && refl < EPSILON)
 				{
 					t_ray r_ray;

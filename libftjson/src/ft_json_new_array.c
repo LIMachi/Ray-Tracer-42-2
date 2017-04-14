@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 17:42:33 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/08 23:33:43 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 07:59:00 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ t_json_value		*ft_json_new_array(const char *src,
 	if ((ar->nb_values = ft_json_evaluate_array_size(src, length, (*pos)++)) > 0)
 	{
 		if ((ar->value = (t_json_value**)ft_malloc(sizeof(t_json_value*) *
-				ar->nb_values)) == NULL && ft_free(out))
+				ar->nb_values)) == NULL && (1 & (long)ft_free(out)))
 			return (ft_free(ar));
 		i = 0;
 		while (i < ar->nb_values)
 		{
 			ar->value[i++] = ft_json_new_value(src, length, pos, out);
 			sf_jump_space(src, length, pos);
-			(src[*pos] == ',' && *pos < length) ? ++*pos : 0;
+			(src[*pos] == ',' && *pos < length && i <= ar->nb_values) ? ++*pos : 0;
 		}
 	}
 	else

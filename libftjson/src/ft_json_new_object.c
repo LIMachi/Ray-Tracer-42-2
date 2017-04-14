@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/17 17:43:24 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/08 23:58:16 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 08:07:10 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,19 @@ t_json_value		*ft_json_new_object(const char *src,
 		return (out != NULL ? ft_free(out) : NULL);
 	if ((obj->nb_pairs = ft_json_evaluate_object_size(src, length, (*pos)++)) > 0)
 	{
-		if ((obj->pair = (t_json_pair**)ft_malloc(sizeof(t_json_pair*) *
-				obj->nb_pairs)) == NULL && ft_free(out) == NULL)
+		if (obj->nb_pairs == -1ul || ((obj->pair =
+				(t_json_pair**)ft_malloc(sizeof(t_json_pair*) *
+				obj->nb_pairs)) == NULL && (1 & (long)ft_free(out))))
 			return (ft_free(obj));
 		i = 0;
 		while (i < obj->nb_pairs)
 		{
 			obj->pair[i++] = ft_json_new_pair(src, length, pos, out);
 			sf_jump_space(src, length, pos);
-			(src[*pos] == ',' && *pos < length) ? ++*pos : 0;
+			if (src[*pos] == ',' && *pos < length)
+				++*pos;
+			else if (i < obj->nb_pairs)
+				break ;
 		}
 	}
 	else

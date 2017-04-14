@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 06:20:09 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 08:29:45 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,6 +283,7 @@ void				*parse_materials(t_json_value *m,
 t_material			parse_material(t_json_value *m, t_material out,
 	t_textures_holder *textures_holder);
 t_material			default_material(void);
+t_primitive			null_primitive(void);
 
 cl_float4			cl_vector_from_json_array(t_json_value *node,
 	cl_float4 default_return);
