@@ -39,15 +39,6 @@ void	display_fps(t_env *e, GLFWwindow *win, char *name)
 
 void		rt(t_env *e)
 {
-	calc_vpul(&e->cam);
-	update_kernel_args(e);
-	if (e->cmd.output != NULL)
-		direct_output(&e->out, &e->argn, e->cmd.output);
-	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
-	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
-	glewExperimental = GL_TRUE;
-	glewInit();
-	glfwMakeContextCurrent(e->glfw.win);
 	e->keys.updated = 1;
 	glfwGetCursorPos(e->glfw.win, &e->mouse.x, &e->mouse.y);
 	while (!glfwWindowShouldClose(e->glfw.win))
@@ -76,17 +67,25 @@ void		init(t_env *e, char *src)
 	parser(e, src = ft_readfile(fd));
 	close(fd);
 	ft_free(src);
-	if ((fd = open(OCL_SOURCE_PATH, O_RDONLY)) == -1)
-		ft_end(-1);
-	ftocl_make_program(ft_str_to_id64("rt"),
-			src = ft_str_clear_commentaries(ft_readfile(fd)), NULL);
-	close(fd);
+	calc_vpul(&e->cam);
+	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
+	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
+	glewExperimental = GL_TRUE;
+	glewInit();
+	init_vao(&e->glfw.vao);
+	init_shaders(e->glfw.vao, &e->glfw.program, "shaders/lemin.vs", "shaders/lemin.fs");
+	init_texture(&e->glfw.tex, e->window.x, e->window.y);
+	glfwMakeContextCurrent(e->glfw.win);
+	e->glfw.cl_ctx = init_cl_context("scl/raytracer.cl", NULL,
+		CL_DEVICE_TYPE_GPU, INTEROP_TRUE);
+	opencl_init(e);
+	if (e->cmd.output != NULL)
+		direct_output(&e->out, &e->argn, e->cmd.output);
 }
 
 int			main(const int argc, char **argv, char **env)
 {
 	t_env	e;
-	int		fd;
 	char	*src;
 
 	src = NULL;
@@ -99,9 +98,6 @@ int			main(const int argc, char **argv, char **env)
 		ft_end(0);
 	}
 	init(&e, src);
-	if (!(fd = ftocl_set_current_kernel(ft_str_to_id64("rt_kernel"))))
-		rt(&e);
-	if (fd == 1)
-		ft_end(0 /* ft_printf("kernel was not found\n")*/);
+	rt(&e);
 	ft_end(0);
 }

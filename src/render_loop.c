@@ -23,7 +23,6 @@ void	process_ker_ret(t_env *e, t_cl_param *params, int n)
 
 void	opencl_render(t_env *e, t_ctx_glfw *glfw)
 {
-	// printf("\e[1;1H\e[2J");
 	glFinish();
 	clEnqueueAcquireGLObjects(glfw->cl_ctx.queue, 1, &glfw->cl_tex, 0, 0,
 		NULL);

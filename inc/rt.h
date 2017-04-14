@@ -230,6 +230,12 @@ void				mouse_callback(GLFWwindow* window, double x, double y);
 void				set_keys(t_env *e);
 void				handle_keys(t_key *keys, t_env *e);
 
+void				init_shaders(GLuint vao, GLuint *program, char *vs,
+	char *fs);
+void				init_texture(GLuint *tex, int w, int h);
+void				init_vao(GLuint *vao);
+void				opencl_init(t_env *e);
+
 int					command_line(t_cmd *cmd, int argc, char **argv);
 
 void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);

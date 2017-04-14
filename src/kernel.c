@@ -24,6 +24,7 @@ t_cl_kernel		*cl_create_kernel(t_cl_ctx *ctx, char *name, int dim)
 	int			err;
 	t_cl_kernel	ker;
 
+	ft_bzero(&ker, sizeof(t_cl_kernel));
 	ker.name = ft_strdup(name);
 	ker.dim = dim;
 	ker.kernel = clCreateKernel(ctx->program, name, &err);
