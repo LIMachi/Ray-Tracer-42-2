@@ -22,12 +22,12 @@
 		"white":
 		{
 			"color": [1, 1, 1],
-			"diffuse": 1.0,
-			"specular": 1.0,
+			"diffuse": [1.0, 1.0, 1.0],
+			"specular": [1.0, 1.0, 1.0],
 			"perturbation": 
 			{
-				"normal": 0.2,
-				"color": "sine"
+				"normal": 1.0,
+				"color": null
 			},
 			"reflection": 1.0
 		}
@@ -39,12 +39,14 @@
 			"position": [0, 0, 500],
 			"direction": [0, 1, 0],
 			"radius": 200,
-			"material": 
+			"brightness": 40,
+			"material": "white"
+			/*"material": 
 			{
-				"color": [1, 1, 1],
-				"diffuse": 1.0,
-				"specular": 1.0
-			}
+				"color": [0.5, 0.5, 0.5],
+				"diffuse": [0.6, 0.6, 0.6],
+				"specular": [0.8, 0.8, 0.8]
+			}*/
 		},
 		{
 			"type": "plane",
@@ -55,8 +57,8 @@
 	],
 	"lights":
 	[
-		{ "position": [300, 0, 0], "color": [0, 3, 0] },
-		{ "position": [-150, -250, 0], "color": [3, 0, 0] },
-		{ "position": [-150, 250, 0], "color": [0, 0, 3] }
+		{ "position": [300, 0, 0], "color": [0, 1, 0] },
+		{ "position": [-150, -250, 0], "color": [1, 0, 0] },
+		{ "position": [-150, 250, 0], "color": [0, 0, 1] }
 	]
 }

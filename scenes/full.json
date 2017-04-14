@@ -29,24 +29,25 @@
 	{
 		"red":
 		{
-			"color": [1, 0, 0],
-			"diffuse": 1.0,
-			"specular": 1.0,
+			"color": [0.3, 0, 0],
+			"diffuse": [0.5, 0.0, 0.0],
+			"specular": [0.7, 0.0, 0.0],
 			"reflection": 0.3,
 			"refraction": 1.0,
-			"brightness": 1.0,
+			"brightness": 2.0,
 			"perturbation":
 			{
-				"normal": 1.0,
+				"normal": "none",
 				"color": "none"
 			}
 		},
 		"cat":
 		{
-			"color": [1, 0.6, 0],
-			"diffuse": 1.0,
-			"specular": 1.0,
-			"reflection": 1.0,
+			"color": [0.6, 0.6, 0.6],
+			"diffuse": [0.4, 0.4, 0.4],
+			"specular": [0.4, 0.4, 0.4],
+			"brightness": 100,
+			"reflection": 0.0,
 			"texture":
 			{
 				"file": "textures/cat.bmp",

@@ -138,13 +138,13 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		solve_quadratic(float a, float b, float c, float *dist);
-float4	get_normal(__global t_primitive *obj, __global t_material *mat, float4 point, t_ray *ray);
+float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ray, float4 point);
 float4	input_ray(float4 dir, float4 norm);
 float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 normal, __global t_img_info *info, __global int *raw_bmp, float4 col);
 float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __global t_img_info *img_info);
 int		color_to_int(float4 color);
 float4	int_to_color(int c);
-int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, __global t_light *lights, int *result);
+int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, __global t_light *lights, int *result, int *l_id);
 
 int		quadratic(float a, float b, float c, float2 *ret);
 
@@ -206,7 +206,7 @@ inline float	local_length(float4 v)
 
 // maximum ray count
 #ifndef MAX_RAY_COUNT
-# define MAX_RAY_COUNT (1 << 4)
+# define MAX_RAY_COUNT (1 << 8)
 #endif
 
 // minimum direct lighting coefficient
@@ -451,7 +451,7 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	return (i);
 }
 
-inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, float4 point, t_ray *ray)
+inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ray, float4 point)
 {
 	float4 n = (float4)(0, 0, 0, 0);
 	float r;
@@ -468,10 +468,12 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, fl
 			n = DOT(obj->direction, obj->position - point) * obj->direction + (point - obj->position);
 			break;
 		case CONE:
-			point -= obj->position;
-			r = cos(obj->radius * M_PI / 180.0);
-			r = r * r;
-			n = point - obj->direction * dot(point, obj->direction) / r;
+			r = DOT(ray->direction, obj->direction) * ray->dist + DOT(ray->origin - obj->position, obj->direction);
+			n = point - obj->position - (1.0f + pow((float)tan(obj->radius * M_PI / 180.0f), 2)) * obj->direction * r;
+			// n = ray->origin - obj->position;
+			// r = cos(obj->radius * M_PI / 180.0);
+			// r = r * r;
+			// n = n - obj->direction * dot(n, obj->direction) / r;
 			break;
 		case PARABOLOID:
 			n = point - obj->position - obj->direction * obj->radius;
@@ -483,7 +485,7 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, fl
 	if (mat->perturbation.normal > 0.0f)
 	{
 		float len = LENGTH(n);
-		n.y += COS(point.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
+		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
 	}
 	return (NORMALIZE(n));
 }
@@ -540,11 +542,6 @@ inline float4	color_perturbation(float4 color, __global t_primitive *prim,
 	return (color);
 }
 
-inline float4	input_ray(float4 dir, float4 norm)
-{
-	return (dir - 2 * DOT(dir, norm) * norm);
-}
-
 inline int		color_to_int(float4 color)
 {
 	color = clamp(color * 255.0f, 0.0f, 255.0f);
@@ -590,14 +587,49 @@ inline float4		color_filter(float4 color, t_color_filter filter)
 	return (out);
 }
 
+float4		get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *argn, int *l_id)
+{
+	float4	c = (float4)0;
+	t_ray	ray_l;
+	float	dist_l;
+	float	scal;
+	float	dist;
 
-int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, __global t_light *lights, int *result)
+	dist = ray->dist;
+	for (int cur_l = 0; cur_l < argn->nb_lights; cur_l++)
+	{
+		t_light light = lights[cur_l];
+		
+		if (argn->direct > EPSILON)
+		{
+			ray_l.direction = light.position - ray->origin;
+			dist_l = LENGTH(ray_l.direction);
+			ray_l.direction /= dist_l;
+			ray_l.origin = ray->origin;
+			if (dist_l > EPSILON && dist_l < dist)
+			{
+				scal = DOT(ray_l.direction, ray->direction);
+				if (scal > MIN_DIRECT)
+				{
+					c += (light.color * (scal - MIN_DIRECT) / (1.0f - MIN_DIRECT));
+					*l_id = cur_l;
+					dist = dist_l;
+				}
+			}
+		}
+	}
+	if (*l_id > -1)
+		*l_id = -*l_id - 2;
+	return (c);
+}
+
+int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, __global t_light *lights, int *result, int *id_l)
 {
 	int id = NO_PRIMITIVE;
-	int	id_l = -1;
 	int cur;
 	int temp;
 
+	*result = 0;
 	for (cur = 0; cur < argn->nb_objects; cur++)
 	{
 		if ((temp = intersect(&objects[cur], ray, &ray->dist)))
@@ -606,55 +638,20 @@ int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, 
 			*result = temp;
 		}
 	}
-	if (ray->depth == 0)
-	{
-		for (cur = 0; cur < argn->nb_lights; cur++)
-		{
-			t_light light = lights[cur];
-			if (argn->direct > EPSILON)
-			{
-				float dist_l = LENGTH(light.position - ray->origin);
-				if (dist_l > EPSILON && dist_l < ray->dist)
-				{
-					id_l = cur;
-					break ;
-				}
-			}
-		}
-	}
-	return (id_l > -1 ? -id_l - 2 : id);
+	ray->color = get_light_color(ray, lights, argn, id_l);
+	if (*id_l == -1)
+		*id_l = id;
+	return (id);
 }
 
-float4		get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *argn)
+inline float4	input_ray(float4 dir, float4 norm)
 {
-	float4	c = (float4)0;
-	t_ray	ray_l;
-	float	dist_l;
-	float	scal;
-
-	for (int cur_l = 0; cur_l < argn->nb_lights; cur_l++)
-	{
-		t_light light = lights[cur_l];
-		
-		if (argn->direct > EPSILON)
-		{
-			dist_l = LENGTH(light.position - ray->origin);
-			ray_l.direction = NORMALIZE(light.position - ray->origin);
-			ray_l.origin = ray->origin;
-			
-			if (dist_l > EPSILON && dist_l < ray->dist)
-			{
-				scal = DOT(ray_l.direction, ray->direction);
-				if (scal > MIN_DIRECT)
-					c += (light.color * (scal - MIN_DIRECT) / (1.0f - MIN_DIRECT));
-			}
-		}
-	}
-	return (c);
+	return (2 * DOT(-dir, norm) * norm - dir);
 }
+
 
 float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global t_primitive *obj, __global t_primitive *objects,
-	__global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn)
+	__global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn, float4 p)
 {
 	float4	c = (float4)0;
 	int shadow = 0;
@@ -665,10 +662,10 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 	for (int l_cur = 0; l_cur < argn->nb_lights; l_cur++)
 	{
 		t_light	light = lights[l_cur];
-		ray_l.direction = light.position - ray->origin;
+		ray_l.direction = light.position - p;
 		float dist_l = LENGTH(ray_l.direction);
 		ray_l.direction = NORMALIZE(ray_l.direction);
-		ray_l.origin = ray->origin;
+		ray_l.origin = p + SHADOW_E * ray_l.direction;
 		for (int cur = 0; cur < argn->nb_objects; cur++)
 		{
 			if ((shadow = intersect(&objects[cur], &ray_l, &dist)) != 0)
@@ -685,16 +682,18 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		{
 			__global t_img_info *info = &img_info[mat->texture.info_index];
 			col = color_texture(obj, &mat->texture, normal, info, raw_bmp, col);
+			c += col;
 		}
-		c += light.color * col * argn->ambient;
+		else
+			c += light.color * col * argn->ambient;
 		if (shadow)
 			continue ;
 		float scale;
 		if ((scale = DOT(ray_l.direction, normal)) > 0)
 			c += light.color * mat->diffuse * scale;
-		float4 ir = input_ray(-ray_l.direction, normal);
-		if (scale > 0 && (scale = DOT(ir, -ray_l.direction)) > 0)
-			c += light.color * mat->specular * pow(scale, mat->brightness * 128);
+		float4 ir = 2 * scale * normal - ray_l.direction;
+		if (scale > 0 && (scale = DOT(ir, -ray->direction)) > 0)
+			c += light.color * mat->specular * pow(scale, mat->brightness);
 	}
 	c = clamp(c / (float)argn->nb_lights, 0.0f, 1.0f);
 	c = color_perturbation(c, obj, mat->perturbation.color, normal);
@@ -770,7 +769,7 @@ __kernel void	rt_kernel(
 			ray.type = ORIGIN;
 			ray.depth = 0;
 			ray.weight = 1.0f;
-			ray.color = (float4)(0);
+			ray.color = color;
 			ray.node = -1;
 			int cur_ray_id = 0;
 			count++;
@@ -778,18 +777,23 @@ __kernel void	rt_kernel(
 			while ((cur_ray = &queue[cur_ray_id])->weight > EPSILON)
 			{
 				cur_ray_id++;
-				float4 collision;
-				int result;
-				int cur_id = raytrace(cur_ray, argn, objects, lights, &result);
+				int result = 0;
+				int l_id = -1;
+				int cur_id = raytrace(cur_ray, argn, objects, lights, &result, &l_id);
 				if (cur_ray->depth == 0)
-					prim_map[i + l * j] = cur_id + 1;
-				cur_ray->color = get_light_color(cur_ray, lights, argn) +
-					(cur_id == -1 ? skybox(&argn->skybox, *cur_ray, raw_bmp, img_info) : 0);
-				if (cur_ray->depth >= argn->bounce_depth || cur_id == -1)
+					prim_map[i + l * j] = l_id + 1;
+				if (!result)
+				{
+					cur_ray->color += skybox(&argn->skybox, *cur_ray, raw_bmp, img_info);
 					continue;
+				}
+				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
-				float4 normal = get_normal(&objects[cur_id], mat, collision, cur_ray) * result;
-				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn);
+				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p) * result;
+				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
+				cur_ray->origin = p;
+				if (cur_ray->depth >= argn->bounce_depth)
+					continue;
 				float lum = mat->reflection;
 				float c0i = DOT(normal, -cur_ray->direction);
 				float sc = 1 - c0i;
@@ -807,8 +811,8 @@ __kernel void	rt_kernel(
 				if (r0 > EPSILON)
 				{
 					float4 reflect = NORMALIZE(cur_ray->direction - 2.0f * DOT(cur_ray->direction, normal) * normal);
-					r_ray.origin = collision + reflect * SHADOW_E;
 					r_ray.direction = reflect;
+					r_ray.origin = cur_ray->origin + EPSILON * r_ray.direction;
 					r_ray.depth = cur_ray->depth + 1;
 					r_ray.weight = r0 * lum * cur_ray->weight;
 					r_ray.type = REFLECTED;
@@ -825,10 +829,10 @@ __kernel void	rt_kernel(
 					e2 = eta * c0i - sqrt(e2);
 					float4	refracted = NORMALIZE(eta * cur_ray->direction + e2 * normal);
 					r_ray.dist = MAXFLOAT;
-					r_ray.origin = collision + refracted * SHADOW_E;
+					r_ray.direction = refracted;
+					r_ray.origin = cur_ray->origin + EPSILON * r_ray.direction;
 					r_ray.depth = cur_ray->depth + 1;
 					r_ray.weight = (1 - r0) * lum * cur_ray->weight;
-					r_ray.direction = refracted;
 					r_ray.type = REFRACTED;
 					if (r_ray.weight > EPSILON)
 						PUSH_RAY(queue, r_ray, queue_end);
@@ -836,7 +840,7 @@ __kernel void	rt_kernel(
 			}
 		}
 	}
-	color = queue[0].color;
+	color = clamp(queue[0].color, 0.0f, 1.0f);
 	color /= count;
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);
