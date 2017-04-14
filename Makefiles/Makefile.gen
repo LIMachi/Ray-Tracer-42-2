@@ -160,7 +160,7 @@ help:
 	$(SILENT)less .tmp
 	$(SILENT)$(RM) .tmp
 
-redep: reitems
+redep:
 	$(SILENT)printf "rebuilding dependencies/rules:\n"
 	$(SILENT)$(RM) $(DOTD)
 	$(SILENT)if [ -z "$$(find $(DEPDIR) -type f)" ]; then $(RM) -r $(DEPDIR); fi
