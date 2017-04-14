@@ -72,7 +72,7 @@ void		init(t_env *e)
 	init_shaders(e->glfw.vao, &e->glfw.program, "shaders/lemin.vs",
 		"shaders/lemin.fs");
 	init_texture(e->glfw.vao, &e->glfw.tex, e->window.x, e->window.y);
-	e->glfw.cl_ctx = init_cl_context("scl/raytracer.cl", NULL,
+	e->glfw.cl_ctx = init_cl_context("scl/raytracer2.cl", NULL,
 		CL_DEVICE_TYPE_GPU, INTEROP_TRUE);
 	opencl_init(e);
 	if (e->cmd.output != NULL)
@@ -97,6 +97,7 @@ int			main(const int argc, char **argv, char **env)
 	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
 	e.argn.map_primitives = 1;
+	e.argn.bounce_depth = 3;
 	e.glfw.fps = 60;
 	parser(&e, src = ft_readfile(fd));
 	close(fd);
