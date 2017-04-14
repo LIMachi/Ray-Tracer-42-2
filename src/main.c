@@ -54,7 +54,7 @@ void		rt(t_env *e)
 		display_fps(e, e->glfw.win, e->glfw.win_name);
 		// printf("\r%f %f %f | %f %f %f", e->cam.p.x, e->cam.p.y, e->cam.p.z, e->cam.d.x, e->cam.d.y, e->cam.d.z);
 		glfwPollEvents();
-		// handle_keys(e->keys, e);
+		handle_keys(e->glfw.keys, e);
 		// opencl_render(e);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);

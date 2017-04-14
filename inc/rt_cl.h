@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_opencl.h                                        :+:      :+:    :+:   */
+/*   rt_cl.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/02 20:10:13 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/11 16:56:52 by cchaumar         ###   ########.fr       */
+/*   Created: 2017/04/14 01:23:40 by cchaumar          #+#    #+#             */
+/*   Updated: 2017/04/14 01:24:02 by cchaumar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_OPENCL_H
-# define FT_OPENCL_H
+#ifndef RT_CL_H
+# define RT_CL_H
 
-# include "../../libft.h"
-# include <OpenCL/cl.h>
-# include <OpenCL/cl_gl_ext.h>
-# include <OpenGL/OpenGL.h>
+# include <rt_incs.h>
 
 # define SIZE_MO		1048576
 # define CLCB			void CL_CALLBACK
 # define INTEROP_TRUE	1
 # define INTEROP_FALSE	0
+# define ALWAYS_UPDATE	8
+# define PARAM_BUFFER	4
 # define PARAM_MEM		2
 # define PARAM_CPY		1
 # define PARAM_NO_CPY	0
-# define CL_WRONLY		CL_MEM_WRITE_ONLY
-# define CL_RDONLY		CL_MEM_READ_ONLY
+# define WR				CL_MEM_WRITE_ONLY
+# define RD				CL_MEM_READ_ONLY
 # define CL_RW			CL_MEM_READ_WRITE
 
 typedef cl_command_queue	t_cl_queue;
@@ -39,6 +38,7 @@ typedef struct	s_cl_param
 	size_t	size;
 	int		mem_type;
 	int		flags;
+	int		needs_update;
 }				t_cl_param;
 
 typedef struct	s_cl_kernel

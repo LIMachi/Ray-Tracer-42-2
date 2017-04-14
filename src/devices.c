@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_opencl.h"
+#include <rt.h>
 
 static void		add_devices(cl_device_id **t, int *n, cl_platform_id id,
 	int type)
@@ -22,12 +22,12 @@ static void		add_devices(cl_device_id **t, int *n, cl_platform_id id,
 	clGetDeviceIDs(id, type, 0, 0, &dn);
 	if (!dn)
 		return ;
-	dev = try(sizeof(cl_device_id) * dn);
+	dev = ft_malloc(sizeof(cl_device_id) * dn);
 	clGetDeviceIDs(id, type, dn, dev, 0);
 	i = 0;
 	while (i < dn)
 		ft_pushback((void **)t, sizeof(cl_device_id), (*n)++, dev + (i++));
-	free(dev);
+	ft_free(dev);
 }
 
 cl_device_id	select_device(int type)
@@ -41,7 +41,7 @@ cl_device_id	select_device(int type)
 	t = NULL;
 	n = 0;
 	clGetPlatformIDs(0, NULL, &pn);
-	p = try(sizeof(cl_platform_id) * pn);
+	p = ft_malloc(sizeof(cl_platform_id) * pn);
 	clGetPlatformIDs(pn, p, NULL);
 	i = 0;
 	while (i < pn)

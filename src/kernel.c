@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_opencl.h"
+#include <rt.h>
 
 t_cl_param		cl_create_param(int mem_type, size_t size, void *p, int flags)
 {
 	if (flags & PARAM_MEM)
-		return ((t_cl_param){0, (cl_mem)p, sizeof(cl_mem), mem_type, flags});
-	return ((t_cl_param){p, 0, size, mem_type, flags});
+		return ((t_cl_param){0, (cl_mem)p, sizeof(cl_mem), mem_type, flags, 1});
+	return ((t_cl_param){p, 0, size, mem_type, flags, 1});
 }
 
 t_cl_kernel		*cl_create_kernel(t_cl_ctx *ctx, char *name, int dim)
@@ -36,14 +36,18 @@ t_cl_kernel		*cl_create_kernel(t_cl_ctx *ctx, char *name, int dim)
 
 void			cl_set_kernel_dims(t_cl_kernel *ker, size_t *g, size_t *l)
 {
+	if (ker->global)
+		ft_free(ker->global);
+	if (ker->local)
+		ft_free(ker->local);		
 	if (g)
 	{
-		ker->global = try(sizeof(size_t) * ker->dim);
+		ker->global = ft_malloc(sizeof(size_t) * ker->dim);
 		ft_memcpy(ker->global, g, sizeof(size_t) * ker->dim);
 	}
 	if (l)
 	{
-		ker->local = try(sizeof(size_t) * ker->dim);
+		ker->local = ft_malloc(sizeof(size_t) * ker->dim);
 		ft_memcpy(ker->local, l, sizeof(size_t) * ker->dim);
 	}
 }
@@ -59,7 +63,7 @@ void			cl_init_kernel(t_cl_ctx *ctx, t_cl_kernel *ker,
 	i = 0;
 	while (i < n)
 	{
-		if (params->flags & PARAM_CPY)
+		if (params->flags & (PARAM_CPY | PARAM_BUFFER))
 		{
 			params->mem = clCreateBuffer(ctx->ctx, params->mem_type,
 				params->size, NULL, &err);

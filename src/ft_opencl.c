@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_opencl.h"
+#include <rt.h>
 
 t_callback		notify(const char *errinfo, const void *private_info,
 		size_t cb, void *user_data)
@@ -25,10 +25,14 @@ t_callback		notify(const char *errinfo, const void *private_info,
 
 cl_program		build_program(cl_context ctx, char *source_file)
 {
-	char		*source;
+	char	*source;
+	int		fd;
 
-	if (!(source = ft_read_file(source_file)))
-		return (0);
+	if ((fd = open(source_file, O_RDONLY)) == -1)
+		return (NULL);
+	if (!(source = ft_readfile(fd)))
+		return (NULL);
+	close(fd);
 	return (clCreateProgramWithSource(ctx, 1, (const char **)&source, NULL,
 		NULL));
 }
@@ -58,12 +62,12 @@ t_cl_ctx		init_cl_context(char *source, char *opts, int type, int inter)
 	ft_bzero(&ctx, sizeof(t_cl_ctx));
 	ctx.device = select_device(type);
 	if (!(ctx.ctx = create_context(&ctx.device, inter)))
-		exit(-1);
+		ft_error(EINVAL, "Can't create context\n");
 	if (!(ctx.queue = clCreateCommandQueue(ctx.ctx, ctx.device, 0, NULL)))
-		exit(-1);
+		ft_error(EINVAL, "Can't create queue\n");
 	if (!(ctx.program = build_program(ctx.ctx, source)))
-		exit(-1);
+		ft_error(EINVAL, "Can't create program\n");
 	if (clBuildProgram(ctx.program, 1, &ctx.device, opts, NULL, NULL))
-		exit(-1);
+		ft_error(EINVAL, "Can't build program\n");
 	return (ctx);
 }

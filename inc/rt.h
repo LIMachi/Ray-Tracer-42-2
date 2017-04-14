@@ -15,6 +15,7 @@
 
 # include <rt_incs.h>
 # include <rt_types.h>
+# include <rt_cl.h>
 # define OCL_SOURCE_PATH "./scl/raytracer.cl"
 # define NONE 0
 # define UPD 1
@@ -178,6 +179,12 @@ typedef struct		s_ctx_glfw
 	int				nkeys;
 	t_key			*mkeys;
 	int				nmkeys;
+	t_cl_ctx		cl_ctx;
+	cl_mem			cl_tex;
+	GLuint			tex;
+	GLuint			program;
+	GLuint			vao;
+	t_cl_kernel		*render;
 }					t_ctx_glfw;
 
 typedef struct		s_env
@@ -221,13 +228,13 @@ void				key_callback(GLFWwindow* win, int key, int scan,
 void				mouse_callback(GLFWwindow* window, double x, double y);
 
 void				set_keys(t_env *e);
+void				handle_keys(t_key *keys, t_env *e);
 
 int					command_line(t_cmd *cmd, int argc, char **argv);
 
 void				init_output(t_ubmp *out, t_argn *argn, t_ubmp *prim_map);
 void				direct_output(t_ubmp *out, t_argn *argn, char *path);
 
-int					keys(t_env *data);
 void				mouse_click(t_env *e, int key);
 void				mouse_callback(GLFWwindow* window, double x, double y);
 void				mouse_scroll_callback(GLFWwindow* window, double dx,

@@ -138,7 +138,7 @@ float4	get_normal(__global t_primitive *obj, __global t_material *mat, float4 po
 float4	phong(float4 dir, float4 norm);
 float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 normal, __global t_img_info *info, __global int *raw_bmp);
 float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __global t_img_info *img_info);
-int		color_to_int(float4 color);
+//int		color_to_int(float4 color);
 float4	int_to_color(int c);
 int		raytrace(t_ray *ray, float4 *color, float4 *point,
 		int *result, __global t_primitive *objects, __global t_light *lights,
@@ -470,11 +470,13 @@ inline float4	phong(float4 dir, float4 norm)
 	return (dir - 2 * DOT(dir, norm) * norm);
 }
 
+/*
 inline int		color_to_int(float4 color)
 {
 	color = clamp(color * 255.0f, 0.0f, 255.0f);
 	return (int)(((int)color.x << 16) + ((int)color.y << 8) + (int)color.z);
 }
+*/
 
 inline float4	int_to_color(int c)
 {
@@ -686,7 +688,7 @@ float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __globa
 #define POP_RAY(q, r, c) r = q[--c];
 
 __kernel void	rt_kernel(
-		__global int			*out,
+		__write_only image2d_t	out,
 		__global int			*prim_map,
 		__global t_argn			*argn,
 		__global t_primitive	*objects,
@@ -694,11 +696,10 @@ __kernel void	rt_kernel(
 		__global t_camera		*cam,
 		__global t_img_info		*img_info,
 		__global t_material		*materials,
-		__global int			*raw_bmp,
-		__global int			*shift)
+		__global int			*raw_bmp)
 {
 	//mode 2: we use 1D Kernels:
-	size_t i = get_global_id(0) + *shift; //id of the kernel in the global call
+	size_t i = get_global_id(0)/* + *shift*/; //id of the kernel in the global call
 
 	// the amount of kernels executed can be more than the screen_size, protect
 	// against bad access
@@ -834,5 +835,6 @@ __kernel void	rt_kernel(
 		color = color_filter(color, argn->filter);
 
 	// return the pixel color
-	out[i] = color_to_int(color);
+	write_imagef(out, (int2)(x, y), (float4)(color.xyz, 1.0));
+	// out[i] = color_to_int(color);
 }

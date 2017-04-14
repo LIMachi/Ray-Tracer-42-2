@@ -10,12 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_opencl.h"
-
-static int		find_ker(char *ref, t_cl_kernel *ker)
-{
-	return (ft_strcmp(ref, ker->name) == 0);
-}
+#include <rt.h>
 
 static void		cl_update_kernel_args(t_cl_ctx *ctx, t_cl_kernel *ker)
 {
@@ -26,9 +21,11 @@ static void		cl_update_kernel_args(t_cl_ctx *ctx, t_cl_kernel *ker)
 	params = ker->params;
 	while (i < ker->p_count)
 	{
-		if (params->flags & PARAM_CPY)
+		if (params->flags & PARAM_CPY && (params->needs_update ||
+			params->flags & ALWAYS_UPDATE))
 			clEnqueueWriteBuffer(ctx->queue, params->mem, CL_TRUE, 0,
 				params->size, params->p, 0, NULL, NULL);
+		params->needs_update = 0;
 		params++;
 		i++;
 	}
@@ -43,22 +40,4 @@ void			run_kernel(void *env, t_cl_ctx *ctx, t_cl_kernel *ker,
 		ker->global, ker->local, 0, NULL, NULL);
 	clFinish(ctx->queue);
 	process(env, ker->params, ker->p_count);
-}
-
-void			run_kernel_name(void *env, t_cl_ctx *ctx, char *name,
-	void (*process)(void *, t_cl_param *, int))
-{
-	t_cl_kernel	*ker;
-
-	if ((ker = ft_arr_find(ft_array(ctx->kernels, sizeof(t_cl_kernel),
-		ctx->k_count), name, (int (*)(void *, void *))find_ker)))
-	{
-		cl_update_kernel_args(ctx, ker);
-		clEnqueueNDRangeKernel(ctx->queue, ker->kernel, ker->dim, NULL,
-			ker->global, ker->local, 0, NULL, NULL);
-		clFinish(ctx->queue);
-		process(env, ker->params, ker->p_count);
-	}
-	else
-		ft_dprintf(2, "Error : can't find kernel %s\n", name);
 }

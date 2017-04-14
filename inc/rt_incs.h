@@ -16,6 +16,8 @@
 # include <libft.h>
 # include "GL/glew.h"
 # include <GLFW/glfw3.h>
+# include <OpenGL/opengl.h>
+# include <OpenCL/opencl.h>
 # include <libftx.h>
 # include <libftocl.h>
 # include <libftjson.h>
