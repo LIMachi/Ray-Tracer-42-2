@@ -450,45 +450,31 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 			break;
 	}
 
-	// limit our object
-	float4 point = ray->origin + ray->direction * (*dist);
-	if (limit(obj, point))
-	{
-		k = *dist;
-		ray->origin = point;
-		switch (obj->type)
-		{
-			case SPHERE:
-				i = sphere_intersect(obj, ray, dist);
-			break;
-			case PLANE:
-				i = plane_intersect(obj, ray, dist);
-			break;
-			case CONE:
-				i = cone_intersect(obj, ray, dist);
-			break;
-			case CYLINDER:
-				i = cylinder_intersect(obj, ray, dist);
-			break;
-			case PARABOLOID:
-				i = paraboloid_intersect(obj, ray, dist);
-			break;
-		}
-		point = ray->origin + ray->direction * (*dist);
-		if (!limit(obj, point))
-			{
-			ray->origin = raytmp;
-			point -= ray->origin;
-			*dist = sqrt(point.x * point.x + point.y * point.y + point.z * point.z);
-				return (i);
-			}
-		else
-		{
-		ray->origin = raytmp;
-			*dist = d;
-			return(0);
-		}
-	}
+	// // limit our object
+	// float4 point = ray->origin + ray->direction * (*dist);
+	// float dp;
+	// if (obj->limit.relative)
+	// 	point -= obj->position;
+	// if (dp < obj->limit.)
+	// dp = max(point.x - obj->limit.high.x, 0.0f);
+	// *dist -= dp;
+	// point -= dp * ray->direction;
+	// dp = max(point.y - obj->limit.high.y, 0.0f);
+	// *dist -= dp;
+	// point -= dp * ray->direction;
+	// dp = max(point.z - obj->limit.high.z, 0.0f);
+	// *dist -= dp;
+	// point -= dp * ray->direction;
+	// dp = max(obj->limit.low.x - point.x, 0.0f);
+	// *dist += dp;
+	// point += dp * ray->direction;
+	// dp = max(obj->limit.low.y - point.y, 0.0f);
+	// *dist += dp;
+	// point += dp * ray->direction;
+	// dp = max(obj->limit.low.z - point.z, 0.0f);
+	// *dist += dp;
+	// point += dp * ray->direction;
+		
 	return (i);
 }
 
@@ -814,12 +800,10 @@ __kernel void	rt_kernel(
 		__global t_material		*materials,
 		__global int			*raw_bmp)
 {
-	//mode 2: we use 1D Kernels:
 	size_t i = get_global_id(0);
 	size_t j = get_global_id(1);
 	size_t l = get_global_size(0);
-	// the amount of kernels executed can be more than the screen_size, protect
-	// against bad access
+
 	if (i >= (size_t)argn->screen_size.x * (size_t)argn->screen_size.y)
 		return ;
 
@@ -828,29 +812,24 @@ __kernel void	rt_kernel(
 
 	t_ray		ray;
 
-	// ray queue to emulate recursion
 	t_ray		queue[MAX_RAY_COUNT];
 	int			queue_pos = 0;
 
-	// antialias variables
 	int aa_x;
 	int aa_y;
 	int count = 0;
 
 	float4 color = (float4)(0, 0, 0, 0);
 
-	// antialias loop
 	for (aa_y = 0; aa_y < argn->antialias; aa_y++)
 	{
 		for (aa_x = 0; aa_x < argn->antialias; aa_x++)
 		{
 			float2 aa;
 
-			// subpixel positions
 			aa.x = x + (aa_x - argn->antialias / 2.0f) / argn->antialias;
 			aa.y = y + (aa_y - argn->antialias / 2.0f) / argn->antialias;
 
-			// get our subray
 			ray.direction = NORMALIZE(cam->vpul + NORMALIZE(cam->right) * (aa.x) - NORMALIZE(cam->up) * (aa.y));
 			ray.origin = cam->pos;
 			ray.dist = MAXFLOAT;
@@ -859,27 +838,22 @@ __kernel void	rt_kernel(
 			ray.weight = 1.0f;
 			ray.color = (float4)(0, 0, 0, 0);
 
-			// this is our starting ray, add it to the queue
 			PUSH_RAY(queue, ray, queue_pos);
 
-			// start iterating over our emulated stack
 			while (queue_pos > 0)
 			{
 				t_ray cur_ray;
 				float4 cur_color = (float4)(0, 0, 0, 0);
 				float4 collision;
 
-				// get our ray
 				POP_RAY(queue, cur_ray, queue_pos);
 
-				// raytrace!
 				int result;
 				int cur_id = raytrace(&cur_ray, &cur_color, &collision, &result, objects, lights, argn, materials, img_info, raw_bmp);
 
 				if (cur_ray.depth == 0)
 					prim_map[i + l * j] = cur_id + 1;
 
-				// do things based on ray type
 				switch (cur_ray.type)
 				{
 					case ORIGIN:
@@ -891,11 +865,9 @@ __kernel void	rt_kernel(
 				}
 				count++;
 
-				// if we have exceeded our depth or didnt hit anything, skip
 				if (cur_ray.depth >= argn->bounce_depth || cur_id == -1)
 					continue;
 
-				// beautiful reflections
 				__global t_material *mat = &materials[objects[cur_id].material];
 				float4 normal = get_normal(&objects[cur_id], mat, collision, &cur_ray);
 
@@ -933,10 +905,6 @@ __kernel void	rt_kernel(
 					r_ray.color = color;
 					if (r_ray.weight > EPSILON)
 						PUSH_RAY(queue, r_ray, queue_pos);
-				
-				
-				
-				
 				}
 				/*if (refr > 0.0f)
 				{
