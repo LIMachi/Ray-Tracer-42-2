@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   opencl.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 10:32:27 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/04 10:32:28 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 05:44:02 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ t_cl_param	*build_params(t_env *e, int *n, size_t g[])
 		e->textures.info, PARAM_CPY), &t, n);
 	add_param(cl_create_param(RD, sizeof(t_material) * e->argn.nb_materials,
 		e->materials.materials, PARAM_CPY), &t, n);
-	add_param(cl_create_param(RD, sizeof(cl_int) * e->textures.total_raw_size,
+	add_param(cl_create_param(RD,
+		sizeof(cl_int) * (e->textures.total_raw_size + 1),
 		e->textures.raw_bmp, PARAM_CPY), &t, n);
 	return (t);
 }
@@ -48,7 +49,7 @@ void		opencl_init(t_env *e)
 	int			i;
 	size_t		g[2];
 	int			err;
-	
+
 	n = 0;
 	g[0] = e->window.x;
 	g[1] = e->window.y;
