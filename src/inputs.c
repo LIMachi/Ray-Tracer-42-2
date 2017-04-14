@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   inputs.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/03 01:10:07 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/03 01:10:08 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 12:58:43 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void		add_key(t_env *e, int keycode, t_key_f press, t_key_f repeat)
 {
 	t_key	key;
 
-	key = (t_key){keycode, 0, press, repeat, NULL}; 
+	key = (t_key){keycode, 0, press, repeat, NULL};
 	ft_pushback((void **)&e->glfw.keys, sizeof(t_key), e->glfw.nkeys++, &key);
 }
 
@@ -25,7 +25,7 @@ static void		add_mouse_key(t_env *e, int button,
 {
 	t_key	key;
 
-	key = (t_key){button, 0, press, NULL, release}; 
+	key = (t_key){button, 0, press, NULL, release};
 	ft_pushback((void **)&e->glfw.mkeys, sizeof(t_key), e->glfw.nmkeys++, &key);
 }
 
@@ -35,13 +35,13 @@ static void		quit(t_env *e, int keycode)
 	glfwSetWindowShouldClose(e->glfw.win, GLFW_TRUE);
 }
 
-static void		toggle_cursor(t_env *e, int keycode)
+void			toggle_cursor(t_env *e, int keycode)
 {
 	(void)keycode;
 	e->keys.cursor = !e->keys.cursor;
 	glfwSetInputMode(e->glfw.win, GLFW_CURSOR, e->keys.cursor ?
 		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-} 
+}
 
 static void		move(t_env *e, int keycode)
 {

@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/27 09:40:29 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/30 17:42:30 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 11:36:44 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,16 @@ void		percent_callback(int percent, t_env *e)
 	}
 }
 
+/*
 void		update(t_env *e)
 {
-	size_t size;
+//	size_t size;
 
-	if (e->keys.updated <= 0)
-		return ;
-	e->keys.updated = 0;
-	if (e->out.data == NULL)
-		init_output(&e->out, &e->argn, &e->prim_map);
-	size = e->out.size.x * e->out.size.y;
+//	if (e->keys.updated <= 0)
+//		return ;
+//	e->keys.updated = 0;
+//	if (e->out.data == NULL)
+//		init_output(&e->out, &e->argn, &e->prim_map);
+//	size = e->out.size.x * e->out.size.y;
 }
+*/

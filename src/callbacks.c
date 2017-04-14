@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   callbacks.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/03 01:48:18 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/03 01:48:19 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 13:58:06 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int		key_match(int keycode, int action, t_key *key)
 	return (0);
 }
 
-void		key_callback(GLFWwindow* win, int key, int scan, int action,
+void		key_callback(GLFWwindow *win, int key, int scan, int action,
 	int mods)
 {
 	t_env	*e;
@@ -46,4 +46,50 @@ void		key_callback(GLFWwindow* win, int key, int scan, int action,
 		keys++;
 		i++;
 	}
+}
+
+void		window_focus(GLFWwindow *win, int focus)
+{
+	(void)win;
+	glfw_env(NULL)->glfw.focus = focus == GLFW_TRUE;
+}
+
+void		load_file(t_env *e, const char *path)
+{
+	int			fd;
+	char		*src;
+	char		*tmp;
+	t_camera	cam;
+
+	fd = -1;
+	if (path == NULL || (fd = open(path, O_RDONLY)) == -1 ||
+		(src = ft_readfile(fd)) == NULL)
+	{
+		if (fd != -1)
+			close(fd);
+		return ;
+	}
+	cam = e->cam;
+	tmp = ft_strdup(path);
+	delete_rt_environement(e);
+	e->cmd.scene = tmp;
+	parser(e, src);
+	ft_free(src);
+	close(fd);
+	stat(e->cmd.scene, &e->cmd.status);
+	opencl_init(e, (size_t[2]){e->window.x, e->window.y});
+	e->cam = cam;
+}
+
+void		file_drop_callback(GLFWwindow *win, int n, const char **paths)
+{
+	t_env	*e;
+
+	(void)n;
+	if (paths == NULL)
+		return ;
+	e = glfw_env(NULL);
+	load_file(e, *paths);
+	glfwFocusWindow(win);
+	toggle_cursor(e, 0);
 }

@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 10:07:13 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 13:54:18 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include <rt_incs.h>
 # include <rt_types.h>
 # include <rt_cl.h>
+# include <sys/stat.h>
+# include <time.h>
 # define OCL_SOURCE_PATH "./scl/raytracer.cl"
 # define NONE 0
 # define UPD 1
@@ -55,6 +57,7 @@ typedef struct		s_material
 	cl_float		specular;
 	cl_float		reflection;
 	cl_float		refraction;
+	cl_float		brightness;
 	t_perturbation	perturbation;
 	t_texture		texture;
 	t_texture		normal_map;
@@ -155,6 +158,7 @@ typedef struct		s_cmd
 	char			*scene;
 	char			*output;
 	int				progress_bar_toggle;
+	struct stat		status;
 }					t_cmd;
 
 typedef struct		s_keys
@@ -188,6 +192,7 @@ typedef struct		s_ctx_glfw
 	GLuint			program;
 	GLuint			vao;
 	t_cl_kernel		*render;
+	int				focus;
 }					t_ctx_glfw;
 
 typedef struct		s_env
@@ -199,7 +204,7 @@ typedef struct		s_env
 	t_cmd				cmd;
 	t_argn				argn;
 	t_camera			cam;
-	t_ubmp				out;
+//	t_ubmp				out;
 	t_ubmp				prim_map;
 	t_keys				keys;
 	t_mouse				mouse;
@@ -229,7 +234,9 @@ GLFWwindow			*glfw_init(t_env *e, char *name, int w, int h);
 void				key_callback(GLFWwindow* win, int key, int scan,
 	int action, int mods);
 void				mouse_callback(GLFWwindow* window, double x, double y);
-
+void				file_drop_callback(GLFWwindow *win, int n,
+	const char **paths);
+void				window_focus(GLFWwindow *win, int focus);
 void				set_keys(t_env *e);
 void				handle_keys(t_key *keys, t_env *e);
 int					key_match(int keycode, int action, t_key *key);
@@ -243,7 +250,7 @@ void				init_shaders(GLuint vao, GLuint *program, char *vs,
 	char *fs);
 void				init_texture(GLuint vao, GLuint *tex, int w, int h);
 void				init_vao(GLuint *vao);
-void				opencl_init(t_env *e);
+void				opencl_init(t_env *e, size_t g[2]);
 
 int					command_line(t_cmd *cmd, int argc, char **argv);
 
@@ -257,6 +264,8 @@ void				mouse_scroll_callback(GLFWwindow* window, double dx,
 void 				mouse_button_callback(GLFWwindow* window, int button,
 	int action, int mods);
 void				mouse_off(t_env *e, int key);
+
+void				toggle_cursor(t_env *e, int keycode);
 
 void				rotate_cam(t_camera *cam, double angle, t_vector axe);
 t_vector			cl_float4_to_vector(cl_float4 v);
@@ -301,5 +310,9 @@ void				filter_sepia(t_env *e, int keycode);
 void				filter_cartoon(t_env *e, int keycode);
 void				filter_gray(t_env *e, int keycode);
 void				filter_none(t_env *e, int keycode);
+
+void				delete_rt_environement(t_env *e);
+
+void				load_file(t_env *e, const char *path);
 
 #endif

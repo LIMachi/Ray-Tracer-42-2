@@ -58,7 +58,7 @@
 					"color": "none"
 				}
 			}
-		},
+		}/*,
 		{
 			"type": "paraboloid",
 			"position": [0, 0, -50],
@@ -170,7 +170,7 @@
 			"direction": [0, -1, 0],
 			"radius": 0.21,
 			"material": "red"
-		}
+		}*/
 	],
 	"lights":
 	[

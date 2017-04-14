@@ -49,6 +49,7 @@ typedef struct		s_material
 	float			specular;
 	float			reflection;
 	float			refraction;
+	float			brightness;
 //	float			transparency;
 	t_perturbation	perturbation;
 	t_texture		texture;
@@ -779,8 +780,9 @@ float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __globa
 	pos.y = 0.5f + asinpi(normal.y);
 
 	t_img_info info = img_info[tex->info_index];
-	int x = pos.x * info.size.x;
-	int y = pos.y * info.size.y;
+	int x = clamp((int)(pos.x * info.size.x), 0, info.size.x - 1);
+	int y = clamp((int)(pos.y * info.size.y), 0, info.size.y - 1);
+
 	int raw_c = raw_bmp[info.index + y * info.size.x + x] & 0x00FFFFFF;
 	return int_to_color(raw_c);
 }

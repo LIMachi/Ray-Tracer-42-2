@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 11:27:40 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/11 16:59:31 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 13:09:58 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ static void		cl_update_kernel_args(t_cl_ctx *ctx, t_cl_kernel *ker)
 	while (i < ker->p_count)
 	{
 		if (params->flags & PARAM_CPY && (params->needs_update ||
-			params->flags & ALWAYS_UPDATE))
+			params->flags & ALWAYS_UPDATE) && params->p)
 		{
 			clEnqueueWriteBuffer(ctx->queue, params->mem, CL_TRUE, 0,
 				params->size, params->p, 0, NULL, NULL);
-			params->needs_update = 0;	
+			params->needs_update = 0;
 		}
 		params++;
 		i++;

@@ -6,7 +6,7 @@
 /*   By: pbondoer <pbondoer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/30 12:14:54 by pbondoer          #+#    #+#             */
-/*   Updated: 2017/01/30 17:34:35 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 12:10:22 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int			command_line(t_cmd *cmd, int argc, char **argv)
 			i++;
 		}
 		else
-			cmd->scene = argv[i];
+			cmd->scene = ft_strdup(argv[i]);
 		i++;
 	}
 	if (cmd->scene == NULL)

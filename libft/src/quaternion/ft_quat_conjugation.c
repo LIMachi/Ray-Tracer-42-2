@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_quat_conjugation.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 04:01:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 04:01:59 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 10:33:38 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	ft_quat_conjugation(const t_quaternion q, t_vector *v)
 {
 	t_quaternion	p;
-	
+
 	p = ft_quat(0, v->x, v->y, v->z);
 	p = ft_quat_multiply(p, ft_quat_inverse(q));
 	p = ft_quat_multiply(q, p);

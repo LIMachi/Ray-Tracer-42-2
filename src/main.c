@@ -6,12 +6,24 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 09:15:54 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/25 23:47:50 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 14:04:28 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
 #include "mlx.h"
+
+void	test_file_update(t_env *e)
+{
+	struct stat	tstatus;
+
+	stat(e->cmd.scene, &tstatus);
+	if (tstatus.st_mtimespec.tv_sec != e->cmd.status.st_mtimespec.tv_sec)
+	{
+		load_file(e, e->cmd.scene);
+		opencl_render(e);
+	}
+}
 
 void	display_fps(t_env *e, GLFWwindow *win, char *name)
 {
@@ -34,6 +46,7 @@ void	display_fps(t_env *e, GLFWwindow *win, char *name)
 			e->glfw.fps = frames;
 		}
 		frames = 0;
+		test_file_update(e);
 	}
 }
 
@@ -46,7 +59,8 @@ void		rt(t_env *e)
 		display_fps(e, e->glfw.win, e->glfw.win_name);
 		glfwPollEvents();
 		handle_keys(e->glfw.keys, e);
-		opencl_render(e);
+		if (e->glfw.focus)
+			opencl_render(e);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(e->glfw.vao);
@@ -56,11 +70,28 @@ void		rt(t_env *e)
 	}
 }
 
+void		kernel_init(t_env *e)
+{
+	int			err;
+
+	e->glfw.render = cl_create_kernel(&e->glfw.cl_ctx, "rt_kernel", 2);
+	cl_set_kernel_dims(e->glfw.render,
+		(size_t[2]){e->window.x, e->window.y}, NULL);
+	e->glfw.cl_tex = clCreateFromGLTexture(e->glfw.cl_ctx.ctx,
+		CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, e->glfw.tex, &err);
+	if (err)
+		ft_error(EINVAL, "couldnt create cl_mem from texture\n");
+	else
+		ft_printf("created mem object : %p\n", e->glfw.cl_tex);
+	opencl_init(e, (size_t[2]){e->window.x, e->window.y});
+}
+
 void		init(t_env *e)
 {
 	size_t	size;
 
 	calc_vpul(&e->cam);
+	e->glfw.focus = 1;
 	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
 	size = e->window.x * e->window.y;
 	e->prim_map = (t_ubmp){e->window, ft_malloc(size * 4)};
@@ -74,9 +105,9 @@ void		init(t_env *e)
 	init_texture(e->glfw.vao, &e->glfw.tex, e->window.x, e->window.y);
 	e->glfw.cl_ctx = init_cl_context("scl/raytracer2.cl", NULL,
 		CL_DEVICE_TYPE_GPU, INTEROP_TRUE);
-	opencl_init(e);
-	if (e->cmd.output != NULL)
-		direct_output(&e->out, &e->argn, e->cmd.output);
+	kernel_init(e);
+//	if (e->cmd.output != NULL)
+//		direct_output(&e->out, &e->argn, e->cmd.output);
 }
 
 int			main(const int argc, char **argv, char **env)
@@ -99,6 +130,7 @@ int			main(const int argc, char **argv, char **env)
 	e.glfw.fps = 60;
 	parser(&e, src = ft_readfile(fd));
 	close(fd);
+	stat(e.cmd.scene, &e.cmd.status);
 	ft_free(src);
 	init(&e);
 	rt(&e);
