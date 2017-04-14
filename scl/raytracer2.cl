@@ -48,6 +48,7 @@ typedef struct		s_material
 	float			diffuse;
 	float			specular;
 	float			reflection;
+	float			transparency;
 	t_perturbation	perturbation;
 	t_texture		texture;
 }					t_material;
@@ -120,6 +121,13 @@ typedef struct		s_ray
 	float4			color;
 }					t_ray;
 
+//j'aime les commentaires, et vous? :p
+/*
+   NOTE HYPER IMPORTANTE:
+   pour la compatibilité AMD, il faut continuer d'utiliser les flags __global et les pointeurs
+   (AMD ne copie pas les déréférencements de pointeurs dans la stack, ce qui fait que les objets et la lumière n'étaient pas envoyé aux calculs)
+   */
+
 int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
@@ -137,6 +145,7 @@ int		raytrace(t_ray *ray, float4 *color, float4 *point,
 		int *result, __global t_primitive *objects, __global t_light *lights,
 		__global t_argn *argn, __global t_material *materials,
 		__global t_img_info *img_info, __global int *raw_bmp);
+int		quadratic(float a, float b, float c, float2 *ret);
 
 #if 0
 # define DOT local_dot
@@ -196,7 +205,7 @@ inline float	local_length(float4 v)
 
 // maximum ray count
 #ifndef MAX_RAY_COUNT
-# define MAX_RAY_COUNT (1 << 8)
+# define MAX_RAY_COUNT (1 << 4)
 #endif
 
 // minimum direct lighting coefficient
@@ -219,33 +228,117 @@ inline float	local_length(float4 v)
 # define CARTOON_STEPS 3
 #endif
 
+int				quadratic(float a, float b, float c, float2 *ret)
+{
+	float	delta;
+
+	delta = b * b - (4.0f * a * c);
+	if (delta <= 0)
+		return (0);
+	ret->x = (b - sqrt(delta)) / (2.0f * a);
+	ret->y = (b + sqrt(delta)) / (2.0f * a);
+	return (1);
+}
+
 int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float d = DOT(obj->direction, ray->direction);
 
 	// facing the plane (d == 0)
-	if (d > -EPSILON && d < EPSILON)
+	if (d > -0.01f && d < 0.01f)
 		return (0);
 
-	float new_dist = DOT(obj->position - ray->origin, obj->direction) / d;
+	float new_dist = DOT(obj->position + EPSILON - ray->origin, obj->direction) / d;
 
-	if (new_dist > EPSILON && new_dist < *dist)
+	if (new_dist > EPSILON && (new_dist < *dist || *dist < 0.01f))
 	{
 		*dist = new_dist;
 		return (d > 0 ? -1 : 1);
 	}
 	return (0);
 }
+/*
+int				rt_plan(__global t_obj *o, t_ray *ray)
+{
+	float	d = dot(o->dir, ray->dir);
+	float	t;
 
+	// ray paralele au plan
+	if (d > -0.01f && d < 0.01f)
+		return (0);
+	t = dot(o->pos + EPSILON - ray->ori, o->dir) / d;
+	if (t > EPSILON && (t < ray->t || ray->t < 0.01f))
+	{
+		ray->t = t;
+		return (d > 0 ? -1 : 1);
+	}
+	return (0);
+}
+*/
 int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float4 pos = obj->position - ray->origin;
-
+	float2 t;
 	float a = DOT(ray->direction, ray->direction);
-	float b = 2 * DOT(ray->direction, pos);
+	float b = 2.0f * DOT(ray->direction, pos);
 	float c = DOT(pos, pos) - obj->radius * obj->radius;
-	return solve_quadratic(a, b, c, dist);
+	if(quadratic(a, b, c, &t))
+	{
+		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+		{
+			if (t.x < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.x;
+			return (1);
+		}
+		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+		{
+			if (t.y < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.y;
+			return (-1);
+		}
+	}
+	return (0);
+
+//	return solve_quadratic(a, b, c, dist);
 }
+/*
+int				rt_sphere(__global t_obj *o, t_ray *ray)
+{
+	float2	t;
+	float4	pos;
+	float	a;
+	float	b;
+	float	c;
+
+	pos = o->pos - ray->ori;
+	a = dot(ray->dir, ray->dir);
+	b = 2.0f * dot(ray->dir, pos);
+	c = dot(pos, pos) - o->r * o->r;
+	if ((quadratic(a, b, c, &t)))
+	{
+		if (t.x < t.y && t.x > 0.001 && (t.x < ray->t || ray->t <= 0.001))
+		{
+			if (t.x < 0.001)
+				ray->t = 0.001;
+			else
+				ray->t = t.x;
+			return (1);
+		}
+		else if (t.y > 0.001 && (t.y < ray->t || ray->t <= 0.001))
+		{
+			if (t.y < 0.001)
+				ray->t = 0.001;
+			else
+				ray->t = t.y;
+			return (-1);
+		}
+	}
+	return (0);
+}*/
 
 int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
@@ -336,7 +429,8 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	int i = 0;
 	float d = *dist;
-
+	float k = *dist;
+	float4 raytmp = ray->origin;
 	switch (obj->type)
 	{
 		case SPHERE:
@@ -360,10 +454,41 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float4 point = ray->origin + ray->direction * (*dist);
 	if (limit(obj, point))
 	{
-		*dist = d;
-		return (0);
+		k = *dist;
+		ray->origin = point;
+		switch (obj->type)
+		{
+			case SPHERE:
+				i = sphere_intersect(obj, ray, dist);
+			break;
+			case PLANE:
+				i = plane_intersect(obj, ray, dist);
+			break;
+			case CONE:
+				i = cone_intersect(obj, ray, dist);
+			break;
+			case CYLINDER:
+				i = cylinder_intersect(obj, ray, dist);
+			break;
+			case PARABOLOID:
+				i = paraboloid_intersect(obj, ray, dist);
+			break;
+		}
+		point = ray->origin + ray->direction * (*dist);
+		if (!limit(obj, point))
+			{
+			ray->origin = raytmp;
+			point -= ray->origin;
+			*dist = sqrt(point.x * point.x + point.y * point.y + point.z * point.z);
+				return (i);
+			}
+		else
+		{
+		ray->origin = raytmp;
+			*dist = d;
+			return(0);
+		}
 	}
-
 	return (i);
 }
 
@@ -581,9 +706,7 @@ int		raytrace(t_ray *ray, float4 *color, float4 *point,
 					if (scal > MIN_DIRECT)
 					{
 						id_l = cur_l;
-						//				c			0.95~1 - 0.95 = 0.0-0.05 * 20 = 0.0-1.0, 20 = 1 / 0.05
-						//add_color += (light.color * (scal - MIN_DIRECT) * (20))
-						add_color += (light.color * (scal - MIN_DIRECT) / (1.0f - MIN_DIRECT)) * argn->direct;
+						add_color += (light.color * (scal - MIN_DIRECT) / (1.0f - MIN_DIRECT))/* * argn->direct*/;
 					}
 				}
 			}
@@ -777,7 +900,8 @@ __kernel void	rt_kernel(
 				float4 normal = get_normal(&objects[cur_id], mat, collision, &cur_ray);
 
 				float refl = mat->reflection;
-				if (refl > EPSILON)
+				float refr = mat->transparency;
+				if (refl > EPSILON && refr < EPSILON)
 				{
 					float4 reflect = NORMALIZE(cur_ray.direction - 2.0f * DOT(cur_ray.direction, normal) * normal);
 
@@ -795,9 +919,26 @@ __kernel void	rt_kernel(
 				}
 
 				// beautiful refractions
-				/*
-				float refr = mat->transparency;
-				if (refr > 0.0f)
+				
+				if (refr > EPSILON && refl < EPSILON)
+				{
+					t_ray r_ray;
+					r_ray.dist = MAXFLOAT;
+					r_ray.origin = collision;
+					r_ray.depth = cur_ray.depth + 1;
+					r_ray.weight = refr * cur_ray.weight;
+					r_ray.direction = cur_ray.direction;
+//					r_ray.type = REFRACTED;
+					r_ray.type = REFLECTED;
+					r_ray.color = color;
+					if (r_ray.weight > EPSILON)
+						PUSH_RAY(queue, r_ray, queue_pos);
+				
+				
+				
+				
+				}
+				/*if (refr > 0.0f)
 				{
 					float i = cur_ray.refraction_index / mat->refraction_index;
 					float d = DOT(-cur_ray.direction, normal);
@@ -809,7 +950,6 @@ __kernel void	rt_kernel(
 					r_ray.direction = refract;
 					r_ray.depth = cur_ray.depth + 1;
 					r_ray.weight = refr * cur_ray.weight;
-					r_ray.type = REFRACTED;
 					r_ray.color = color;
 					r_ray.transparency = cur_ray.transparency;
 					r_ray.refraction_index = cur_ray.refraction_index;

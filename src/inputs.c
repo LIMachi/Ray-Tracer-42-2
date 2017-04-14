@@ -76,5 +76,11 @@ void			set_keys(t_env *e)
 	add_key(e, GLFW_KEY_LEFT_SHIFT, NULL, move);
 	add_key(e, GLFW_KEY_W, NULL, move);
 	add_key(e, GLFW_KEY_LEFT_ALT, toggle_cursor, NULL);
+
+	add_key(e, GLFW_KEY_1, filter_sepia, NULL);
+	add_key(e, GLFW_KEY_2, filter_gray, NULL);
+	add_key(e, GLFW_KEY_3, filter_cartoon, NULL);
+	add_key(e, GLFW_KEY_4, filter_none, NULL);
+
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_LEFT, mouse_click, mouse_off);
 }
