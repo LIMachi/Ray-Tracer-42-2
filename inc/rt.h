@@ -293,4 +293,9 @@ cl_float4			cl_float4_sub(cl_float4 a, cl_float4 b);
 cl_float4			ft_vector_thales(cl_float4 origin, cl_float4 v1,
 						cl_float4 v2, cl_float4 r);
 
+void				filter_sepia(t_env *e, int keycode);
+void				filter_cartoon(t_env *e, int keycode);
+void				filter_gray(t_env *e, int keycode);
+void				filter_none(t_env *e, int keycode);
+
 #endif
