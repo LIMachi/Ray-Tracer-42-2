@@ -45,22 +45,22 @@ void		rt(t_env *e)
 		direct_output(&e->out, &e->argn, e->cmd.output);
 	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
 	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
-	// ftx_new_window(e->window, "RT", NULL);
+	glewExperimental = GL_TRUE;
+	glewInit();
+	glfwMakeContextCurrent(e->glfw.win);
 	e->keys.updated = 1;
-	// update(e);
 	glfwGetCursorPos(e->glfw.win, &e->mouse.x, &e->mouse.y);
 	while (!glfwWindowShouldClose(e->glfw.win))
 	{
 		display_fps(e, e->glfw.win, e->glfw.win_name);
-		// printf("\r%f %f %f | %f %f %f", e->cam.p.x, e->cam.p.y, e->cam.p.z, e->cam.d.x, e->cam.d.y, e->cam.d.z);
 		glfwPollEvents();
 		handle_keys(e->glfw.keys, e);
 		// opencl_render(e);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		// glBindVertexArray(e->vao);
-		// glUseProgram(e->program);
-		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(e->glfw.vao);
+		glUseProgram(e->glfw.program);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(e->glfw.win);
 	}
 }
