@@ -159,6 +159,7 @@ typedef struct		s_keys
 {
 	int				ctrl;
 	int				updated;
+	int				cursor;
 }					t_keys;
 
 typedef struct		s_key
@@ -230,9 +231,14 @@ void				mouse_callback(GLFWwindow* window, double x, double y);
 void				set_keys(t_env *e);
 void				handle_keys(t_key *keys, t_env *e);
 
+void				opencl_render(t_env *e);
+void				process_ker_ret(t_env *e, t_cl_param *params, int n);
+
+void				get_prim_map(t_env *e);
+
 void				init_shaders(GLuint vao, GLuint *program, char *vs,
 	char *fs);
-void				init_texture(GLuint *tex, int w, int h);
+void				init_texture(GLuint vao, GLuint *tex, int w, int h);
 void				init_vao(GLuint *vao);
 void				opencl_init(t_env *e);
 

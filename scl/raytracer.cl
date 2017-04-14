@@ -699,15 +699,12 @@ __kernel void	rt_kernel(
 		__global int			*raw_bmp)
 {
 	//mode 2: we use 1D Kernels:
-	size_t i = get_global_id(0)/* + *shift*/; //id of the kernel in the global call
+	size_t	i = get_global_id(0);
+	size_t	j = get_global_id(1);
+	size_t	l = get_global_size(0);
 
-	// the amount of kernels executed can be more than the screen_size, protect
-	// against bad access
-	if (i >= (size_t)argn->screen_size.x * (size_t)argn->screen_size.y)
-		return ;
-
-	float x = (float)(i % argn->screen_size.x);
-	float y = (float)(i / argn->screen_size.x);
+	float x = (float)i;
+	float y = (float)j;
 
 	t_ray		ray;
 
@@ -722,6 +719,7 @@ __kernel void	rt_kernel(
 
 	float4 color = (float4)(0, 0, 0, 0);
 
+	prim_map[i + l * j] = 0;
 	// antialias loop
 	for (aa_y = 0; aa_y < argn->antialias; aa_y++)
 	{
@@ -760,8 +758,9 @@ __kernel void	rt_kernel(
 				int cur_id = raytrace(&cur_ray, &cur_color, &collision, &result, objects, lights, argn, materials, img_info, raw_bmp);
 
 				if (cur_ray.depth == 0 && argn->map_primitives)
-					prim_map[i] = cur_id + 1;
-
+				{
+					prim_map[i + l * j] = cur_id + 1;
+				}
 				// do things based on ray type
 				switch (cur_ray.type)
 				{
@@ -834,7 +833,5 @@ __kernel void	rt_kernel(
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);
 
-	// return the pixel color
-	write_imagef(out, (int2)(x, y), (float4)(color.xyz, 1.0));
-	// out[i] = color_to_int(color);
+	write_imagef(out, (int2)(i, j), (float4)(color.xyz, 1.0));
 }

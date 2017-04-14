@@ -12,7 +12,7 @@
 
 #include <rt.h>
 
-void	process_ker_ret(t_env *e, t_cl_param *params, int n)
+void		process_ker_ret(t_env *e, t_cl_param *params, int n)
 {
 	(void)params;
 	(void)n;
@@ -21,12 +21,13 @@ void	process_ker_ret(t_env *e, t_cl_param *params, int n)
 		&e->glfw.cl_tex, 0, 0, NULL);
 }
 
-void	opencl_render(t_env *e, t_ctx_glfw *glfw)
+void		opencl_render(t_env *e)
 {
 	glFinish();
-	clEnqueueAcquireGLObjects(glfw->cl_ctx.queue, 1, &glfw->cl_tex, 0, 0,
-		NULL);
-	run_kernel(e, &glfw->cl_ctx, glfw->render, (t_f_cl_proc)process_ker_ret);
+	clEnqueueAcquireGLObjects(e->glfw.cl_ctx.queue, 1,
+		&e->glfw.cl_tex, 0, 0, NULL);
+	run_kernel(e, &e->glfw.cl_ctx,
+		e->glfw.render, (t_f_cl_proc)process_ker_ret);
 }
 
 void	handle_keys(t_key *keys, t_env *e)

@@ -47,14 +47,4 @@ void		update(t_env *e)
 	if (e->out.data == NULL)
 		init_output(&e->out, &e->argn, &e->prim_map);
 	size = e->out.size.x * e->out.size.y;
-	ftocl_clear_current_kernel_arg(5);
-	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 5, sizeof(t_camera),
-		(void*)&e->cam);
-	ftocl_run_percent_callback(size, 9, (void (*)(int, void *))percent_callback,
-		e);
-	ftocl_read_current_kernel_arg(0, e->out.data);
-	ftocl_read_current_kernel_arg(1, e->prim_map.data);
-	ftx_put_ubmp_img(ftx_data()->focused_window->vbuffer, ft_point(0, 0),
-		&e->out, NOMASK);
-	ftx_refresh_window(ftx_data()->focused_window);
 }

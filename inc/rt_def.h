@@ -20,7 +20,7 @@
 # define RELEASE		GLFW_RELEASE
 
 # define SPEED			5
-# define ROT			0.05
+# define ROT			0.005
 # define SCROLL			0.02
 
 #endif

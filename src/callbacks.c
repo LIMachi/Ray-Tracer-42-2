@@ -56,22 +56,20 @@ void		mouse_click(t_env *e, int key)
 
 	x = e->mouse.x;
 	y = e->mouse.y;
+	if (key != GLFW_MOUSE_BUTTON_LEFT)
+		return ;
+	get_prim_map(e);
 	if (!(x >= 0 && y >= 0 && x < e->prim_map.size.x && y < e->prim_map.size.y))
 		return ;
 	check = e->prim_map.data[e->prim_map.size.x * y + x];
-	if (key == 1)
-		e->mouse.is_select = check;
-	ftocl_clear_current_kernel_arg(3);
-	ftocl_set_current_kernel_arg(CL_MEM_READ_ONLY, 3, sizeof(t_primitive) *
-		e->argn.nb_objects, (void*)e->prim);
-	e->keys.updated = 1;
+	e->mouse.is_select = check;
+	ft_printf("mouse click got : %d\n", check);
 }
 
 void		mouse_off(t_env *e, int key)
 {
 	if (key == GLFW_MOUSE_BUTTON_LEFT)
 		e->mouse.is_select = 0;
-	e->keys.updated = 1;
 }
 
 void 		mouse_button_callback(GLFWwindow* window,

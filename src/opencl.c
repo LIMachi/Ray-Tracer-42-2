@@ -45,6 +45,7 @@ void		opencl_init(t_env *e)
 {
 	t_cl_param	*t;
 	int			n;
+	int			i;
 	size_t		g[2];
 	int			err;
 	
@@ -60,5 +61,11 @@ void		opencl_init(t_env *e)
 	else
 		ft_printf("created mem object : %p\n", e->glfw.cl_tex);
 	t = build_params(e, &n, g);
+	i = 0;
+	while (i < n)
+	{
+		t[i].needs_update = !!(t[i].flags & PARAM_CPY);
+		i++;
+	}
 	cl_init_kernel(&e->glfw.cl_ctx, e->glfw.render, t, n);
 }

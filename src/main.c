@@ -46,7 +46,7 @@ void		rt(t_env *e)
 		display_fps(e, e->glfw.win, e->glfw.win_name);
 		glfwPollEvents();
 		handle_keys(e->glfw.keys, e);
-		// opencl_render(e);
+		opencl_render(e);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(e->glfw.vao);
@@ -59,6 +59,7 @@ void		rt(t_env *e)
 void		init(t_env *e, char *src)
 {
 	int		fd;
+	size_t	size;
 
 	if ((fd = open(e->cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
@@ -69,13 +70,16 @@ void		init(t_env *e, char *src)
 	ft_free(src);
 	calc_vpul(&e->cam);
 	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
+	size = e->window.x * e->window.y;
+	e->prim_map = (t_ubmp){e->window, ft_malloc(size * 4)};
 	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
 	glewExperimental = GL_TRUE;
 	glewInit();
-	init_vao(&e->glfw.vao);
-	init_shaders(e->glfw.vao, &e->glfw.program, "shaders/lemin.vs", "shaders/lemin.fs");
-	init_texture(&e->glfw.tex, e->window.x, e->window.y);
 	glfwMakeContextCurrent(e->glfw.win);
+	init_vao(&e->glfw.vao);
+	init_shaders(e->glfw.vao, &e->glfw.program, "shaders/lemin.vs",
+		"shaders/lemin.fs");
+	init_texture(e->glfw.vao, &e->glfw.tex, e->window.x, e->window.y);
 	e->glfw.cl_ctx = init_cl_context("scl/raytracer.cl", NULL,
 		CL_DEVICE_TYPE_GPU, INTEROP_TRUE);
 	opencl_init(e);

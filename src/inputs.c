@@ -35,22 +35,30 @@ static void		quit(t_env *e, int keycode)
 	glfwSetWindowShouldClose(e->glfw.win, GLFW_TRUE);
 }
 
+static void		toggle_cursor(t_env *e, int keycode)
+{
+	(void)keycode;
+	e->keys.cursor = !e->keys.cursor;
+	glfwSetInputMode(e->glfw.win, GLFW_CURSOR, e->keys.cursor ?
+		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+} 
+
 static void		move(t_env *e, int keycode)
 {
 	t_vector	v;
 
 	if (keycode == GLFW_KEY_A)
 		v = ft_vector_scale(cl_float4_to_vector(e->cam.right), -1);
-	else if (keycode == GLFW_KEY_W)
-		v = ft_vector_scale(cl_float4_to_vector(e->cam.up), -1);
-	else if (keycode == GLFW_KEY_Q)
+	else if (keycode == GLFW_KEY_S)
 		v = ft_vector_scale(cl_float4_to_vector(e->cam.dir), -1);
+	else if (keycode == GLFW_KEY_LEFT_SHIFT)
+		v = ft_vector_scale(cl_float4_to_vector(e->cam.up), -1);
 	else if (keycode == GLFW_KEY_D)
 		v = cl_float4_to_vector(e->cam.right);
-	else if (keycode == GLFW_KEY_S)
-		v = cl_float4_to_vector(e->cam.up);
-	else if (keycode == GLFW_KEY_E)
+	else if (keycode == GLFW_KEY_W)
 		v = cl_float4_to_vector(e->cam.dir);
+	else if (keycode == GLFW_KEY_SPACE)
+		v = cl_float4_to_vector(e->cam.up);
 	else
 		return ;
 	e->cam.pos = vector_to_cl_float4(ft_vector_add(
@@ -64,8 +72,9 @@ void			set_keys(t_env *e)
 	add_key(e, GLFW_KEY_A, NULL, move);
 	add_key(e, GLFW_KEY_S, NULL, move);
 	add_key(e, GLFW_KEY_D, NULL, move);
+	add_key(e, GLFW_KEY_SPACE, NULL, move);
+	add_key(e, GLFW_KEY_LEFT_SHIFT, NULL, move);
 	add_key(e, GLFW_KEY_W, NULL, move);
-	add_key(e, GLFW_KEY_Q, NULL, move);
-	add_key(e, GLFW_KEY_E, NULL, move);
+	add_key(e, GLFW_KEY_LEFT_ALT, toggle_cursor, NULL);
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_LEFT, mouse_click, mouse_off);
 }
