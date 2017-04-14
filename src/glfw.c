@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   glfw.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/03 01:07:41 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/03 01:07:41 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 12:52:40 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ GLFWwindow	*glfw_init(t_env *e, char *name, int w, int h)
 	glfwSetScrollCallback(win, mouse_scroll_callback);
 	glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
 	glfwSetWindowSizeCallback(win, glfw_resize);
+	glfwSetWindowFocusCallback(win, window_focus);
+	glfwSetDropCallback(win, file_drop_callback);
 	glfwMakeContextCurrent(win);
 	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(1);

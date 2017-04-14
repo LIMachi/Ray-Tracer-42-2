@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kernel.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 10:37:52 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/04 10:37:52 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 13:09:11 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 t_cl_param		cl_create_param(int mem_type, size_t size, void *p, int flags)
 {
+	if (!size)
+		size = 1;
 	if (flags & PARAM_MEM)
 		return ((t_cl_param){0, (cl_mem)p, sizeof(cl_mem), mem_type, flags, 1});
 	return ((t_cl_param){p, 0, size, mem_type, flags, 1});
@@ -40,7 +42,7 @@ void			cl_set_kernel_dims(t_cl_kernel *ker, size_t *g, size_t *l)
 	if (ker->global)
 		ft_free(ker->global);
 	if (ker->local)
-		ft_free(ker->local);		
+		ft_free(ker->local);
 	if (g)
 	{
 		ker->global = ft_malloc(sizeof(size_t) * ker->dim);

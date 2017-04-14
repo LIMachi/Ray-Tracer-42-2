@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 08:29:53 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 12:12:10 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,14 @@ t_material					parse_material(t_json_value *m, t_material out,
 	if (m == NULL || m->type != object || m->ptr == NULL)
 		return (out);
 	v[0] = ft_json_search_pair_in_object(m,
+		(t_json_string){.length = 10, .ptr = "refraction"});
+	(v[0] != NULL && v[0]->type == number && v[0]->ptr != NULL) ?
+		out.refraction = (cl_float) * (double*)v[0]->ptr : 0;
+	v[0] = ft_json_search_pair_in_object(m,
+		(t_json_string){.length = 10, .ptr = "brightness"});
+	(v[0] != NULL && v[0]->type == number && v[0]->ptr != NULL) ?
+		out.brightness = (cl_float) * (double*)v[0]->ptr : 0;
+	v[0] = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 12, .ptr = "perturbation"});
 	v[1] = ft_json_search_pair_in_object(v[0],
 		(t_json_string){.length = 6, .ptr = "normal"});
@@ -87,12 +95,12 @@ void						*parse_materials(t_json_value *m,
 	out = NULL;
 	if (m == NULL || m->type != object || m->ptr == NULL ||
 		(obj = (t_json_object*)m->ptr)->nb_pairs == 0 || obj->pair == NULL ||
-		(out = (t_pair*)ft_malloc(sizeof(t_pair) * obj->nb_pairs)) == NULL ||
+		(out = (t_pair*)ft_memalloc(sizeof(t_pair) * obj->nb_pairs)) == NULL ||
 		(materials->materials =
-		ft_malloc(sizeof(t_material) * (obj->nb_pairs + 1))) == NULL)
+		ft_memalloc(sizeof(t_material) * (obj->nb_pairs + 1))) == NULL)
 		return (out != NULL ? ft_free(out) : NULL);
 	if ((materials->name =
-			ft_malloc(sizeof(char*) * (obj->nb_pairs + 1))) == NULL)
+			ft_memalloc(sizeof(char*) * (obj->nb_pairs + 1))) == NULL)
 	{
 		ft_memdel((void**)&materials->materials);
 		return (ft_free(out));

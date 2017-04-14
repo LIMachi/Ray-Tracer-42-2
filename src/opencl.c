@@ -6,7 +6,7 @@
 /*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 10:32:27 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 05:44:02 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 11:58:15 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,25 +42,13 @@ t_cl_param	*build_params(t_env *e, int *n, size_t g[])
 	return (t);
 }
 
-void		opencl_init(t_env *e)
+void		opencl_init(t_env *e, size_t g[2])
 {
 	t_cl_param	*t;
 	int			n;
 	int			i;
-	size_t		g[2];
-	int			err;
 
 	n = 0;
-	g[0] = e->window.x;
-	g[1] = e->window.y;
-	e->glfw.render = cl_create_kernel(&e->glfw.cl_ctx, "rt_kernel", 2);
-	cl_set_kernel_dims(e->glfw.render, g, NULL);
-	e->glfw.cl_tex = clCreateFromGLTexture(e->glfw.cl_ctx.ctx,
-		CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, e->glfw.tex, &err);
-	if (err)
-		ft_error(EINVAL, "couldnt create cl_mem from texture\n");
-	else
-		ft_printf("created mem object : %p\n", e->glfw.cl_tex);
 	t = build_params(e, &n, g);
 	i = 0;
 	while (i < n)

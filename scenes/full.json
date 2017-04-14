@@ -4,7 +4,7 @@
 		"size": [1280, 720],
 		"lighting":
 		{
-			"ambient": 0.2,
+			"ambient": 0.05,
 			"direct": 1.0
 		},
 		"antialias": 1,
@@ -34,6 +34,7 @@
 			"specular": 1.0,
 			"reflection": 0.3,
 			"refraction": 1.0,
+			"brightness": 1.0,
 			"perturbation":
 			{
 				"normal": 1.0,

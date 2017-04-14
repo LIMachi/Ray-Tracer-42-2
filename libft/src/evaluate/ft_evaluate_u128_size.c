@@ -6,14 +6,14 @@
 /*   By: lee <lee@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/25 18:25:04 by lee               #+#    #+#             */
-/*   Updated: 2017/03/17 05:26:03 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 10:32:52 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 
-/*
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#if 0
+# if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 size_t	ft_evaluate_u128_size(__uint128_t v)
 {
@@ -42,7 +42,7 @@ size_t	ft_evaluate_u128_size(__uint128_t v)
 	return (size ? size : 1);
 }
 
-#else
+# else
 
 size_t	ft_evaluate_u128_size(__uint128_t v)
 {
@@ -71,8 +71,8 @@ size_t	ft_evaluate_u128_size(__uint128_t v)
 	return (size ? size : 1);
 }
 
-#endif
-*/
+# endif
+#else
 
 size_t	ft_evaluate_u128_size(__uint128_t v)
 {
@@ -85,3 +85,5 @@ size_t	ft_evaluate_u128_size(__uint128_t v)
 		++l;
 	return (l);
 }
+
+#endif
