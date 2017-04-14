@@ -429,9 +429,7 @@ inline int		limit(__global t_primitive *obj, float4 point)
 inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	int i = 0;
-	float d = *dist;
-	float k = *dist;
-	float4 raytmp = ray->origin;
+
 	switch (obj->type)
 	{
 		case SPHERE:
@@ -482,7 +480,6 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, fl
 			return (n);
 	}
 
-	// normal perturbation
 	if (mat->perturbation.normal > 0.0f)
 	{
 		float len = LENGTH(n);
