@@ -127,6 +127,6 @@
 	],
 	"lights":
 	[
-		{ "position": [0, 0, 0], "color": [1, 1, 1] }
+		{ "position": [0, 0, 0, false], "color": [1, 1, 1] }
 	]
 }

@@ -49,7 +49,7 @@ void				parse_lights(t_json_value *l, t_argn *argn,
 	i = -1;
 	while (++i < ar->nb_values)
 		(*lights)[i] = (t_light){.position =
-		cl_vector_from_json_array(ft_json_search_pair_in_object0(ar->value[i],
+		cl_vector_from_json_array0(ft_json_search_pair_in_object(ar->value[i],
 		(t_json_string){.length = 8, .ptr = "position"}),
 		(cl_float4){.x = 0, .y = 0, .z = 0, .w = 0}), .color =
 		cl_vector_from_json_array(ft_json_search_pair_in_object(ar->value[i],

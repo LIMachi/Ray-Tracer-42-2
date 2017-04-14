@@ -57,8 +57,8 @@
 	],
 	"lights":
 	[
-		{ "position": [300, 0, 0], "color": [0, 1, 0] },
-		{ "position": [-150, -250, 0], "color": [1, 0, 0] },
-		{ "position": [-150, 250, 0], "color": [0, 0, 1] }
+		{ "position": [300, 0, 0, false], "color": [0, 1, 0] },
+		{ "position": [-150, -250, 0, false], "color": [1, 0, 0] },
+		{ "position": [-150, 250, 0, false], "color": [0, 0, 1] }
 	]
 }
