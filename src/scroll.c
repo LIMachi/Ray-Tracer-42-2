@@ -14,8 +14,6 @@
 
 void	get_prim_map(t_env *e)
 {
-	ft_printf("asked for reading prim map : %d\n", e->prim_map.size.x *
-		e->prim_map.size.y);
 	clEnqueueReadBuffer(e->glfw.cl_ctx.queue, e->glfw.render->params[1].mem,
 		CL_TRUE, 0, e->prim_map.size.x * e->prim_map.size.y * sizeof(int),
 		e->prim_map.data, 0, 0, NULL);

@@ -76,7 +76,6 @@ void			mouse_callback(GLFWwindow* window, double x, double y)
 
 	e = glfw_env(NULL);
 	(void)window;
-	ft_printf("%d %d\n", e->mouse.is_select, e->keys.cursor);
 	if (!e->mouse.is_select && !e->keys.cursor)
 		rotate(e, x - e->mouse.x, y - e->mouse.y);
 	if (e->mouse.is_select && e->keys.cursor)

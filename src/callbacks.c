@@ -63,7 +63,6 @@ void		mouse_click(t_env *e, int key)
 		return ;
 	check = e->prim_map.data[e->prim_map.size.x * y + x];
 	e->mouse.is_select = check;
-	ft_printf("mouse click got : %d\n", check);
 }
 
 void		mouse_off(t_env *e, int key)

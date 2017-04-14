@@ -56,18 +56,10 @@ void		rt(t_env *e)
 	}
 }
 
-void		init(t_env *e, char *src)
+void		init(t_env *e)
 {
-	int		fd;
 	size_t	size;
 
-	if ((fd = open(e->cmd.scene, O_RDONLY)) == -1)
-		ft_end(-1);
-	e->cam.orientation.r = 1;
-	e->glfw.fps = 60;
-	parser(e, src = ft_readfile(fd));
-	close(fd);
-	ft_free(src);
 	calc_vpul(&e->cam);
 	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
 	size = e->window.x * e->window.y;
@@ -91,6 +83,7 @@ int			main(const int argc, char **argv, char **env)
 {
 	t_env	e;
 	char	*src;
+	int		fd;
 
 	src = NULL;
 	ft_bzero(&e, sizeof(t_env));
@@ -101,7 +94,14 @@ int			main(const int argc, char **argv, char **env)
 		ft_path_name(argv[0]));
 		ft_end(0);
 	}
-	init(&e, src);
+	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
+		ft_end(-1);
+	e.argn.map_primitives = 1;
+	e.glfw.fps = 60;
+	parser(&e, src = ft_readfile(fd));
+	close(fd);
+	ft_free(src);
+	init(&e);
 	rt(&e);
 	ft_end(0);
 }

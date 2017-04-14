@@ -24,7 +24,6 @@ static void		cl_update_kernel_args(t_cl_ctx *ctx, t_cl_kernel *ker)
 		if (params->flags & PARAM_CPY && (params->needs_update ||
 			params->flags & ALWAYS_UPDATE))
 		{
-			ft_printf("%d : %p\n", i, params->p);
 			clEnqueueWriteBuffer(ctx->queue, params->mem, CL_TRUE, 0,
 				params->size, params->p, 0, NULL, NULL);
 			params->needs_update = 0;	
