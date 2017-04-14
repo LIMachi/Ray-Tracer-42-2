@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/25 17:10:35 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/13 05:48:07 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 06:17:53 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,10 @@ inline static void	parse_material_images(t_json_value *m,
 		return ;
 	v = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 7, .ptr = "texture"});
+	parse_image(ft_json_search_pair_in_object(v,
+		(t_json_string){.length = 4, .ptr = "file"}), textures_holder);
+	v = ft_json_search_pair_in_object(m,
+		(t_json_string){.length = 10, .ptr = "normal_map"});
 	parse_image(ft_json_search_pair_in_object(v,
 		(t_json_string){.length = 4, .ptr = "file"}), textures_holder);
 }

@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/13 06:44:13 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 06:19:31 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ inline static t_material	parse_material_0(t_json_value *m, t_material out,
 	v = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 7, .ptr = "texture"});
 	out.texture = parse_texture(v, out.texture, textures_holder);
+	v = ft_json_search_pair_in_object(m,
+		(t_json_string){.length = 7, .ptr = "normal_map"});
+	out.normal_map = parse_texture(v, out.texture, textures_holder);
 	return (out);
 }
 
