@@ -1,7 +1,7 @@
 {
 	"render_options":
 	{
-		"size": [2560, 1440],
+		"size": [1280, 720],
 		"lighting":
 		{
 			"ambient": 0.2,
@@ -22,7 +22,7 @@
 		"direction": [0, 0, 1],
 		"up": [0, 1, 0],
 		"right": [1, 0, 0],
-		"vp_size": [2560, 1440],
+		"vp_size": [1280, 720],
 		"dist": 800
 	},
 	"materials":
@@ -32,7 +32,7 @@
 			"color": [1, 0, 0],
 			"diffuse": 1.0,
 			"specular": 1.0,
-			"reflection": 1.0,
+			"reflection": 0.3,
 			"refraction": 1.0,
 			"perturbation":
 			{
