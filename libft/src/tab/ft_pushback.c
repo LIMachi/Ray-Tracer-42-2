@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_pushback.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/17 07:30:52 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/02/17 07:30:54 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 01:19:45 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	ft_pushback(void **data, size_t size, int count, void *o)
 		p[i] = u[i - count * size];
 		i++;
 	}
-	free(*data);
+	if (*data != NULL)
+		ft_free(*data);
 	*data = p;
 }
