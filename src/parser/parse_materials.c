@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 14:35:41 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:24:12 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,7 @@ inline static t_material	parse_material_0(t_json_value *m, t_material out,
 	v = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 8, .ptr = "specular"});
 	out.specular = cl_vector_from_json_array(v, out.specular);
-/*	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 7, .ptr = "diffuse"});
-	(v != NULL && v->type == number && v->ptr != NULL) ?
-		out.diffuse = (cl_float) * (double*)v->ptr : 0;
 	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 8, .ptr = "specular"});
-	(v != NULL && v->type == number && v->ptr != NULL) ?
-		out.specular = (cl_float) * (double*)v->ptr : 0;
-*/	v = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 10, .ptr = "reflection"});
 	(v != NULL && v->type == number && v->ptr != NULL) ?
 		out.reflection = (cl_float) * (double*)v->ptr : 0;

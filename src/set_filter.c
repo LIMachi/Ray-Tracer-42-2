@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   set_filter.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/04/14 15:26:09 by hmartzol          #+#    #+#             */
+/*   Updated: 2017/04/14 15:27:29 by hmartzol         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <rt.h>
 
 void		filter_sepia(t_env *e, int keycode)
@@ -25,5 +37,5 @@ void		filter_none(t_env *e, int keycode)
 {
 	keycode = keycode + 32;
 	e->glfw.render->params[2].needs_update = 1;
-		e->argn.filter = 0;
+	e->argn.filter = 0;
 }

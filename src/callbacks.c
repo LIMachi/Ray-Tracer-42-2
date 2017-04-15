@@ -6,13 +6,13 @@
 /*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/03 01:48:18 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 13:58:06 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:16:44 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
 
-int		key_match(int keycode, int action, t_key *key)
+int			key_match(int keycode, int action, t_key *key)
 {
 	if (key->keycode == keycode)
 	{
@@ -26,8 +26,7 @@ int		key_match(int keycode, int action, t_key *key)
 	return (0);
 }
 
-void		key_callback(GLFWwindow *win, int key, int scan, int action,
-	int mods)
+void		key_callback(GLFWwindow *win, int key, int scan, int action)
 {
 	t_env	*e;
 	int		i;
@@ -35,7 +34,6 @@ void		key_callback(GLFWwindow *win, int key, int scan, int action,
 
 	e = glfw_env(NULL);
 	(void)win;
-	(void)mods;
 	(void)scan;
 	keys = e->glfw.keys;
 	i = 0;

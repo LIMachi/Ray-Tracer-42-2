@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gl_handler.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/06 17:35:24 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 03:43:55 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:53:12 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,17 +45,17 @@
 # define GL_VS			GL_VERTEX_SHADER
 # define GL_FS			GL_FRAGMENT_SHADER
 
-typedef struct		s_gl_shader
+typedef struct			s_gl_shader
 {
 	GLuint	id;
 	GLuint	type;
 	char	*file;
-}					t_gl_shader;
+}						t_gl_shader;
 
-t_gl_shader	gl_shader(GLuint type, char *file);
-GLuint		create_program(int shader_count, t_gl_shader *shaders);
-int			compile_shader(t_gl_shader *shader);
-void		gl_compile_log(GLuint shader, char *name);
-void		validate(GLuint program);
+t_gl_shader				gl_shader(GLuint type, char *file);
+GLuint					create_program(int shader_count, t_gl_shader *shaders);
+int						compile_shader(t_gl_shader *shader);
+void					gl_compile_log(GLuint shader, char *name);
+void					validate(GLuint program);
 
 #endif

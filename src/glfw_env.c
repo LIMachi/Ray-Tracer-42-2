@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_evaluate_u128_size.c                            :+:      :+:    :+:   */
+/*   glfw_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lee <lee@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/02/25 18:25:04 by lee               #+#    #+#             */
-/*   Updated: 2017/04/14 15:41:42 by hmartzol         ###   ########.fr       */
+/*   Created: 2017/04/14 15:35:49 by hmartzol          #+#    #+#             */
+/*   Updated: 2017/04/14 15:36:03 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
+#include <rt.h>
 
-size_t	ft_evaluate_u128_size(__uint128_t v)
+t_env		*glfw_env(t_env *e)
 {
-	size_t		l;
+	static t_env	*pe = NULL;
 
-	if (v == 0)
-		return (1);
-	l = 1;
-	while (v /= 10)
-		++l;
-	return (l);
+	return ((pe = e ? e : pe));
 }

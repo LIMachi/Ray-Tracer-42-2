@@ -6,13 +6,13 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 10:42:57 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 13:14:54 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:17:21 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
 
-void 				delete_args(t_cl_kernel *ker)
+void				delete_args(t_cl_kernel *ker)
 {
 	int		i;
 
@@ -32,7 +32,7 @@ void				delete_rt_environement(t_env *e)
 	int	i;
 
 	i = 0;
-	while(i < e->argn.nb_materials)
+	while (i < e->argn.nb_materials)
 		ft_memdel((void**)&e->materials.name[i++]);
 	ft_memdel((void**)&e->materials.name);
 	ft_memdel((void**)&e->materials.materials);

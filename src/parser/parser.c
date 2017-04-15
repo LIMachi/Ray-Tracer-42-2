@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/21 19:24:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 13:06:33 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:11:14 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ void				parser(t_env *e, const char *src)
 	v = ft_json_search_pair_in_object(root,
 		(t_json_string){.length = 6, .ptr = "lights"});
 	parse_lights(v, &e->argn, &e->lights);
-//	if (!check_parsed_data(&e->argn, &e->cam))
-//		ft_error(EINTERN, "Invalid json values\n");
 	ft_json_free(root);
 	e->argn.nb_info = e->textures.nb_info;
 	e->argn.nb_materials = e->materials.nb_materials;

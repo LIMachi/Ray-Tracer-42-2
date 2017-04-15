@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   gl_objects.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/17 05:39:28 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/02/26 05:09:25 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:19:53 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
 
-static void	release_shaders(GLuint program, int count, t_gl_shader *shaders)
+static void		release_shaders(GLuint program, int count, t_gl_shader *shaders)
 {
 	int		i;
 

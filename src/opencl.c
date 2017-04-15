@@ -6,11 +6,11 @@
 /*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 10:32:27 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 11:58:15 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:23:02 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include  <rt.h>
+#include <rt.h>
 
 void		add_param(t_cl_param p, t_cl_param **params, int *n)
 {

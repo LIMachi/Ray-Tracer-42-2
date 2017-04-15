@@ -6,7 +6,7 @@
 /*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/03 01:10:07 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 12:58:43 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:29:09 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,6 @@ static void		quit(t_env *e, int keycode)
 {
 	(void)keycode;
 	glfwSetWindowShouldClose(e->glfw.win, GLFW_TRUE);
-}
-
-void			toggle_cursor(t_env *e, int keycode)
-{
-	(void)keycode;
-	e->keys.cursor = !e->keys.cursor;
-	glfwSetInputMode(e->glfw.win, GLFW_CURSOR, e->keys.cursor ?
-		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 }
 
 static void		move(t_env *e, int keycode)
@@ -76,11 +68,9 @@ void			set_keys(t_env *e)
 	add_key(e, GLFW_KEY_LEFT_SHIFT, NULL, move);
 	add_key(e, GLFW_KEY_W, NULL, move);
 	add_key(e, GLFW_KEY_LEFT_ALT, toggle_cursor, NULL);
-
 	add_key(e, GLFW_KEY_1, filter_sepia, NULL);
 	add_key(e, GLFW_KEY_2, filter_gray, NULL);
 	add_key(e, GLFW_KEY_3, filter_cartoon, NULL);
 	add_key(e, GLFW_KEY_4, filter_none, NULL);
-
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_LEFT, mouse_click, mouse_off);
 }

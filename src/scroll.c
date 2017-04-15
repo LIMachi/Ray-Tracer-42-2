@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scroll.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 00:19:35 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 00:19:36 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:25:58 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	get_prim_map(t_env *e)
 		e->prim_map.data, 0, 0, NULL);
 }
 
-void	mouse_scroll_callback(GLFWwindow* window, double dx, double dy)
+void	mouse_scroll_callback(GLFWwindow *window, double dx, double dy)
 {
 	t_env	*e;
 	int		check;
@@ -41,4 +41,4 @@ void	mouse_scroll_callback(GLFWwindow* window, double dx, double dy)
 		e->prim[check - 1].radius *= 1.0f + (dy * SCROLL);
 	if (check > 0 && dy < 0)
 		e->prim[check - 1].radius /= 1.0f + (dy * SCROLL);
-}	
+}

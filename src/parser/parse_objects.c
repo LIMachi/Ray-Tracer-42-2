@@ -6,14 +6,14 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:02:23 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 08:14:14 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:24:51 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <float.h>
 #include <rt.h>
 
-inline static cl_uint	parse_object_material(t_json_value *o,
+inline static cl_uint		parse_object_material(t_json_value *o,
 	t_material_holder *materials, t_textures_holder *textures)
 {
 	int	i;
@@ -106,14 +106,12 @@ inline static t_primitive	parse_object(t_json_value *o,
 
 	if (o == NULL || o->type != object || o->ptr == NULL)
 		return (null_primitive());
-		//ft_error(EINTERN, "Parser encountered invalid object\n");
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 4, .ptr = "type"});
 	if ((p.type = ft_json_check_string(v, 5,
 		(char**)(size_t[5]){(size_t)"sphere", (size_t)"plane",
 		(size_t)"cone", (size_t)"cylinder", (size_t)"paraboloid"}, -1)) == -1)
 		return (null_primitive());
-//		ft_error(EINTERN, "Parser encountered invalid object\n");
 	v = ft_json_search_pair_in_object(o,
 		(t_json_string){.length = 8, .ptr = "material"});
 	p.material = parse_object_material(v, materials, textures);

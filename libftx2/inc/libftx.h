@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 11:11:43 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/07 19:39:15 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:54:09 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,10 +166,9 @@ typedef struct				s_ftx_line_data
 ** when called for the first time, it will initialize it's mlx pointer
 */
 
-typedef int 				(*t_ftx_loop_cb)(void *);
+typedef int					(*t_ftx_loop_cb)(void *);
 
 t_ftx_data					*ftx_data(void);
-
 
 /*
 ** ftx_color_lerp: do a linear interpolation betwen f (front) and b (back)

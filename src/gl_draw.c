@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gl_draw.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 07:44:37 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/04 07:44:37 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:19:24 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ void	init_vao(GLuint *vao)
 {
 	GLuint			vbo;
 	GLuint			ebo;
+	const GLuint	elems[] = {0, 1, 2, 2, 3, 0};
 	const GLfloat	vertices[] = {
-		-1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-		1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		-1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
 		1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 		-1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f};
-	const GLuint	elems[] = {0, 1, 2, 2, 3, 0};
 
 	glGenVertexArrays(1, vao);
 	glBindVertexArray(*vao);

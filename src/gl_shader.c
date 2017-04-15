@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gl_shader.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/04 07:48:53 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/04 07:48:54 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:20:12 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void		gl_compile_log(GLuint shader, char *name)
 	ft_free(log_info);
 }
 
-int		compile_shader(t_gl_shader *shader)
+int			compile_shader(t_gl_shader *shader)
 {
 	char	*source;
 	GLuint	id;

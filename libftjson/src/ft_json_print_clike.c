@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/07 01:25:05 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/21 15:15:13 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:49:05 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ inline static void	sf_json_print_clike_object(int fd, t_json_object *obj)
 
 	if (obj == NULL)
 		return ;
-	i= 0;
+	i = 0;
 	while (i < obj->nb_pairs)
 		if (obj->pair[i++] != NULL && obj->pair[i - 1]->value != NULL)
 			ft_json_print_clike(fd, obj->pair[i - 1]->value);

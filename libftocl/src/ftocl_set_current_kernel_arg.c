@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/14 11:16:03 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/25 23:46:37 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:51:08 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,7 @@ int	ftocl_set_current_kernel_arg(cl_mem_flags flags, cl_uint index,
 														size, ptr, &err);
 	data->current_kernel->sizes[index] = size;
 	if (err != CL_SUCCESS)
-	{
-		//ft_printf("error: %d\n", err == CL_OUT_OF_HOST_MEMORY);
 		ft_error(EINTERN, "buffer creation failed\n");
-	}
 	err = clSetKernelArg(data->current_kernel->kernel, index, sizeof(cl_mem),
 								(void *)&data->current_kernel->args[index]);
 	if (err != CL_SUCCESS)

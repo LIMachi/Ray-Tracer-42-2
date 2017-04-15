@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/07 03:01:51 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/02/21 15:15:26 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 16:43:02 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,11 @@ inline static void	sf_json_print_pair(int fd, t_json_pair *pair, int level)
 {
 	if (pair == NULL)
 		return ;
-//	while (level-- > 0)
-//		ft_putchar_fd('\t', fd);
 	ft_putchar_fd('\"', fd);
 	ft_putstr_fd(pair->key != NULL && pair->key->ptr != NULL ?
 				pair->key->ptr : "(NULL)", fd);
 	ft_putstr_fd("\": ", fd);
 	sf_json_print(fd, pair->value, level);
-
 }
 
 inline static void	sf_json_print_object(int fd, t_json_object *obj, int level)
@@ -81,7 +78,7 @@ inline static void	sf_json_print_array(int fd, t_json_array *ar, int level)
 	}
 }
 
-void	sf_json_print(int fd, t_json_value *node, int level)
+void				sf_json_print(int fd, t_json_value *node, int level)
 {
 	if (node == NULL)
 		return ;
@@ -93,7 +90,7 @@ void	sf_json_print(int fd, t_json_value *node, int level)
 		ft_json_print_data(fd, node);
 }
 
-void	ft_json_print(int fd, t_json_value *root)
+void				ft_json_print(int fd, t_json_value *root)
 {
 	sf_json_print(fd, root, 0);
 	ft_putchar_fd('\n', fd);

@@ -34,8 +34,7 @@ inline static cl_float4	cl_vector_from_json_array0(t_json_value *node,
 	return (out);
 }
 
-
-void				parse_lights(t_json_value *l, t_argn *argn,
+void					parse_lights(t_json_value *l, t_argn *argn,
 	t_light **lights)
 {
 	t_json_array	*ar;

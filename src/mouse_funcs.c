@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mouse_funcs.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 05:08:04 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 05:08:04 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:22:30 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void		mouse_off(t_env *e, int key)
 		e->mouse.is_select = 0;
 }
 
-void 		mouse_button_callback(GLFWwindow* window,
+void		mouse_button_callback(GLFWwindow *window,
 	int button, int action, int mods)
 {
 	t_env	*e;

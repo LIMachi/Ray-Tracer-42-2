@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/16 09:51:11 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/01/24 11:00:02 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:52:28 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ static int	sf_button_release_hook(int key, int x, int y, void *p)
 	return (0);
 }
 
-int			ftx_hook_mice_move(t_window *window, t_ftx_m_cb callback, void *data)
+int			ftx_hook_mice_move(t_window *window, t_ftx_m_cb callback,
+								void *data)
 {
 	t_mice	*mice;
 

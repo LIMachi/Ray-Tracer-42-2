@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   glfw_mouse.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cchaumar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/13 23:54:53 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/13 23:54:53 by cchaumar         ###   ########.fr       */
+/*   Updated: 2017/04/14 15:29:06 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,15 @@ static void		mouse_drag(t_env *e, int x, int y)
 	}
 }
 
-void			mouse_callback(GLFWwindow* window, double x, double y)
+void			toggle_cursor(t_env *e, int keycode)
+{
+	(void)keycode;
+	e->keys.cursor = !e->keys.cursor;
+	glfwSetInputMode(e->glfw.win, GLFW_CURSOR, e->keys.cursor ?
+		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+}
+
+void			mouse_callback(GLFWwindow *window, double x, double y)
 {
 	t_env	*e;
 
