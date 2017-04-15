@@ -695,9 +695,9 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		else if (scale > 0)
 			c += light.color * col * scale;
 //		float4 ir = NORMALIZE(2 * scale * normal - ray_l.direction);
-		float4 ir = (-ray_l.direction + ray->direction) / 2;
-		if (scale > 0 && (scale = DOT(ir, -ray->direction)) > 0)
-			c += light.color * mat->specular * pow(scale, mat->brightness);
+		float4 ir = (ray_l.direction - ray->direction) / 2;
+		if (scale > 0 && (scale = DOT(ir, normal)) > 0)
+			c += light.color * mat->specular * pow(scale, mat->brightness) > 0 ? c : 0;
 	}
 	c = clamp(c / (float)argn->nb_lights, 0.0f, 1.0f);
 	c = color_perturbation(c, obj, mat->perturbation.color, normal);
