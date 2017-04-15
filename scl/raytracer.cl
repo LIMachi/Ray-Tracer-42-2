@@ -666,14 +666,15 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		float dist_l = LENGTH(ray_l.direction);
 		ray_l.direction = NORMALIZE(ray_l.direction);
 		ray_l.origin = p + SHADOW_E * ray_l.direction;
+		shadow = 0;
 		for (int cur = 0; cur < argn->nb_objects; cur++)
 		{
 			if ((shadow = intersect(&objects[cur], &ray_l, &dist)) != 0)
 			{
-				if (dist > EPSILON && dist < dist_l && DOT(ray_l.direction, objects[cur].position - ray->origin) > 0)
+				if (dist > EPSILON && dist < dist_l)
 					break ;
-				else
-					shadow = 0;
+//				else
+//					shadow = 0;
 			}
 		}
 		float4 col = mat->color;
@@ -682,16 +683,19 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		{
 			__global t_img_info *info = &img_info[mat->texture.info_index];
 			col = color_texture(obj, &mat->texture, normal, info, raw_bmp, col);
-			c += col;
+//			c += col;
 		}
 		else
 			c += light.color * col * argn->ambient;
 		if (shadow)
 			continue ;
 		float scale;
-		if ((scale = DOT(ray_l.direction, normal)) > 0)
+		if ((scale = DOT(ray_l.direction, normal)) > 0 && mat->texture.info_index == ULONG_MAX)
 			c += light.color * mat->diffuse * scale;
-		float4 ir = 2 * scale * normal - ray_l.direction;
+		else if (scale > 0)
+			c += light.color * col * scale;
+//		float4 ir = NORMALIZE(2 * scale * normal - ray_l.direction);
+		float4 ir = (-ray_l.direction + ray->direction) / 2;
 		if (scale > 0 && (scale = DOT(ir, -ray->direction)) > 0)
 			c += light.color * mat->specular * pow(scale, mat->brightness);
 	}
