@@ -481,11 +481,13 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_
 		default:
 			return (n);
 	}
-
-	if (mat->perturbation.normal > 0.0f)
+	
+//	printf("%f ", mat->perturbation.normal);
+	if (mat->perturbation.normal > EPSILON)
 	{
 		float len = LENGTH(n);
 		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
+//		n.y = 10 * sin(n.y);
 	}
 	return (NORMALIZE(n));
 }
@@ -600,7 +602,7 @@ float4		get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *a
 	{
 		t_light light = lights[cur_l];
 		
-		if (argn->direct > EPSILON)
+		if (argn->direct > EPSILON && light.position.w < 0.99)
 		{
 			ray_l.direction = light.position - ray->origin;
 			dist_l = LENGTH(ray_l.direction);
@@ -656,14 +658,22 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 	float4	c = (float4)0;
 	int shadow = 0;
 	t_ray	ray_l;
-
 	float dist = MAXFLOAT;
 	
 	for (int l_cur = 0; l_cur < argn->nb_lights; l_cur++)
 	{
+		float	dist_l;
 		t_light	light = lights[l_cur];
-		ray_l.direction = light.position - p;
-		float dist_l = LENGTH(ray_l.direction);
+		if(light.position.w < 0.9)
+		{
+			ray_l.direction = light.position - p;
+			dist_l = LENGTH(ray_l.direction);
+		}
+		else
+		{
+			ray_l.direction = light.position;
+			dist_l = MAXFLOAT;
+		}
 		ray_l.direction = NORMALIZE(ray_l.direction);
 		ray_l.origin = p + SHADOW_E * ray_l.direction;
 		shadow = 0;
@@ -793,7 +803,7 @@ __kernel void	rt_kernel(
 				}
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
-				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p) * result;
+				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p);
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
 				cur_ray->origin = p;
 				if (cur_ray->depth >= argn->bounce_depth)
