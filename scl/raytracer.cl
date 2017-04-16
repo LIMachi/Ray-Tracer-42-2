@@ -138,7 +138,7 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		intersect(__global t_primitive *obj, t_ray *ray, float *dist);
 int		solve_quadratic(float a, float b, float c, float *dist);
-float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ray, float4 point);
+float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ray, float4 point, __global int *raw_bmp, __global t_img_info *img_info);
 float4	input_ray(float4 dir, float4 norm);
 float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 normal, __global t_img_info *info, __global int *raw_bmp, float4 col);
 float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __global t_img_info *img_info);
@@ -306,40 +306,6 @@ int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 
 //	return solve_quadratic(a, b, c, dist);
 }
-/*
-int				rt_sphere(__global t_obj *o, t_ray *ray)
-{
-	float2	t;
-	float4	pos;
-	float	a;
-	float	b;
-	float	c;
-
-	pos = o->pos - ray->ori;
-	a = dot(ray->dir, ray->dir);
-	b = 2.0f * dot(ray->dir, pos);
-	c = dot(pos, pos) - o->r * o->r;
-	if ((quadratic(a, b, c, &t)))
-	{
-		if (t.x < t.y && t.x > 0.001 && (t.x < ray->t || ray->t <= 0.001))
-		{
-			if (t.x < 0.001)
-				ray->t = 0.001;
-			else
-				ray->t = t.x;
-			return (1);
-		}
-		else if (t.y > 0.001 && (t.y < ray->t || ray->t <= 0.001))
-		{
-			if (t.y < 0.001)
-				ray->t = 0.001;
-			else
-				ray->t = t.y;
-			return (-1);
-		}
-	}
-	return (0);
-}*/
 
 int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
@@ -347,17 +313,38 @@ int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float4 p = CROSS(pos, obj->direction);
 	float4 r = CROSS(ray->direction, obj->direction);
 
+	float2 t;
 	float a = DOT(r, r);
 	float b = 2 * DOT(r, p);
 	float c = DOT(p, p) - obj->radius * obj->radius * DOT(obj->direction, obj->direction);
-	return solve_quadratic(a, b, c, dist);
+	if(quadratic(a, b, c , &t))
+	{
+		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+		{
+			if (t.x < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.x;
+			return (1);
+		}
+		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+		{
+			if (t.y < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.y;
+			return (-1);
+		}
+	}
+	return (0);
+//	return solve_quadratic(a, b, c, dist);
 }
 
 int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float4 pos = ray->origin - obj->position;
 	float4 dir = -ray->direction;
-
+	float2 t;
 	float tr = tan(obj->radius * M_PI / 180.0f);
 	float r = 1.0f + tr * tr;
 	float dd = DOT(dir, obj->direction);
@@ -366,8 +353,28 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float a = DOT(dir, dir) - (r * dd * dd);
 	float b = 2.0f * (DOT(dir, pos) - (r * dd * xv));
 	float c = DOT(pos, pos) - (r * xv * xv);
+	if(quadratic(a, b, c , &t))
+	{
+		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+		{
+			if (t.x < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.x;
+			return (1);
+		}
+		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+		{
+			if (t.y < 0.01)
+				*dist = 0.01;
+			else
+				*dist = t.y;
+			return (-1);
+		}
+	}
+	return (0);
 
-	return solve_quadratic(a, b, c, dist);
+//	return solve_quadratic(a, b, c, dist);
 }
 
 int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
@@ -429,7 +436,8 @@ inline int		limit(__global t_primitive *obj, float4 point)
 inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	int i = 0;
-
+	float4 raytmp = ray->origin;
+	float d = *dist;
 	switch (obj->type)
 	{
 		case SPHERE:
@@ -448,10 +456,54 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 			i = paraboloid_intersect(obj, ray, dist);
 			break;
 	}
+	float4 point = ray->direction * *dist + ray->origin;
+		if(limit(obj, point))
+		{
+			ray->origin = point;
+			switch (obj->type)
+			{
+				case SPHERE:
+					i = sphere_intersect(obj, ray, dist);
+					break;
+				case PLANE:
+					i = plane_intersect(obj, ray, dist);
+					break;
+				case CONE:
+					i = cone_intersect(obj, ray, dist);
+					break;
+				case CYLINDER:
+					i = cylinder_intersect(obj, ray, dist);
+					break;
+				case PARABOLOID:
+					i = paraboloid_intersect(obj, ray, dist);
+					break;
+			}
+			point += ray->direction * *dist;
+			if(!limit(obj, point))
+			{
+				ray->origin = raytmp;
+				point -= ray->origin;
+				*dist = *dist;
+				return(-1);
+			}
+			else
+			{
+				ray->origin = raytmp;
+				*dist = d;
+				return(0);
+			}
+	}
+//		else
+//			return(0);
 	return (i);
 }
 
-inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ray, float4 point)
+inline float4	get_normal(__global t_primitive *obj,
+							__global t_material *mat,
+							t_ray *ray,
+							float4 point,
+							__global int *raw_bmp,
+							__global t_img_info *img_info)
 {
 	float4 n = (float4)(0, 0, 0, 0);
 	float r;
@@ -483,12 +535,22 @@ inline float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_
 	}
 	
 //	printf("%f ", mat->perturbation.normal);
-	if (mat->perturbation.normal > EPSILON)
+	if (mat->perturbation.normal > EPSILON && mat->normal_map.info_index == ULONG_MAX)
 	{
 		float len = LENGTH(n);
 		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
 //		n.y = 10 * sin(n.y);
 	}
+//	float4	nm = n;
+//	if (mat->normal_map.info_index != ULONG_MAX)
+//	{
+//		__global t_img_info *info = &img_info[mat->normal_map.info_index];
+//		nm = color_texture(obj, &mat->normal_map, nm, info, raw_bmp, n);
+//		n.x += nm.x * 2.0 - 1.0;
+//		n.y += nm.y * 2.0 - 1.0;
+//		nm.z = nm.z < 0.5 ? nm.z = 0.5 : 0;
+//		n.z -= (nm.z - 0.5) * 2.0;
+//	}
 	return (NORMALIZE(n));
 }
 
@@ -706,7 +768,7 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 			c += light.color * col * scale;
 //		float4 ir = NORMALIZE(2 * scale * normal - ray_l.direction);
 		float4 ir = (ray_l.direction - ray->direction) / 2;
-		if (scale > 0 && (scale = DOT(ir, normal)) > 0)
+		if ((scale = DOT(ir, normal)))
 			c += light.color * mat->specular * pow(scale, mat->brightness) > 0 ? c : 0;
 	}
 	c = clamp(c / (float)argn->nb_lights, 0.0f, 1.0f);
@@ -755,7 +817,6 @@ __kernel void	rt_kernel(
 
 	float x = (float)i;
 	float y = (float)j;
-
 	t_ray 		*cur_ray;
 	t_ray		queue[MAX_RAY_COUNT];
 	int			queue_end = 0;
@@ -803,7 +864,14 @@ __kernel void	rt_kernel(
 				}
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
-				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p);
+				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
+//				__global t_img_info *inf = &img_info[mat->texture.info_index];
+//				float4 nm = color_texture(objects, &mat->texture, normal, inf, raw_bmp, (float4)(0,0,0,0));
+//				normal.x += nm.x * 2 - 1;
+//				normal.y += nm.y * 2 - 1;
+//				if(nm.z < 0.5)
+//					nm.z = 0.5;
+//				normal.z -= (nm.z - 0.5) * 2;
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
 				cur_ray->origin = p;
 				if (cur_ray->depth >= argn->bounce_depth)
