@@ -34,7 +34,7 @@ inline static t_material	parse_material_0(t_json_value *m, t_material out,
 		(t_json_string){.length = 7, .ptr = "texture"});
 	out.texture = parse_texture(v, out.texture, textures_holder);
 	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 7, .ptr = "normal_map"});
+		(t_json_string){.length = 10, .ptr = "normal_map"});
 	out.normal_map = parse_texture(v, out.normal_map, textures_holder);
 	return (out);
 }
