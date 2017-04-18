@@ -357,17 +357,17 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	{
 		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
 		{
-			if (t.x < 0.01)
-				*dist = 0.01;
-			else
+//			if (t.x < 0.01)
+//				*dist = 0.01;
+//			else
 				*dist = t.x;
 			return (1);
 		}
 		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
 		{
-			if (t.y < 0.01)
-				*dist = 0.01;
-			else
+//			if (t.y < 0.01)
+//				*dist = 0.01;
+//			else
 				*dist = t.y;
 			return (-1);
 		}
@@ -457,7 +457,7 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 			break;
 	}
 	float4 point = ray->direction * *dist + ray->origin;
-		if(limit(obj, point))
+		if(limit(obj, point) && obj->type != CONE)
 		{
 			ray->origin = point;
 			switch (obj->type)
@@ -479,12 +479,12 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 					break;
 			}
 			point += ray->direction * *dist;
-			if(!limit(obj, point))
+			if(!limit(obj, point) && *dist < d)
 			{
 				ray->origin = raytmp;
 				point -= ray->origin;
-				*dist = *dist;
-				return(-1);
+//				*dist = d;
+				return(i);
 			}
 			else
 			{
@@ -865,13 +865,13 @@ __kernel void	rt_kernel(
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
 				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
-//				__global t_img_info *inf = &img_info[mat->texture.info_index];
-//				float4 nm = color_texture(objects, &mat->texture, normal, inf, raw_bmp, (float4)(0,0,0,0));
-//				normal.x += nm.x * 2 - 1;
-//				normal.y += nm.y * 2 - 1;
-//				if(nm.z < 0.5)
-//					nm.z = 0.5;
-//				normal.z -= (nm.z - 0.5) * 2;
+				__global t_img_info *inf = &img_info[mat->normal_map.info_index];
+				float4 nm = color_texture(objects, &mat->normal_map, normal, inf, raw_bmp, (float4)(0,0,0,0));
+				normal.x += nm.x * 2 - 1;
+				normal.y -= nm.y * 2 - 1;
+				if(nm.z < 0.5)
+					nm.z = 0.5;
+				normal.z -= (nm.z - 0.5) * 2;
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
 				cur_ray->origin = p;
 				if (cur_ray->depth >= argn->bounce_depth)

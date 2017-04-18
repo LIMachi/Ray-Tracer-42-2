@@ -54,6 +54,12 @@
 				"stretch": [1.0, 1.0],
 				"offset": [0.0, 0.0]
 			},
+			"normal_map":
+			{
+				"file": "textures/mur.bmp",
+				"stretch": [1.0, 1.0],
+				"offset": [0.0, 0.0]
+			},
 			"perturbation":
 			{
 				"normal": 1.0,
@@ -103,7 +109,12 @@
 			"position": [0, 0, 500],
 			"direction": [0, 1, 0],
 			"radius": 30,
-			"material": "red"
+			"material": "red",
+			"limit":
+			{
+				"relative": true,
+				"high": [null, 0, null]
+			}
 		},
 		{
 			"type": "paraboloid",
