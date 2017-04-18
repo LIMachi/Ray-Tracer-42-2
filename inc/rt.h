@@ -211,6 +211,7 @@ typedef struct			s_env
 	t_mouse				mouse;
 	t_point				window;
 	t_ctx_glfw			glfw;
+	int					need_reboot;
 }						t_env;
 
 typedef void			(*t_key_f)(t_env *, int);

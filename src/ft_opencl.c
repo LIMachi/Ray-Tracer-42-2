@@ -21,6 +21,10 @@ t_callback		notify(const char *errinfo, const void *private_info,
 	(void)cb;
 	(void)user_data;
 	ft_printf("Error %d (notified) : %s\n", ++errcount, errinfo);
+	if (!ft_strcmp("[CL_INVALID_VALUE] : OpenCL Error : clEnqueueReadBuffer fai"
+			"led: unable to allocate enough temporary memory to facilitate the "
+			"data transfer", (char*)errinfo))
+		glfw_env(NULL)->need_reboot = 1;
 }
 
 cl_program		build_program(cl_context ctx, char *source_file)
