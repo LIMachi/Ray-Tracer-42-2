@@ -77,7 +77,7 @@
 			"limit":
 			{
 				"relative": true,
-				"low": [null, 0, null]
+				"high": [null, 0, null]
 			}
 		},
 		{
@@ -113,7 +113,7 @@
 			"limit":
 			{
 				"relative": true,
-				"high": [null, 0, null]
+				"high": [null, 10, null]
 			}
 		},
 		{

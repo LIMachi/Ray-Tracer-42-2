@@ -83,6 +83,12 @@ void	rt(t_env *e)
 		display_fps(e, e->glfw.win, e->glfw.win_name);
 		glfwPollEvents();
 		handle_keys(e->glfw.keys, e);
+		if (e->need_reboot)
+		{
+			e->need_reboot = 0;
+			ft_printf("Rebooting application...\n");
+			load_file(e, e->cmd.scene);
+		}
 		if (e->glfw.focus)
 			opencl_render(e);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
