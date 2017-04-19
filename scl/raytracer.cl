@@ -403,9 +403,9 @@ int		solve_quadratic(float a, float b, float c, float *dist)
 	float x1 = (b - delta) / (2.0f * a);
 	float x2 = (b + delta) / (2.0f * a);
 
-	if (x1 < EPSILON) // use x2 if x1 is negative
+	if (x1 < 0.01f) // use x2 if x1 is negative
 	{
-		if (x2 < EPSILON) // both are negative
+		if (x2 < 0.01f) // both are negative
 			return (0);
 		else if (x2 < *dist) // x2 positive
 		{
@@ -458,7 +458,7 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 			break;
 	}
 	float4 point = ray->direction * *dist + ray->origin;
-		if(limit(obj, point))
+		if(limit(obj, point) && i)
 		{
 			ray->origin = point;
 			switch (obj->type)
@@ -480,10 +480,33 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 					break;
 			}
 			point += ray->direction * *dist;
-			if(!limit(obj, point) && *dist < d)
+			if(!limit(obj, point))
 			{
 				ray->origin = raytmp;
-				point -= ray->origin;
+					if(!i)
+					{
+						*dist = d;
+						switch (obj->type)
+						{
+							case SPHERE:
+								i = sphere_intersect(obj, ray, dist);
+								break;
+							case PLANE:
+								i = plane_intersect(obj, ray, dist);
+								break;
+							case CONE:
+								i = cone_intersect(obj, ray, dist);
+								break;
+							case CYLINDER:
+								i = cylinder_intersect(obj, ray, dist);
+								break;
+							case PARABOLOID:
+							i = paraboloid_intersect(obj, ray, dist);
+								break;
+						return(i);
+						}
+					}
+				point -= raytmp;
 				*dist = LENGTH(point);
 				return(-1);
 			}
@@ -926,7 +949,11 @@ __kernel void	rt_kernel(
 						PUSH_RAY(queue, r_ray, queue_end);
 				}
 			}
-			color += clamp(queue[0].color, 0.0f, 1.0f);
+			while(cur_ray_id >= 0)
+			{
+			color += clamp(queue[cur_ray_id].color * queue[cur_ray_id].weight, 0.0f, 1.0f);
+			cur_ray_id--;
+			}
 		}
 	}
 	
