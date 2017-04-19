@@ -764,12 +764,12 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 						{
 							tmray.origin += dist * tmray.direction;
 							eta = objects[cur].material.refraction
-							
-							
+
+
 						}
 						int colid = intersect
-						
-						
+
+
 					}*/
 					if ( s < EPSILON)
 						break ;
@@ -777,10 +777,6 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 			}
 		}
 		float4 col = mat->color;
-<<<<<<< HEAD
-
-=======
->>>>>>> 03d41864e294beaacb8de01645d3e6d3b5b229f5
 		if (mat->texture.info_index != ULONG_MAX)
 		{
 			__global t_img_info *info = &img_info[mat->texture.info_index];
