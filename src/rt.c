@@ -45,6 +45,7 @@ void	test_file_update(t_env *e)
 	if (tstatus.st_mtimespec.tv_sec != e->cmd.status.st_mtimespec.tv_sec)
 	{
 		load_file(e, e->cmd.scene);
+		e->keys.updated = 1;
 		opencl_render(e);
 	}
 }

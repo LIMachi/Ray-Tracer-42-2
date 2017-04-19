@@ -15,7 +15,7 @@
 static void		conjug(t_quaternion q, t_vector *d, t_vector *r)
 {
 	ft_quat_conjugation(q, d);
-	ft_quat_conjugation(q, r);	
+	ft_quat_conjugation(q, r);
 }
 
 void			rotate(t_env *e, double x, double y, double z)
@@ -27,7 +27,7 @@ void			rotate(t_env *e, double x, double y, double z)
 	d = cl_float4_to_vector(e->cam.dir);
 	r = cl_float4_to_vector(e->cam.right);
 	u = cl_float4_to_vector(e->cam.up);
-	
+
 	if (x)
 		conjug(ft_quat_rotation_build(x * ROT, u), &d, &r);
 	if (y)
@@ -90,5 +90,6 @@ void			mouse_callback(GLFWwindow *window, double x, double y)
 		mouse_drag(e, x, y);
 	e->mouse.x = x;
 	e->mouse.y = y;
-	e->argn.moving = MOVING;
+	if (!e->keys.cursor || e->mouse.is_select)
+		e->argn.moving = MOVING;
 }

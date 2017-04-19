@@ -38,3 +38,6 @@
 auteur
 log.txt
 ./rt
+
+.DS_Store
+rt

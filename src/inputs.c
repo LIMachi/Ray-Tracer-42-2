@@ -62,7 +62,7 @@ static void		move(t_env *e, int keycode)
 void			rotate_(t_env *e, int keycode)
 {
 	e->argn.moving = MOVING;
-	rotate(e, 0, 0, 200 * (keycode == GLFW_KEY_Q ? -ROT : ROT));
+	rotate(e, 0, 0, 800 * (keycode == GLFW_KEY_Q ? ROT : -ROT));
 }
 
 void			set_keys(t_env *e)
