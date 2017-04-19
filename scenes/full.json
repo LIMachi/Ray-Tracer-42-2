@@ -1,7 +1,7 @@
 {
 	"render_options":
 	{
-		"size": [1280, 720],
+		"size": [2560, 1440],
 		"lighting":
 		{
 			"ambient": 0.05,
@@ -22,7 +22,7 @@
 		"direction": [0, 0, 1],
 		"up": [0, 1, 0],
 		"right": [1, 0, 0],
-		"vp_size": [1280, 720],
+		"vp_size": [2560, 1440],
 		"dist": 800
 	},
 	"materials":

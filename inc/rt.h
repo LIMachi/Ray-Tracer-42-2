@@ -144,6 +144,7 @@ typedef struct			s_argn
 	t_texture			skybox;
 	cl_int				nb_info;
 	cl_int				nb_materials;
+	cl_int				moving;
 }						t_argn;
 
 typedef struct			s_mouse
@@ -260,8 +261,8 @@ void					mouse_button_callback(GLFWwindow *window,
 void					mouse_off(t_env *e, int key);
 
 void					toggle_cursor(t_env *e, int keycode);
-
 void					rotate_cam(t_camera *cam, double angle, t_vector axe);
+void					rotate(t_env *e, double x, double y, double z);
 t_vector				cl_float4_to_vector(cl_float4 v);
 cl_float4				vector_to_cl_float4(t_vector v);
 void					calc_vpul(t_camera *cam);
@@ -305,6 +306,7 @@ void					filter_sepia(t_env *e, int keycode);
 void					filter_cartoon(t_env *e, int keycode);
 void					filter_gray(t_env *e, int keycode);
 void					filter_none(t_env *e, int keycode);
+void					increase(t_env *e, int keycode);
 
 void					delete_rt_environement(t_env *e);
 

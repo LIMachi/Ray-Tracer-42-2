@@ -109,6 +109,7 @@ typedef struct		s_argn
 	t_texture		skybox;
 	int				nb_info;
 	int				nb_materials;
+	int				moving;
 }					t_argn;
 
 typedef struct		s_ray
@@ -808,43 +809,42 @@ __kernel void	rt_kernel(
 		__global t_material		*materials,
 		__global int			*raw_bmp)
 {
-	size_t i = get_global_id(0);
-	size_t j = get_global_id(1);
-	size_t l = get_global_size(0);
+	size_t i = get_global_id(0) * (1 + argn->moving);
+	size_t j = get_global_id(1) * (1 + argn->moving);
+	size_t l = get_global_size(0) * (1 + argn->moving);
 
-	if (i >= (size_t)argn->screen_size.x * (size_t)argn->screen_size.y)
-		return ;
-
-	float x = (float)i;
-	float y = (float)j;
+	float d = (float)argn->moving;
+	float x = (float)i + 0.5f * d;
+	float y = (float)j + 0.5f * d;
 	t_ray 		*cur_ray;
 	t_ray		queue[MAX_RAY_COUNT];
 	int			queue_end = 0;
 
 	int aa_x;
 	int aa_y;
+	int am = argn->moving ? 1 : argn->antialias;
 	int count = 0;
+	t_ray ray;
 
 	float4 color = (float4)(0, 0, 0, 0);
 
-	for (aa_y = 0; aa_y < argn->antialias; aa_y++)
+	for (aa_y = 0; aa_y < am; aa_y++)
 	{
-		for (aa_x = 0; aa_x < argn->antialias; aa_x++)
+		for (aa_x = 0; aa_x < am; aa_x++)
 		{
 			float2 aa;
 			for (int i = 0; i < MAX_RAY_COUNT; i++) {
 				queue[i].weight = 0;
 			}
-			aa.x = x + (aa_x - argn->antialias / 2.0f) / argn->antialias;
-			aa.y = y + (aa_y - argn->antialias / 2.0f) / argn->antialias;
-			t_ray ray;
+			aa.x = x + (aa_x - am / 2.0f) / am;
+			aa.y = y + (aa_y - am / 2.0f) / am;
 			ray.direction = NORMALIZE(cam->vpul + NORMALIZE(cam->right) * (aa.x) - NORMALIZE(cam->up) * (aa.y));
 			ray.origin = cam->pos;
 			ray.dist = MAXFLOAT;
 			ray.type = ORIGIN;
 			ray.depth = 0;
 			ray.weight = 1.0f;
-			ray.color = color;
+			ray.color = (float4)0.0f;
 			ray.node = -1;
 			int cur_ray_id = 0;
 			count++;
@@ -856,7 +856,9 @@ __kernel void	rt_kernel(
 				int l_id = -1;
 				int cur_id = raytrace(cur_ray, argn, objects, lights, &result, &l_id);
 				if (cur_ray->depth == 0)
-					prim_map[i + l * j] = l_id + 1;
+					for (int ki = 0; ki <= argn->moving; ki++)
+						for (int kj = 0; kj <= argn->moving; kj++)
+							prim_map[i + ki + l * (j + kj)] = l_id + 1;
 				if (!result)
 				{
 					cur_ray->color += skybox(&argn->skybox, *cur_ray, raw_bmp, img_info);
@@ -874,7 +876,7 @@ __kernel void	rt_kernel(
 //				normal.z -= (nm.z - 0.5) * 2;
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
 				cur_ray->origin = p;
-				if (cur_ray->depth >= argn->bounce_depth)
+				if (cur_ray->depth >= argn->bounce_depth || argn->moving)
 					continue;
 				float lum = mat->reflection;
 				float c0i = DOT(normal, -cur_ray->direction);
@@ -920,11 +922,14 @@ __kernel void	rt_kernel(
 						PUSH_RAY(queue, r_ray, queue_end);
 				}
 			}
+			color += clamp(queue[0].color, 0.0f, 1.0f);
 		}
 	}
-	color = clamp(queue[0].color, 0.0f, 1.0f);
+	
 	color /= count;
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);
-	write_imagef(out, (int2)(i, j), (float4)(color.xyz, 1.0));
+	for (int ki = 0; ki <= argn->moving; ki++)
+		for (int kj = 0; kj <= argn->moving; kj++)
+			write_imagef(out, (int2)(i + ki, j + kj), (float4)(color.xyz, 1.0));
 }

@@ -76,13 +76,16 @@ void	display_fps(t_env *e, GLFWwindow *win, char *name)
 
 void	rt(t_env *e)
 {
-	e->keys.updated = 1;
+	e->keys.updated = 0;
 	glfwGetCursorPos(e->glfw.win, &e->mouse.x, &e->mouse.y);
 	while (!glfwWindowShouldClose(e->glfw.win))
 	{
 		display_fps(e, e->glfw.win, e->glfw.win_name);
+		e->argn.moving = 0;
 		glfwPollEvents();
 		handle_keys(e->glfw.keys, e);
+		if (e->argn.moving)
+			e->argn.antialias = 1;
 		if (e->need_reboot)
 		{
 			e->need_reboot = 0;
