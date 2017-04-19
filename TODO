@@ -1,0 +1,4 @@
+WIP	-output of a json file of the current state of the scene
+WIP	-get hit and repeat of right clic for rotating objects
+	-add some rotation vector to objects
+	-verify all scene's validity
