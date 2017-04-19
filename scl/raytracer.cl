@@ -483,29 +483,6 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 			if(!limit(obj, point))
 			{
 				ray->origin = raytmp;
-					if(!i)
-					{
-						*dist = d;
-						switch (obj->type)
-						{
-							case SPHERE:
-								i = sphere_intersect(obj, ray, dist);
-								break;
-							case PLANE:
-								i = plane_intersect(obj, ray, dist);
-								break;
-							case CONE:
-								i = cone_intersect(obj, ray, dist);
-								break;
-							case CYLINDER:
-								i = cylinder_intersect(obj, ray, dist);
-								break;
-							case PARABOLOID:
-							i = paraboloid_intersect(obj, ray, dist);
-								break;
-						return(i);
-						}
-					}
 				point -= raytmp;
 				*dist = LENGTH(point);
 				return(-1);
@@ -517,8 +494,6 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 				return(0);
 			}
 	}
-//		else
-//			return(0);
 	return (i);
 }
 
@@ -559,11 +534,11 @@ inline float4	get_normal(__global t_primitive *obj,
 	}
 
 //	printf("%f ", mat->perturbation.normal);
-	if (mat->perturbation.normal > EPSILON && mat->normal_map.info_index == ULONG_MAX)
+	if (mat->perturbation.normal > EPSILON)
 	{
 		float len = LENGTH(n);
-		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
-//		n.y = 10 * sin(n.y);
+//		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
+		n.x = 20 * sin(n.y);
 	}
 //	float4	nm = n;
 //	if (mat->normal_map.info_index != ULONG_MAX)
@@ -739,15 +714,16 @@ inline float4	input_ray(float4 dir, float4 norm)
 
 
 float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global t_primitive *obj, __global t_primitive *objects,
-	__global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn, float4 p)
+	__global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn, float4 p,
+	__global t_material *materials)
 {
 	float4	c = (float4)0;
-	int shadow = 0;
 	t_ray	ray_l;
 	float dist = MAXFLOAT;
 
 	for (int l_cur = 0; l_cur < argn->nb_lights; l_cur++)
 	{
+		float	s = 1.0f;
 		float	dist_l;
 		t_light	light = lights[l_cur];
 		if(light.position.w < 0.9)
@@ -762,19 +738,49 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		}
 		ray_l.direction = NORMALIZE(ray_l.direction);
 		ray_l.origin = p + SHADOW_E * ray_l.direction;
-		shadow = 0;
 		for (int cur = 0; cur < argn->nb_objects; cur++)
 		{
-			if ((shadow = intersect(&objects[cur], &ray_l, &dist)) != 0)
+			int ret;
+			if ((ret = intersect(&objects[cur], &ray_l, &dist)) != 0)
 			{
 				if (dist > EPSILON && dist < dist_l)
-					break ;
-//				else
-//					shadow = 0;
+				{
+					s *= materials[objects[ret].material].reflection != 0;
+/*					if(objects[cur].material.transparency > EPSILON)
+					{
+						t_ray tmray;
+						float4 hit = ray_l.direction * dist + ray_l.origin;
+						tmray.origin = hit;
+						float eta = 1.0 / objects[cur].material.refraction;
+						float e2 = eta * eta;
+						float4 normal = get_normal(&objects[cur], &objects[cur].material, &ray_l, hit, raw_bmp, img_info);
+						float c0i = dot(normal, -ray_l.direction);
+						e2 = 1 - e2 * (1 - c0i * c0i);
+						if (e2 < 0)
+							break;
+						e2 = eta * c0i - sqrt(e2);
+						tmray.direction = normalize(eta * ray_l.direction + e2 * normal);
+						if (intersect(&objects[cur], &tmray, &dist) == -1)
+						{
+							tmray.origin += dist * tmray.direction;
+							eta = objects[cur].material.refraction
+							
+							
+						}
+						int colid = intersect
+						
+						
+					}*/
+					if ( s < EPSILON)
+						break ;
+				}
 			}
 		}
 		float4 col = mat->color;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 03d41864e294beaacb8de01645d3e6d3b5b229f5
 		if (mat->texture.info_index != ULONG_MAX)
 		{
 			__global t_img_info *info = &img_info[mat->texture.info_index];
@@ -783,17 +789,17 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		}
 		else
 			c += light.color * col * argn->ambient;
-		if (shadow)
+		if (s < EPSILON)
 			continue ;
 		float scale;
 		if ((scale = DOT(ray_l.direction, normal)) > 0 && mat->texture.info_index == ULONG_MAX)
-			c += light.color * mat->diffuse * scale;
+			c += s * light.color * mat->diffuse * scale;
 		else if (scale > 0)
-			c += light.color * col * scale;
+			c += s * light.color * col * scale;
 //		float4 ir = NORMALIZE(2 * scale * normal - ray_l.direction);
 		float4 ir = (ray_l.direction - ray->direction) / 2;
 		if ((scale = DOT(ir, normal)))
-			c += light.color * mat->specular * pow(scale, mat->brightness) > 0 ? c : 0;
+			c += s * light.color * mat->specular * pow(scale, mat->brightness) > 0 ? c : 0;
 	}
 	c = clamp(c / (float)argn->nb_lights, 0.0f, 1.0f);
 	c = color_perturbation(c, obj, mat->perturbation.color, normal);
@@ -891,7 +897,7 @@ __kernel void	rt_kernel(
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
 				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
-				if(mat->normal_map.info_index != -1)
+				if(mat->normal_map.info_index != ULONG_MAX)
 				{
 				__global t_img_info *info = &img_info[mat->normal_map.info_index];
 				float4 nm = color_texture(&objects[cur_id], &mat->normal_map, normal, info, raw_bmp, (float4)(0,0,0,0));
@@ -902,7 +908,7 @@ __kernel void	rt_kernel(
 				normal.z += ((nm.z - 0.5) * 2) - 1;
 				normal = NORMALIZE(normal);
 				}
-				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
+				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p, materials);
 				cur_ray->origin = p;
 				if (cur_ray->depth >= argn->bounce_depth || argn->moving)
 					continue;
@@ -937,7 +943,7 @@ __kernel void	rt_kernel(
 					float	e2 = eta * eta;
 					e2 = 1 - e2 * (1 - c0i * c0i);
 					if (e2 < 0)
-						continue ;
+						continue;
 					e2 = eta * c0i - sqrt(e2);
 					float4	refracted = NORMALIZE(eta * cur_ray->direction + e2 * normal);
 					r_ray.dist = MAXFLOAT;
@@ -950,11 +956,12 @@ __kernel void	rt_kernel(
 						PUSH_RAY(queue, r_ray, queue_end);
 				}
 			}
-			while(cur_ray_id >= 0)
+			while(--cur_ray_id)
 			{
-			color += clamp(queue[cur_ray_id].color * queue[cur_ray_id].weight, 0.0f, 1.0f);
-			cur_ray_id--;
+				queue[cur_ray_id].color = clamp(queue[cur_ray_id].color, 0.0f, 1.0f);
+				queue[queue[cur_ray_id].node].color *= (1.0f + queue[cur_ray_id].color * queue[cur_ray_id].weight);
 			}
+			color += queue[0].color;
 		}
 	}
 
