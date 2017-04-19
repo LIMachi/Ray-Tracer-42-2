@@ -23,11 +23,24 @@ void		process_ker_ret(t_env *e, t_cl_param *params, int n)
 
 void		opencl_render(t_env *e)
 {
-	glFinish();
-	clEnqueueAcquireGLObjects(e->glfw.cl_ctx.queue, 1,
-		&e->glfw.cl_tex, 0, 0, NULL);
-	run_kernel(e, &e->glfw.cl_ctx,
-		e->glfw.render, (t_f_cl_proc)process_ker_ret);
+	size_t	g[2];
+
+	if (e->argn.moving != e->keys.updated)
+	{
+		g[0] = e->window.x / (1 + e->argn.moving);
+		g[1] = e->window.y / (1 + e->argn.moving);
+		e->glfw.render->params[2].needs_update = 1;
+		cl_set_kernel_dims(e->glfw.render, g, NULL);
+	}
+	if (e->keys.updated)
+	{
+		glFinish();
+		clEnqueueAcquireGLObjects(e->glfw.cl_ctx.queue, 1,
+			&e->glfw.cl_tex, 0, 0, NULL);
+		run_kernel(e, &e->glfw.cl_ctx,
+			e->glfw.render, (t_f_cl_proc)process_ker_ret);
+	}
+	e->keys.updated = e->argn.moving;
 }
 
 void		handle_keys(t_key *keys, t_env *e)

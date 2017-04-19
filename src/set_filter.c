@@ -39,3 +39,10 @@ void		filter_none(t_env *e, int keycode)
 	e->glfw.render->params[2].needs_update = 1;
 	e->argn.filter = 0;
 }
+
+void		increase(t_env *e, int keycode)
+{
+	(void)keycode;
+	e->glfw.render->params[2].needs_update = 1;
+	e->argn.antialias++;
+}

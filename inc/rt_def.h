@@ -19,8 +19,9 @@
 # define REPEAT			GLFW_REPEAT
 # define RELEASE		GLFW_RELEASE
 
-# define SPEED			0.5
+# define SPEED			1.0
 # define ROT			0.005
 # define SCROLL			0.02
+# define MOVING			3
 
 #endif

@@ -56,6 +56,13 @@ static void		move(t_env *e, int keycode)
 	e->cam.pos = vector_to_cl_float4(ft_vector_add(
 		cl_float4_to_vector(e->cam.pos),
 		ft_vector_scale(v, SPEED * 60.0f / e->glfw.fps)));
+	e->argn.moving = MOVING;
+}
+
+void			rotate_(t_env *e, int keycode)
+{
+	e->argn.moving = MOVING;
+	rotate(e, 0, 0, 200 * (keycode == GLFW_KEY_Q ? -ROT : ROT));
 }
 
 void			set_keys(t_env *e)
@@ -67,11 +74,14 @@ void			set_keys(t_env *e)
 	add_key(e, GLFW_KEY_SPACE, NULL, move);
 	add_key(e, GLFW_KEY_LEFT_SHIFT, NULL, move);
 	add_key(e, GLFW_KEY_W, NULL, move);
+	add_key(e, GLFW_KEY_Q, NULL, rotate_);
+	add_key(e, GLFW_KEY_E, NULL, rotate_);
 	add_key(e, GLFW_KEY_LEFT_ALT, toggle_cursor, NULL);
 	add_key(e, GLFW_KEY_1, filter_sepia, NULL);
 	add_key(e, GLFW_KEY_2, filter_gray, NULL);
 	add_key(e, GLFW_KEY_3, filter_cartoon, NULL);
 	add_key(e, GLFW_KEY_4, filter_none, NULL);
+	add_key(e, GLFW_KEY_I, increase, NULL);
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_LEFT, mouse_click, mouse_off);
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_RIGHT, mouse_click, mouse_off);
 }

@@ -109,6 +109,7 @@ typedef struct		s_argn
 	t_texture		skybox;
 	int				nb_info;
 	int				nb_materials;
+	int				moving;
 }					t_argn;
 
 typedef struct		s_ray
@@ -353,28 +354,28 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float a = DOT(dir, dir) - (r * dd * dd);
 	float b = 2.0f * (DOT(dir, pos) - (r * dd * xv));
 	float c = DOT(pos, pos) - (r * xv * xv);
-	if(quadratic(a, b, c , &t))
-	{
-		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
-		{
-			if (t.x < 0.01)
-				*dist = 0.01;
-			else
-				*dist = t.x;
-			return (1);
-		}
-		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
-		{
-			if (t.y < 0.01)
-				*dist = 0.01;
-			else
-				*dist = t.y;
-			return (-1);
-		}
-	}
-	return (0);
+//	if(quadratic(a, b, c , &t))
+//	{
+//		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+//		{
+//			if (t.x < 0.01)
+//				*dist = 0.01;
+//			else
+//				*dist = t.x;
+//			return (-1);
+//		}
+//		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+//		{
+//			if (t.y < 0.01)
+//				*dist = 0.01;
+//			else
+//				*dist = t.y;
+//			return (1);
+//		}
+//	}
+//	return (0);
 
-//	return solve_quadratic(a, b, c, dist);
+	return solve_quadratic(a, b, c, dist);
 }
 
 int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
@@ -479,11 +480,11 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 					break;
 			}
 			point += ray->direction * *dist;
-			if(!limit(obj, point))
+			if(!limit(obj, point) && *dist < d)
 			{
 				ray->origin = raytmp;
 				point -= ray->origin;
-				*dist = *dist;
+				*dist = LENGTH(point);
 				return(-1);
 			}
 			else
@@ -808,43 +809,42 @@ __kernel void	rt_kernel(
 		__global t_material		*materials,
 		__global int			*raw_bmp)
 {
-	size_t i = get_global_id(0);
-	size_t j = get_global_id(1);
-	size_t l = get_global_size(0);
+	size_t i = get_global_id(0) * (1 + argn->moving);
+	size_t j = get_global_id(1) * (1 + argn->moving);
+	size_t l = get_global_size(0) * (1 + argn->moving);
 
-	if (i >= (size_t)argn->screen_size.x * (size_t)argn->screen_size.y)
-		return ;
-
-	float x = (float)i;
-	float y = (float)j;
+	float d = (float)argn->moving;
+	float x = (float)i + 0.5f * d;
+	float y = (float)j + 0.5f * d;
 	t_ray 		*cur_ray;
 	t_ray		queue[MAX_RAY_COUNT];
 	int			queue_end = 0;
 
 	int aa_x;
 	int aa_y;
+	int am = argn->moving ? 1 : argn->antialias;
 	int count = 0;
+	t_ray ray;
 
 	float4 color = (float4)(0, 0, 0, 0);
 
-	for (aa_y = 0; aa_y < argn->antialias; aa_y++)
+	for (aa_y = 0; aa_y < am; aa_y++)
 	{
-		for (aa_x = 0; aa_x < argn->antialias; aa_x++)
+		for (aa_x = 0; aa_x < am; aa_x++)
 		{
 			float2 aa;
 			for (int i = 0; i < MAX_RAY_COUNT; i++) {
 				queue[i].weight = 0;
 			}
-			aa.x = x + (aa_x - argn->antialias / 2.0f) / argn->antialias;
-			aa.y = y + (aa_y - argn->antialias / 2.0f) / argn->antialias;
-			t_ray ray;
+			aa.x = x + (aa_x - am / 2.0f) / am;
+			aa.y = y + (aa_y - am / 2.0f) / am;
 			ray.direction = NORMALIZE(cam->vpul + NORMALIZE(cam->right) * (aa.x) - NORMALIZE(cam->up) * (aa.y));
 			ray.origin = cam->pos;
 			ray.dist = MAXFLOAT;
 			ray.type = ORIGIN;
 			ray.depth = 0;
 			ray.weight = 1.0f;
-			ray.color = color;
+			ray.color = (float4)0.0f;
 			ray.node = -1;
 			int cur_ray_id = 0;
 			count++;
@@ -856,7 +856,9 @@ __kernel void	rt_kernel(
 				int l_id = -1;
 				int cur_id = raytrace(cur_ray, argn, objects, lights, &result, &l_id);
 				if (cur_ray->depth == 0)
-					prim_map[i + l * j] = l_id + 1;
+					for (int ki = 0; ki <= argn->moving; ki++)
+						for (int kj = 0; kj <= argn->moving; kj++)
+							prim_map[i + ki + l * (j + kj)] = l_id + 1;
 				if (!result)
 				{
 					cur_ray->color += skybox(&argn->skybox, *cur_ray, raw_bmp, img_info);
@@ -865,16 +867,20 @@ __kernel void	rt_kernel(
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
 				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
-//				__global t_img_info *inf = &img_info[mat->texture.info_index];
-//				float4 nm = color_texture(objects, &mat->texture, normal, inf, raw_bmp, (float4)(0,0,0,0));
-//				normal.x += nm.x * 2 - 1;
-//				normal.y += nm.y * 2 - 1;
-//				if(nm.z < 0.5)
-//					nm.z = 0.5;
-//				normal.z -= (nm.z - 0.5) * 2;
+				if(mat->normal_map.info_index != -1)
+				{
+				__global t_img_info *inf = &img_info[mat->normal_map.info_index];
+				float4 nm = color_texture(objects, &mat->normal_map, normal, inf, raw_bmp, (float4)(0,0,0,0));
+				normal.x += nm.x * 2 - 1;
+				normal.y -= nm.y * 2 - 1;
+				if(nm.z < 0.5)
+					nm.z = 0.5;
+				normal.z += ((nm.z - 0.5) * 2) - 1;
+				normal = NORMALIZE(normal);
+				}
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p);
 				cur_ray->origin = p;
-				if (cur_ray->depth >= argn->bounce_depth)
+				if (cur_ray->depth >= argn->bounce_depth || argn->moving)
 					continue;
 				float lum = mat->reflection;
 				float c0i = DOT(normal, -cur_ray->direction);
@@ -920,11 +926,14 @@ __kernel void	rt_kernel(
 						PUSH_RAY(queue, r_ray, queue_end);
 				}
 			}
+			color += clamp(queue[0].color, 0.0f, 1.0f);
 		}
 	}
-	color = clamp(queue[0].color, 0.0f, 1.0f);
+	
 	color /= count;
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);
-	write_imagef(out, (int2)(i, j), (float4)(color.xyz, 1.0));
+	for (int ki = 0; ki <= argn->moving; ki++)
+		for (int kj = 0; kj <= argn->moving; kj++)
+			write_imagef(out, (int2)(i + ki, j + kj), (float4)(color.xyz, 1.0));
 }

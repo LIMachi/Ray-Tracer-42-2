@@ -12,9 +12,14 @@
 
 #include <rt.h>
 
-static void		rotate(t_env *e, double x, double y)
+static void		conjug(t_quaternion q, t_vector *d, t_vector *r)
 {
-	t_quaternion	q;
+	ft_quat_conjugation(q, d);
+	ft_quat_conjugation(q, r);	
+}
+
+void			rotate(t_env *e, double x, double y, double z)
+{
 	t_vector		d;
 	t_vector		r;
 	t_vector		u;
@@ -22,18 +27,13 @@ static void		rotate(t_env *e, double x, double y)
 	d = cl_float4_to_vector(e->cam.dir);
 	r = cl_float4_to_vector(e->cam.right);
 	u = cl_float4_to_vector(e->cam.up);
+	
 	if (x)
-	{
-		q = ft_quat_rotation_build(x * ROT, u);
-		ft_quat_conjugation(q, &d);
-		ft_quat_conjugation(q, &r);
-	}
+		conjug(ft_quat_rotation_build(x * ROT, u), &d, &r);
 	if (y)
-	{
-		q = ft_quat_rotation_build(y * ROT, r);
-		ft_quat_conjugation(q, &d);
-		ft_quat_conjugation(q, &r);
-	}
+		conjug(ft_quat_rotation_build(y * ROT, r), &d, &r);
+	if (z)
+		conjug(ft_quat_rotation_build(z * ROT, d), &d, &r);
 	e->cam.dir = vector_to_cl_float4(d);
 	e->cam.right = vector_to_cl_float4(r);
 	u = ft_vector_normalize(ft_vector_cross_product(d, r));
@@ -85,9 +85,10 @@ void			mouse_callback(GLFWwindow *window, double x, double y)
 	e = glfw_env(NULL);
 	(void)window;
 	if (!e->mouse.is_select && !e->keys.cursor)
-		rotate(e, x - e->mouse.x, y - e->mouse.y);
+		rotate(e, x - e->mouse.x, y - e->mouse.y, 0);
 	if (e->mouse.is_select && e->keys.cursor)
 		mouse_drag(e, x, y);
 	e->mouse.x = x;
 	e->mouse.y = y;
+	e->argn.moving = MOVING;
 }
