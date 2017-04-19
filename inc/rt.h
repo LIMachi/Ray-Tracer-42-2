@@ -150,6 +150,7 @@ typedef struct			s_argn
 typedef struct			s_mouse
 {
 	int					is_select;
+	int					is_select_right;
 	double				x;
 	double				y;
 }						t_mouse;

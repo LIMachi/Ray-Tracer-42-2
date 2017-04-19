@@ -83,4 +83,5 @@ void			set_keys(t_env *e)
 	add_key(e, GLFW_KEY_4, filter_none, NULL);
 	add_key(e, GLFW_KEY_I, increase, NULL);
 	add_mouse_key(e, GLFW_MOUSE_BUTTON_LEFT, mouse_click, mouse_off);
+	add_mouse_key(e, GLFW_MOUSE_BUTTON_RIGHT, mouse_click, mouse_off);
 }

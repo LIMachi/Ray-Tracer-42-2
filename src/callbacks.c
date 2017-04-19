@@ -63,28 +63,35 @@ void		load_file(t_env *e, const char *path)
 	if (path == NULL || (fd = open(path, O_RDONLY)) == -1 ||
 		(src = ft_readfile(fd)) == NULL)
 	{
-		if (fd != -1)
-			close(fd);
+		(fd != -1) ? close(fd) : 0;
 		return ;
 	}
-	cam = e->cam;
-	tmp = ft_strdup(path);
-	delete_rt_environement(e);
-	e->cmd.scene = tmp;
-	parser(e, src);
+	if (src[0] == '{' || src[0] == '[')
+	{
+		cam = e->cam;
+		tmp = ft_strdup(path);
+		delete_rt_environement(e);
+		e->cmd.scene = tmp;
+		parser(e, src);
+		stat(e->cmd.scene, &e->cmd.status);
+		opencl_init(e, (size_t[2]){e->window.x, e->window.y});
+		e->cam = cam;
+	}
 	ft_free(src);
 	close(fd);
-	stat(e->cmd.scene, &e->cmd.status);
-	opencl_init(e, (size_t[2]){e->window.x, e->window.y});
-	e->cam = cam;
 }
 
 void		file_drop_callback(GLFWwindow *win, int n, const char **paths)
 {
-	t_env	*e;
+	t_env		*e;
+	struct stat	st;
 
 	(void)n;
 	if (paths == NULL)
+		return ;
+	if (stat(*paths, &st) == -1)
+		return ;
+	if (!(st.st_mode & S_IFREG))
 		return ;
 	e = glfw_env(NULL);
 	load_file(e, *paths);
