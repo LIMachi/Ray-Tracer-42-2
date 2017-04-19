@@ -8,7 +8,7 @@
 			"direct": 1.0
 		},
 		"antialias": 1,
-		"bounce_depth": 4,
+		"bounce_depth": 8,
 		"filter": "none",
 		"stereoscopy": true,
 		"skybox":
@@ -32,12 +32,12 @@
 			"color": [0.3, 0, 0],
 			"diffuse": [0.5, 0.0, 0.0],
 			"specular": [0.7, 0.0, 0.0],
-			"reflection": 0.3,
-			"refraction": 1.0,
+			"reflection": 0.5,
+			"refraction": 0.0,
 			"brightness": 2.0,
 			"perturbation":
 			{
-				"normal": "none",
+				"normal": 1.0,
 				"color": "none"
 			}
 		},
@@ -62,7 +62,7 @@
 			},
 			"perturbation":
 			{
-				"normal": 1.0,
+				"normal": "none",
 				"color": "none"
 			}
 		}
@@ -93,7 +93,7 @@
 				"perturbation":
 				{
 					"normal": "none",
-					"color": "none"
+					"color": "sine"
 				}
 			}
 		},
@@ -109,7 +109,14 @@
 			"position": [0, 0, 500],
 			"direction": [0, 1, 0],
 			"radius": 30,
-			"material": "red",
+			"material":
+			{
+				"color": [0.5, 0.5, 0.5],
+				"diffuse": [0.5, 0.7, 0.4],
+				"specular": [0.3, 0.4, 0.3],
+				"reflection": 0.8,
+				"refraction": 1.0
+			},
 			"limit":
 			{
 				"relative": true,
