@@ -10,7 +10,7 @@
 		"antialias": 1,
 		"bounce_depth": 2,
 		"filter": "none",
-		"stereoscopy": true,
+		"stereoscopy": false,
 		"skybox":
 		{
 			"file": "textures/red-sky.bmp"
@@ -29,10 +29,10 @@
 	{
 		"red":
 		{
-			"color": [1, 0, 0.4],
-			"diffuse": 1.0,
-			"specular": 1.0,
-			"reflection": 1.0,
+			"color": [1, 0.2, 0.4],
+			"diffuse": 0.7,
+			"specular": 0.7,
+			"reflection": 0.5,
 			"perturbation":
 			{
 				"normal": "none",
@@ -58,7 +58,7 @@
 					"color": "none"
 				}
 			}
-		}/*,
+		},
 		{
 			"type": "paraboloid",
 			"position": [0, 0, -50],
@@ -170,10 +170,10 @@
 			"direction": [0, -1, 0],
 			"radius": 0.21,
 			"material": "red"
-		}*/
+		}
 	],
 	"lights":
 	[
-		{ "position": [0, 100000, 0], "color": [10, 10, 10] }
+		{ "position": [0, 100000, 0, false], "color": [2, 2, 1] }
 	]
 }

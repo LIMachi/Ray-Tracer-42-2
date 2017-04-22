@@ -5,7 +5,11 @@
 		"lighting":
 		{
 			"ambient": 0.0
-		}
+		},
+		"antialias": 1,
+		"bounce_depth": 4,
+		"filter": "none",
+		"stereoscopy": false
 	},
 	"camera":
 	{
@@ -21,14 +25,15 @@
 		"red":
 		{
 			"color": [1, 1, 1],
-			"diffuse": 1.0,
-			"specular": 1.0
+			"diffuse": [1, 0, 0],
+			"specular": [0.5, 0.0, 0.0],
+			"reflection": 0.0
 		},
 		"pp":
 		{
 			"color": [1, 1, 1],
-			"diffuse": 1.0,
-			"specular": 1.0,
+			"diffuse": [1, 1, 1],
+			"specular": [0.0, 0.0, 0.0],
 			"reflection": 1.0
 		}
 	},
@@ -79,11 +84,11 @@
 	],
 	"lights":
 	[
-		{ "position": [30, 0, 0], "color": [0, 0, 2] },
-		{ "position": [0, 30, 0], "color": [2, 0, 0] },
-		{ "position": [0, 0, 30], "color": [0, 2, 0] },
-		{ "position": [0, 0, -30], "color": [0, 2, 2] },
-		{ "position": [0, -30, 0], "color": [2, 0, 2] },
-		{ "position": [-30, 0, 0], "color": [2, 2, 0] }
+		{ "position": [30, 0, 0, false], "color": [0, 0, 1] },
+		{ "position": [0, 30, 0, false], "color": [1, 0, 0] },
+		{ "position": [0, 0, 30, false], "color": [0, 1, 0] },
+		{ "position": [0, 0, -30, false], "color": [0, 1, 1] },
+		{ "position": [0, -30, 0, false], "color": [1, 0, 1] },
+		{ "position": [-30, 0, 0, false], "color": [1, 1, 0] }
 	]
 }

@@ -649,7 +649,7 @@ inline float4	get_normal(__global t_primitive *obj,
 		default:
 			return (n);
 	}
-	
+
 //	printf("%f ", mat->perturbation.normal);
 	if (mat->perturbation.normal > EPSILON)
 	{
@@ -690,7 +690,7 @@ inline float4	color_texture(__global t_primitive *prim, __global t_texture *tex,
 {
 	float2 pos = texture_map(prim, normal);
 	if (pos.x == -1)
-		return (col);
+		return (/*col*/ (float4)(1, 1, 1, 1));
 	if (tex->stretch.x != 0.0f && tex->stretch.y != 0.0f)
 		pos /= tex->stretch;
 	pos += tex->offset;
@@ -779,7 +779,7 @@ float4		get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *a
 	for (int cur_l = 0; cur_l < argn->nb_lights; cur_l++)
 	{
 		t_light light = lights[cur_l];
-		
+
 		if (argn->direct > EPSILON && light.position.w < 0.99)
 		{
 			ray_l.direction = light.position - ray->origin;
@@ -837,7 +837,7 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 	float4	c = (float4)0;
 	t_ray	ray_l;
 	float dist = MAXFLOAT;
-	
+
 	for (int l_cur = 0; l_cur < argn->nb_lights; l_cur++)
 	{
 		float	s = 1.0f;
@@ -881,12 +881,12 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 						{
 							tmray.origin += dist * tmray.direction;
 							eta = objects[cur].material.refraction
-							
-							
+
+
 						}
 						int colid = intersect
-						
-						
+
+
 					}*/
 					if ( s < EPSILON)
 						break ;
@@ -954,6 +954,7 @@ __kernel void	rt_kernel(
 	size_t i = get_global_id(0) * (1 + argn->moving);
 	size_t j = get_global_id(1) * (1 + argn->moving);
 	size_t l = get_global_size(0) * (1 + argn->moving);
+	size_t h = get_global_size(1) * (1 + argn->moving);
 
 	float d = (float)argn->moving;
 	float x = (float)i + 0.5f * d;
@@ -1011,8 +1012,8 @@ __kernel void	rt_kernel(
 				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
 				if(mat->normal_map.info_index != ULONG_MAX)
 				{
-				__global t_img_info *inf = &img_info[mat->normal_map.info_index];
-				float4 nm = color_texture(objects, &mat->normal_map, normal, inf, raw_bmp, (float4)(0,0,0,0));
+				__global t_img_info *info = &img_info[mat->normal_map.info_index];
+				float4 nm = color_texture(&objects[cur_id], &mat->normal_map, normal, info, raw_bmp, (float4)(0,0,0,0));
 				normal.x += nm.x * 2 - 1;
 				normal.y -= nm.y * 2 - 1;
 				if(nm.z < 0.5)
@@ -1076,7 +1077,7 @@ __kernel void	rt_kernel(
 			color += queue[0].color;
 		}
 	}
-	
+
 	color /= count;
 	if (argn->filter != NONE)
 		color = color_filter(color, argn->filter);

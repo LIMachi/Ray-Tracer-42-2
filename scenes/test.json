@@ -2,10 +2,16 @@
 	"render_options":
 	{
 		"size": [1000, 1000],
+		"size": [1000, 1000],
 		"lighting":
 		{
-			"ambient": 0.05
-		}
+			"ambient": 0.2,
+			"direct": 1.0
+		},
+		"antialias": 1,
+		"bounce_depth": 2,
+		"filter": "none",
+		"stereoscopy": false
 	},
 	"camera":
 	{
