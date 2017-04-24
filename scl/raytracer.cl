@@ -76,6 +76,7 @@ typedef struct		s_limit
 	int				relative;
 	float4			high;
 	float4			low;
+	float4			rotation;
 }					t_limit;
 
 typedef struct		s_primitive
@@ -241,7 +242,7 @@ int				quadratic(float a, float b, float c, float2 *ret)
 	float	delta;
 
 	delta = b * b - (4.0f * a * c);
-	if (delta < 0.0)
+	if (delta < 0)
 		return (0);
 	ret->x = (b - sqrt(delta)) / (2.0f * a);
 	ret->y = (b + sqrt(delta)) / (2.0f * a);
@@ -253,12 +254,12 @@ int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float d = DOT(obj->direction, ray->direction);
 
 	// facing the plane (d == 0)
-	if (d > -0.01f && d < 0.01f)
-		return (0);
+//	if (d > -0.01f && d < 0.01f)
+//		return (0);
 
 	float new_dist = DOT(obj->position + EPSILON - ray->origin, obj->direction) / d;
 
-	if (new_dist > EPSILON && (new_dist < *dist || *dist < 0.01f) && !limit(obj, ray->direction * new_dist + ray->origin, (float4)(0,0,0,0)))
+	if (new_dist > EPSILON && (new_dist < *dist || *dist < 0.01f) && !limit(obj, ray->direction * new_dist + ray->origin, obj->limit.rotation))
 	{
 		*dist = new_dist;
 		return (d > 0 ? -1 : 1);
@@ -292,7 +293,7 @@ int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float c = DOT(pos, pos) - obj->radius * obj->radius;
 	if(quadratic(a, b, c, &t))
 	{
-		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.x + ray->origin, (float4)(0,0,0,0)))
+		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.x + ray->origin, obj->limit.rotation))
 		{
 			if (t.x < 0.01)
 				*dist = 0.01;
@@ -300,7 +301,7 @@ int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 				*dist = t.x;
 			return (1);
 		}
-		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.y + ray->origin, (float4)(0,0,0,0)))
+		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.y + ray->origin, obj->limit.rotation))
 		{
 			if (t.y < 0.01)
 				*dist = 0.01;
@@ -326,7 +327,7 @@ int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float c = DOT(p, p) - obj->radius * obj->radius * DOT(obj->direction, obj->direction);
 	if(quadratic(a, b, c , &t))
 	{
-		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.x + ray->origin, (float4)(0,0,0,0)))
+		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.x + ray->origin, obj->limit.rotation))
 		{
 			if (t.x < 0.01)
 				*dist = 0.01;
@@ -334,7 +335,7 @@ int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 				*dist = t.x;
 			return (1);
 		}
-		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.y + ray->origin, (float4)(0,0,0,0)))
+		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.y + ray->origin, obj->limit.rotation))
 		{
 			if (t.y < 0.01)
 				*dist = 0.01;
@@ -365,22 +366,24 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	dd = dot(d, odir);
 	x = ray->origin - obj->position;
 	float xx = dot(x, odir);
-	k = tan(obj->radius * M_PI / 180.0f);
+	k = tan(obj->radius * M_PI / 360.0f);
 	k = 1.0 + k * k;
 	a = dot(d, d) - sq(dd) * k;
-	b = 2.0 * (dot(d, x) - k * dd * xx);
+	b = (dot(d, x) - k * dd * xx) * 2.0;
 	c = dot(x, x) - sq(xx) * k;
 	if ((quadratic(a, b, c, &t)))
 	{
-		if (t.x < t.y && t.x > 0.01f && t.x < *dist)
+		if (((t.x < t.y && t.x > 0.01f && t.x < *dist) || (t.x > 0.01f && t.y < 0.01f && t.x < *dist))
+			&& !limit(obj, ray->direction * t.x + ray->origin, obj->limit.rotation))
 		{
 			*dist = t.x;
-			return (1);
+			return (-1);
 		}
-		else if (t.y > 0.01f && t.y < *dist)
+		else if (((t.y < t.x && t.y < *dist && t.y > 0.01f) || (t.y > 0.01f && t.x < 0.01f && t.y < *dist))
+			&& !limit(obj, ray->direction * t.y + ray->origin, obj->limit.rotation))
 		{
 			*dist = t.y;
-			return (-1);
+			return (1);
 		}
 	}
 	return (0);
@@ -436,26 +439,28 @@ int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	x = obj->position - ray->origin;
 	k = 2;//tan(obj->radius / 180.0f * M_PI);
 	
-//	float4 pos = ray->origin - obj->position;
-//	float4 dir = -ray->direction;
+	float4 pos = ray->origin - obj->position;
+	float4 dir = -ray->direction;
 
-//	float dv = DOT(dir, obj->direction);
-//	float xv = DOT(pos, obj->direction);
+	float dv = DOT(dir, obj->direction);
+	float xv = DOT(pos, obj->direction);
 
-	float a = dot(d, d) - sq(dot(d, odir));
-	float b = (dot(d, x) - dot(d, odir) * (dot(x, odir) + 2.0 * k)) * 2.0f;
-	float c = dot(x, x) - dot(x, odir) * (dot(x, odir) + 4 * k);
-//	float a = DOT(dir, dir) - dv * dv;
-//	float b = 2.0f * (DOT(dir, pos) - dv * (xv + 2.0f * obj->radius));
-//	float c = DOT(pos, pos) - xv * (xv + 4.0f * obj->radius);
+//	float a = dot(d, d) - sq(dot(d, odir));
+//	float b = (dot(d, x) - dot(d, odir) * (dot(x, odir) + 2.0 * k)) * 2.0f;
+//	float c = dot(x, x) - dot(x, odir) * (dot(x, odir) + 4 * k);
+	float a = DOT(dir, dir) - dv * dv;
+	float b = 2.0f * (DOT(dir, pos) - dv * (xv + 2.0f * obj->radius));
+	float c = DOT(pos, pos) - xv * (xv + 4.0f * obj->radius);
 	if ((quadratic(a, b, c, &t)))
 	{
-		if (t.x < t.y && t.x > 0.01f && (t.x < *dist || *dist <= 0.0))
+		if (t.x < t.y && t.x > 0.01f && (t.x < *dist || *dist <= 0.0)
+				&& !limit(obj, ray->direction * t.x + ray->origin, obj->limit.rotation))
 		{
 			*dist = t.x;
 			return (1);
 		}
-		else if (t.y > 0.01f && (t.y < *dist || *dist <= 0.0))
+		else if (t.y > 0.01f && (t.y < *dist || *dist <= 0.0)
+				&& !limit(obj, ray->direction * t.y + ray->origin, obj->limit.rotation))
 		{
 			*dist = t.y;
 			return (-1);
