@@ -168,6 +168,11 @@
 					"normal": "none",
 					"color": "sine"
 				}
+			},
+			"limit":
+			{
+				"relative": true,
+				"low": [0.0, 0.0, 0.0]
 			}
 		},
 		{
@@ -175,7 +180,12 @@
 			"position": [150, 0, 200],
 			"direction": [1, 1, 0],
 			"radius": 20,
-			"material": "red"
+			"material": "red",
+			"limit":
+			{
+				"relative": true,
+				"low": [null, -70.0, null]
+			}
 		},
 		{
 			"type": "cone",
@@ -187,14 +197,19 @@
 				"color": [0.5, 0.5, 0.5],
 				"diffuse": [0.5, 0.7, 0.4],
 				"specular": [0.3, 0.4, 0.3],
+<<<<<<< HEAD
 				"reflection": 0.8,
 				"refraction": 1.0,
 				"brightness": 70
+=======
+				"reflection": 0.0,
+				"refraction": 0.0
+>>>>>>> 0d9532c6825a71c152282396a3c3a6c70a6fecfa
 			},
 			"limit":
 			{
 				"relative": true,
-				"high": [null, 10, null]
+				"low": [null, -70.0, null]
 			}
 		},
 		{
@@ -202,7 +217,13 @@
 			"position": [0, 50, 600],
 			"direction": [0, -1, 0],
 			"radius": 2,
-			"material": "red"
+			"material": "red",
+			"limit":
+			{
+				"relative": true,
+				"low": [null, -70, null],
+				"rotation": [0.5, 0, 0]
+			}
 		}
 	],
 	"lights":

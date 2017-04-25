@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 16:43:49 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/24 19:06:50 by pgourran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ typedef struct			s_limit
 	cl_int				relative;
 	cl_float4			high;
 	cl_float4			low;
+	cl_float4			rotation;
 }						t_limit;
 
 typedef struct			s_primitive
