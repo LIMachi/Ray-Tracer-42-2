@@ -67,10 +67,46 @@
 			}
 		}
 	},
-	"group":
+/*	"groups":
 	{
 		"cube":
 		[
+			{
+				"type": "sphere",
+				"position": [0, 0, 200],
+				"radius": 20,
+				"material" : "cat",
+				"material":
+				{
+					"color": [0.6, 0.6, 0.6],
+					"diffuse": [0.4, 0.4, 0.4],
+					"specular": [0.4, 0.4, 0.4],
+					"brightness": 100,
+					"reflection": 0.0,
+					"texture":
+					{
+						"file": "textures/cat.bmp",
+						"stretch": [1.0, 1.0],
+						"offset": [0.0, 0.0]
+					},
+					"normal_map":
+					{
+						"file": "textures/mur.bmp",
+						"stretch": [1.0, 1.0],
+						"offset": [0.0, 0.0]
+					},
+					"perturbation":
+					{
+						"normal": "none",
+						"color": "none"
+					}
+				},
+				"limit":
+				{
+					"relative": true,
+					"high": [null, 0, null]
+				}
+			},
 			{
 				"type": "plane",
 				"position": [-1, 0, 0],
@@ -127,12 +163,12 @@
 				}
 			}
 		]
-	},
+	},*/
 	"objects":
 	[
 /*		{
 			"type": "cube",
-			"position": [0, 100, 0],
+			"position": [0, 0, 0],
 			"direction": [0, 1, 0],
 			"material": "cat"
 		},*/
@@ -141,6 +177,31 @@
 			"position": [0, 0, 200],
 			"radius": 20,
 			"material" : "cat",
+			"material":
+			{
+				"color": [0.6, 0.6, 0.6],
+				"diffuse": [0.4, 0.4, 0.4],
+				"specular": [0.4, 0.4, 0.4],
+				"brightness": 100,
+				"reflection": 0.0,
+				"texture":
+				{
+					"file": "textures/cat.bmp",
+					"stretch": [1.0, 1.0],
+					"offset": [0.0, 0.0]
+				},
+				"normal_map":
+				{
+					"file": "textures/mur.bmp",
+					"stretch": [1.0, 1.0],
+					"offset": [0.0, 0.0]
+				},
+				"perturbation":
+				{
+					"normal": "none",
+					"color": "none"
+				}
+			},
 			"limit":
 			{
 				"relative": true,

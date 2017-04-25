@@ -21,6 +21,9 @@
 # define OCL_SOURCE_PATH "./scl/raytracer.cl"
 # define NONE 0
 # define UPD 1
+# define D_POS ((cl_float4){.x = 0, .y = 0, .z = 0, .w = 0})
+# define D_DIR ((cl_float4){.x = 0, .y = 0, .z = 1, .w = 0})
+# define D_RAD 1.0f
 
 typedef enum			e_prim_type
 {
@@ -121,6 +124,7 @@ typedef struct			s_primitive
 	cl_float			radius;
 	cl_uint				material;
 	t_limit				limit;
+	cl_uint				group_id;
 }						t_primitive;
 
 typedef struct			s_light
@@ -199,6 +203,19 @@ typedef struct			s_ctx_glfw
 	int					focus;
 }						t_ctx_glfw;
 
+typedef struct			s_group_constructor
+{
+	char				*name;
+	unsigned			nb_prims;
+	t_primitive			*prim;
+}						t_group_constructor;
+
+typedef struct			s_group
+{
+	unsigned			nb_prims;
+	int					*prim_ids;
+}						t_group;
+
 typedef struct			s_env
 {
 	t_light				*lights;
@@ -214,6 +231,10 @@ typedef struct			s_env
 	t_point				window;
 	t_ctx_glfw			glfw;
 	int					need_reboot;
+	unsigned			nb_groups;
+	t_group				*group;
+	unsigned			nb_group_constructors;
+	t_group_constructor	*group_constructor;
 }						t_env;
 
 typedef void			(*t_key_f)(t_env *, int);
@@ -272,23 +293,18 @@ void					update_kernel_args(t_env *e);
 
 void					parser(t_env *e, const char *src);
 
-int						check_parsed_data(const t_argn *argn,
-										const t_camera *cam);
 void					parse_images(t_json_value *root,
 									t_textures_holder *textures_holder);
 void					parse_camera(t_json_value *c, t_camera *cam);
-void					parse_lights(t_json_value *l, t_argn *argn,
-									t_light **lights);
-void					parse_objects(t_json_value *o, t_env *e);
-void					parse_render_options(t_json_value *ro, t_argn *argn,
-											t_textures_holder *h);
-t_texture				parse_texture(t_json_value *t, t_texture default_return,
-									t_textures_holder *textures_holder);
-void					*parse_materials(t_json_value *m,
-										t_material_holder *materials,
+void					parse_lights(t_json_array *ar, t_env *e);
+void					parse_objects(t_json_array *ar, t_env *e);
+void					parse_render_options(t_json_value *ro, t_env *e);
+t_texture				parse_texture(t_json_value *t,
+									void **out_and_textures_holder);
+void					*parse_materials(t_json_object *obj, t_env *e);
+t_material				parse_material(t_json_value *m, t_material *out,
 										t_textures_holder *textures_holder);
-t_material				parse_material(t_json_value *m, t_material out,
-										t_textures_holder *textures_holder);
+void					parse_groups(t_json_value *v, t_env *e);
 t_material				default_material(void);
 t_primitive				null_primitive(void);
 
@@ -312,5 +328,13 @@ void					increase(t_env *e, int keycode);
 void					delete_rt_environement(t_env *e);
 
 void					load_file(t_env *e, const char *path);
+
+
+t_primitive				parse_object(t_json_value *o,
+	t_material_holder *materials, t_textures_holder *textures);
+void					load_group(t_json_value *o, t_env *e);
+void					clv4(t_json_value *v, cl_float4 *vector);
+void					clv2(t_json_value *v, cl_float2 *vector);
+void					clf(void *ptr, cl_float *data, t_json_value_type type);
 
 #endif

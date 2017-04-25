@@ -33,7 +33,7 @@ inline static t_json_array	*sf_json_new_array(const char *src,
 		return (ar);
 	if ((ar->value = (t_json_value**)ft_memalloc(sizeof(t_json_value*) *
 			ar->nb_values)) == NULL)
-		return (ft_free(ar));
+		return (ft_json_free_array(&ar));
 	i = 0;
 	while (i < ar->nb_values)
 	{
@@ -44,7 +44,7 @@ inline static t_json_array	*sf_json_new_array(const char *src,
 			if (src[*pos] == ',' && *pos < length)
 				++*pos;
 			else
-				return (ft_free(ar));
+				return (ft_json_free_array(&ar));
 		}
 	}
 	return (ar);

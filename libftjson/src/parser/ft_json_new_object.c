@@ -33,7 +33,7 @@ inline static t_json_object	*sf_json_new_object(const char *src,
 		return (obj);
 	if ((obj->pair = (t_json_pair**)ft_memalloc(sizeof(t_json_pair*) *
 			obj->nb_pairs)) == NULL)
-		return (ft_free(obj));
+		return (ft_json_free_object(&obj));
 	i = 0;
 	while (i < obj->nb_pairs)
 	{
@@ -44,7 +44,7 @@ inline static t_json_object	*sf_json_new_object(const char *src,
 			if (src[*pos] == ',' && *pos < length)
 				++*pos;
 			else
-				return (ft_free(obj));
+				return (ft_json_free_object(&obj));
 		}
 	}
 	return (obj);

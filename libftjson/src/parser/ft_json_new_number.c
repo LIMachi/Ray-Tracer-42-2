@@ -48,20 +48,20 @@ t_json_value		*ft_json_new_number(const char *src,
 	if (src == NULL || (src[*pos] != '+' && src[*pos] != '-' &&
 			!ft_isdigit(src[*pos])) || *pos >= length)
 		return (NULL);
-	if ((out = (t_json_value*)ft_malloc(sizeof(t_json_value))) == NULL)
+	if ((out = (t_json_value*)ft_memalloc(sizeof(t_json_value))) == NULL)
 		return (NULL);
 	if (ft_is_double(&src[*pos]))
 	{
 		out->type = number;
-		if ((out->ptr = ft_malloc(sizeof(double))) == NULL)
-			return (ft_free(out));
+		if ((out->ptr = ft_memalloc(sizeof(double))) == NULL)
+			return (ft_json_free_value(&out));
 		*(double*)out->ptr = ft_atod(&src[*pos]);
 	}
 	else
 	{
 		out->type = integer;
-		if ((out->ptr = ft_malloc(sizeof(int))) == NULL)
-			return (ft_free(out));
+		if ((out->ptr = ft_memalloc(sizeof(int))) == NULL)
+			return (ft_json_free_value(&out));
 		*(int*)out->ptr = ft_atoi_extended(&src[*pos]);
 	}
 	out->parent = parent;

@@ -21,16 +21,20 @@ typedef struct s_json_string	t_json_string;
 
 typedef enum e_json_value_type	t_json_value_type;
 
+typedef void					(*t_json_call_back)(void *, void *,
+													t_json_value_type);
+
 enum							e_json_value_type
 {
-	none = 0x00,
-	null = 0x01,
-	boolean = 0x02,
-	array = 0x04,
-	object = 0x08,
-	integer = 0x10,
-	number = 0x20,
-	string = 0x40
+	invalid = 0x00,
+	none = 0x01,
+	null = 0x02,
+	boolean = 0x04,
+	array = 0x08,
+	object = 0x10,
+	integer = 0x20,
+	number = 0x40,
+	string = 0x80
 };
 
 /*
@@ -102,6 +106,13 @@ struct							s_json_array
 	t_json_value		**value;
 };
 
+typedef struct	s_jae
+{
+	t_json_value		*node;
+	t_json_value_type	etype;
+	int					error_stack;
+}				t_jae;
+
 t_json_value					*ft_json_parse_src(const char *src);
 
 t_json_value					*ft_json_new_value(const char *src,
@@ -134,11 +145,11 @@ unsigned long					ft_json_evaluate_object_size(const char *src,
 t_json_pair						*ft_json_new_pair(const char *src,
 		const unsigned long length, unsigned long *pos, t_json_value *parent);
 
-void							ft_json_free(t_json_value *node);
-void							ft_json_free_string(t_json_string *string);
-void							ft_json_free_array(t_json_array *array);
-void							ft_json_free_object(t_json_object *object);
-void							ft_json_free_pair(t_json_pair *pair);
+void							*ft_json_free_value(t_json_value **node);
+void							*ft_json_free_string(t_json_string **string);
+void							*ft_json_free_array(t_json_array **array);
+void							*ft_json_free_object(t_json_object **object);
+void							*ft_json_free_pair(t_json_pair **pair);
 
 t_json_value					*ft_json_search_pair_in_object(
 						const t_json_value *object, const t_json_string key);
@@ -159,4 +170,15 @@ void							ft_json_print(int fd, t_json_value *root);
 void							sf_json_print(int fd, t_json_value *node,
 											int level);
 
+t_json_string 					ft_json_s_string(char *str);
+t_json_value					*ft_json_acces_value(const t_json_value *root,
+									int *error, char *form, ...);
+t_json_value					*ft_json_search_index_in_array(
+									t_json_value *value, unsigned long index);
+int								ft_json_test_type(const t_json_value *value,
+												const t_json_value_type type);
+t_json_value					*ft_json_search_pair_in_object_c_string(
+									t_json_value *v, const char *str);
+int								ft_json_accesses(const t_json_value *root,
+												const char *form, ...);
 #endif

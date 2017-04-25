@@ -13,26 +13,26 @@
 #include <libftjson.h>
 #include <libft.h>
 
-t_json_pair		*ft_json_new_pair(const char *src, const unsigned long length,
+t_json_pair			*ft_json_new_pair(const char *src,
+									const unsigned long length,
 									unsigned long *pos, t_json_value *parent)
 {
 	t_json_pair	*out;
 
 	while (ft_isspace(src[*pos]))
 		++*pos;
-	if ((out = (t_json_pair*)ft_malloc(sizeof(t_json_pair))) == NULL)
+	if ((out = (t_json_pair*)ft_memalloc(sizeof(t_json_pair))) == NULL)
 		return (out);
 	if ((out->key = ft_json_new_string(src, length, pos)) == NULL)
-		return (ft_free(out));
+		return (ft_json_free_pair(&out));
 	while (ft_isspace(src[*pos]))
 		++*pos;
-	if (src[*pos] != ':' && ft_free(out->key) == NULL)
-		return (ft_free(out));
+	if (src[*pos] != ':')
+		return (ft_json_free_pair(&out));
 	++*pos;
 	while (ft_isspace(src[*pos]))
 		++*pos;
-	if ((out->value = ft_json_new_value(src, length, pos, parent)) == NULL &&
-			ft_free(out->key) == NULL)
-		return (ft_free(out));
+	if ((out->value = ft_json_new_value(src, length, pos, parent)) == NULL)
+		ft_json_free_pair(&out);
 	return (out);
 }

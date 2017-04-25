@@ -12,6 +12,7 @@
 
 #include <rt.h>
 
+/*
 inline static void	parse_camera_1(t_camera *cam)
 {
 	cl_float4	t;
@@ -68,4 +69,29 @@ void				parse_camera(t_json_value *c, t_camera *cam)
 		cam->dist = (v->type == number) ?
 			(cl_float) * (double*)v->ptr : (cl_float) * (int*)v->ptr;
 	parse_camera_1(cam);
+}
+*/
+
+/*
+void				vp_size(void *ptr, void *data)
+{
+	cl_float4		*vector;
+
+	vector = (cl_float4*)data;
+	ft_json_accesses(ptr, "ra>N#ra>N#", 0, clf, &vector->x, 1, clf, &vector->y);
+}
+*/
+
+void				parse_camera(t_json_value *c, t_camera *cam)
+{
+	ft_json_accesses(c, "ro>v#ro>v#ro>v#ro>v#ro>v#ro>N#",
+		"position", clv4, &cam->pos, "direction", clv4, &cam->dir, "up", clv4,
+		&cam->up, "right", clv4, &cam->right, "vp_size", clv2, &cam->vp_size,
+		"dist", clf, &cam->dist);
+	cam->origin_dir = (t_vector){.x = cam->dir.x, .y = cam->dir.y,
+								.z = cam->dir.z};
+	cam->origin_up = (t_vector){.x = cam->up.x, .y = cam->up.y,
+								.z = cam->up.z};
+	cam->origin_right = (t_vector){.x = cam->right.x, .y = cam->right.y,
+								.z = cam->right.z};
 }

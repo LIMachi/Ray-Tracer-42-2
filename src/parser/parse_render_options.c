@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include <rt.h>
-
+/*
 inline static void	parse_render_options_0(t_json_value *ro, t_argn *argn)
 {
 	t_json_value		*v[2];
@@ -62,4 +62,30 @@ void				parse_render_options(t_json_value *ro, t_argn *argn,
 	v = ft_json_search_pair_in_object(ro,
 		(t_json_string){.length = 6, .ptr = "skybox"});
 	argn->skybox = parse_texture(v, argn->skybox, textures);
+}*/
+
+void				skybox(void *ptr, t_env *e)
+{
+	parse_texture(ptr, (void*[2]){&e->argn.skybox, &e->textures});
+}
+
+void				filter(void *ptr, void *data)
+{
+	if (!ft_strcmp(ptr, "none"))
+		*(t_color_filter*)data = 0;
+	else if (!ft_strcmp(ptr, "sepia"))
+		*(t_color_filter*)data = SEPIA;
+	else if (!ft_strcmp(ptr, "grayscale"))
+		*(t_color_filter*)data = GRAYSCALE;
+	else if (!ft_strcmp(ptr, "cartoon"))
+		*(t_color_filter*)data = CARTOON;
+}
+
+void				parse_render_options(t_json_value *ro, t_env *e)
+{
+	ft_json_accesses(ro, "ro>a>i*<a>i*ro>>d#<o>d#ro>i*ro>i*ro>s#ro>b*ro>#",
+	"size", 0, &e->argn.screen_size.x, 1, &e->argn.screen_size.y, "lighting",
+	"ambient", clf, &e->argn.ambient, "direct", clf, &e->argn.direct, "antialias",
+	&e->argn.antialias, "bounce_depth", &e->argn.bounce_depth, "filter", filter,
+	&e->argn.filter, "stereoscopy", &e->argn.stereoscopy, "skybox", skybox, e);
 }

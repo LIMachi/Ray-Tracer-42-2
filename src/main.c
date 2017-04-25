@@ -53,6 +53,9 @@ void	init(t_env *e)
 
 int		main(const int argc, char **argv, char **env)
 {
+	(void)argc;
+	(void)argv;
+	(void)env;
 	t_env	e;
 	char	*src;
 	int		fd;
@@ -60,20 +63,21 @@ int		main(const int argc, char **argv, char **env)
 	src = NULL;
 	ft_bzero(&e, sizeof(t_env));
 	ft_init(env);
-	if (command_line(&e.cmd, argc, argv))
+/*	if (command_line(&e.cmd, argc, argv))
 	{
 		ft_printf("\nUsage: \t%s/%s <scene.json>\n\n", ft_pwd(),
 		ft_path_name(argv[0]));
 		ft_end(0);
-	}
-	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
+	}*/
+	if ((fd = open(/*e.cmd.scene*/argv[1], O_RDONLY)) == -1)
 		ft_end(-1);
 	e.glfw.fps = 60;
 	parser(&e, src = ft_readfile(fd));
-	close(fd);
+/*	close(fd);
 	stat(e.cmd.scene, &e.cmd.status);
 	ft_free(src);
 	init(&e);
 	rt(&e);
 	ft_end(0);
+*/
 }

@@ -18,7 +18,7 @@ t_json_value	*ft_json_pack_value(t_json_value *parent,
 {
 	t_json_value	*out;
 
-	if ((out = (t_json_value*)ft_malloc(sizeof(t_json_value))) == NULL)
+	if ((out = (t_json_value*)ft_memalloc(sizeof(t_json_value))) == NULL)
 		return (NULL);
 	out->type = type;
 	out->ptr = ptr;

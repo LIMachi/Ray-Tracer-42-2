@@ -87,6 +87,7 @@ typedef struct		s_primitive
 	float			radius;
 	uint			material;
 	t_limit			limit;
+	uint			group_id;
 }					t_primitive;
 
 typedef struct		s_light

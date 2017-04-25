@@ -12,6 +12,7 @@
 
 #include <rt.h>
 
+/*
 inline static cl_float4	cl_vector_from_json_array0(t_json_value *node,
 											cl_float4 default_return)
 {
@@ -33,7 +34,9 @@ inline static cl_float4	cl_vector_from_json_array0(t_json_value *node,
 	out.w = (cl_float) * (int*)ar[3]->ptr;
 	return (out);
 }
+*/
 
+/*
 void					parse_lights(t_json_value *l, t_argn *argn,
 	t_light **lights)
 {
@@ -54,4 +57,26 @@ void					parse_lights(t_json_value *l, t_argn *argn,
 		cl_vector_from_json_array(ft_json_search_pair_in_object(ar->value[i],
 		(t_json_string){.length = 5, .ptr = "color"}),
 		(cl_float4){.x = 1, .y = 1, .z = 1, .w = 0})};
+}
+*/
+
+void					parse_lights(t_json_array *ar, t_env *e)
+{
+	unsigned long	i;
+
+	e->lights = ft_memalloc(sizeof(t_light) * ar->nb_values);
+	e->argn.nb_lights = ar->nb_values;
+	i = -1;
+	while (++i < ar->nb_values)
+		ft_json_accesses(ar->value[i], "ro>v#ro>v#", "position", clv4,
+			&e->lights[i].position, "color", clv4, &e->lights[i].color);
+/*
+		e->lights[i] = (t_light){.position =
+		cl_vector_from_json_array0(ft_json_search_pair_in_object(ar->value[i],
+		(t_json_string){.length = 8, .ptr = "position"}),
+		(cl_float4){.x = 0, .y = 0, .z = 0, .w = 0}), .color =
+		cl_vector_from_json_array(ft_json_search_pair_in_object(ar->value[i],
+		(t_json_string){.length = 5, .ptr = "color"}),
+		(cl_float4){.x = 1, .y = 1, .z = 1, .w = 0})};
+*/
 }

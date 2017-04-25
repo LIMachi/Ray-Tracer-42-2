@@ -34,7 +34,7 @@ t_json_value				*ft_json_new_value(const char *src,
 		++(*pos);
 	if ((type = ft_json_evaluate_value_type(src, length, *pos)) == boolean)
 	{
-		if ((tmp = ft_malloc(sizeof(int))) == NULL)
+		if ((tmp = ft_memalloc(sizeof(int))) == NULL)
 			return (NULL);
 		ft_void((*(int*)tmp = (src[(*pos)++] == 't' && *pos + 2 < length &&
 		src[(*pos)++] == 'r' && src[(*pos)++] == 'u' && src[(*pos)++] == 'e'))
