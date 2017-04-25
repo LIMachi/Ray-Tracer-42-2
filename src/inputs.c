@@ -55,7 +55,7 @@ static void		move(t_env *e, int keycode)
 		return ;
 	e->cam.pos = vector_to_cl_float4(ft_vector_add(
 		cl_float4_to_vector(e->cam.pos),
-		ft_vector_scale(v, SPEED * 60.0f / e->glfw.fps)));
+		ft_vector_scale(v, SPEED * e->cam.speed)));
 	e->argn.moving = MOVING;
 }
 

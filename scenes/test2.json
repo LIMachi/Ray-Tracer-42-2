@@ -4,10 +4,9 @@
 		"size": [1920, 1080],
 		"lighting":
 		{
-			"ambient": 0.4,
-			"direct": 1.0
+			"ambient": 0.4
 		},
-		"antialias": 1,
+		"antialias": 4,
 		"bounce_depth": 8,
 		"filter": "none",
 		"stereoscopy": false,
@@ -37,7 +36,7 @@
 			"brightness": 2.0,
 			"perturbation":
 			{
-				"normal": 1.0,
+				"normal": 0.0,
 				"color": "none"
 			}
 		},
@@ -46,7 +45,7 @@
 			"color": [0.6, 0.6, 0.6],
 			"diffuse": [0.4, 0.4, 0.4],
 			"specular": [0.4, 0.4, 0.4],
-			"brightness": 100,
+			"brightness": 100.0,
 			"reflection": 0.0,
 			"texture":
 			{
@@ -130,7 +129,7 @@
 	},
 	"objects":
 	[
-/*		{
+		/*{
 			"type": "cube",
 			"position": [0, 100, 0],
 			"direction": [0, 1, 0],
@@ -148,26 +147,17 @@
 			}
 		},
 		{
-			"type": "cube",
-			"position": [0, -100, 0],
-			"direction": [0, -1, 0],
-			"material": "cat"
-		},
-		{
 			"type": "plane",
 			"position": [0, -200, 0],
 			"direction": [0, 1, 0],
 			"material":
 			{
-				"color": [0.5, 0.5, 0.5],
-				"diffuse": 1.0,
-				"specular": 1.0,
-				"reflection": 0.5,
-				"perturbation":
-				{
-					"normal": "none",
-					"color": "sine"
-				}
+				"color": [0.6, 0.6, 0.6],
+				"diffuse": [0.2, 0.2, 0.2],
+				"specular": [0.3, 0.3, 0.3],
+				"reflection": 0.8,
+				"refraction": 12,
+				"brightness": 42.0
 			}
 		},
 		{
@@ -189,7 +179,7 @@
 				"specular": [0.3, 0.4, 0.3],
 				"reflection": 0.8,
 				"refraction": 1.0,
-				"brightness": 70
+				"brightness": 70.0
 			},
 			"limit":
 			{

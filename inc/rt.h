@@ -99,6 +99,7 @@ typedef struct			s_camera
 	cl_float4			right;
 	cl_float4			vpul;
 	cl_float2			vp_size;
+	float				speed;
 	float				dist;
 	t_quaternion		orientation;
 	t_vector			origin_dir;

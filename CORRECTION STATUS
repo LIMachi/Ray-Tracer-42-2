@@ -9,7 +9,7 @@
 	-lumière ambiante: ok														1	3
 	-lumière ambiante++: ok														1	4
 	-limites:
-		-découpage basique xyz: ok (bug)										1	5
+		-découpage basique xyz: ok												1	5
 		-découpage relatif/absolu (y compris rotation): non						0
 		-pas déffets sur la translation post découpage: ok						1	6
 		-processus unique par objet: ok											1	7
@@ -26,41 +26,41 @@
 		-reflexion (on/off): ok													1	12
 		-% de reflexion: ok														1	13
 		-transparence (on/off): ok												1	14
-		-refraction: non														0
-		-% de refraction/transparence: ok										1	15
+		-refraction: ok															1	15
+		-% de refraction/transparence: ok										1	16
 	-ombre transparentes: non													0
 	-textures:
-		-au moins 1 objet: ok													1	16
+		-au moins 1 objet: ok													1	17
 		-au moins 4 objets de base: non											0
-		-etirer/reduire: ok														1	17
-		-décaler: ok															1	18
-		-autre que format xpm: ok												1	19
+		-etirer/reduire: ok														1	18
+		-décaler: ok															1	19
+		-autre que format xpm: ok												1	20
 	-autres applications de textures:
-		-bump or normal map: ok													1	20
+		-bump or normal map: ok													1	21
 		-transparence: non														0
 		-découpe: non															0
 		-diapositive (projection par semi-transparence, 2 points): non			0
 	-objets composés: non														0
 	-objets negatifs: non														0
-	-objet natif simple (paraboloid/hyperboloid): ok							1	21
+	-objet natif simple (paraboloid/hyperboloid): ok							1	22
 	-effets visuels:
-		-antialiasing: ok														1	22
-		-cartoon: ok															1	23
+		-antialiasing: ok														1	23
+		-cartoon: ok															1	24
 		-motion blur: non														0
-		-sepia/grey: ok															1	24
+		-sepia/grey: ok															1	25
 		-stereoscopie simple: non												0
 	-effet technique:
 		-calcul cluster (2 points): non											0
-		-multi thread: ok														1	25
-		-rapide: ok																1	26
-		-sauvegarde d'image: ok													1	27
+		-multi thread: ok														1	26
+		-rapide: ok																1	27
+		-sauvegarde d'image: ok													1	28
 	-environement:
 		-interface (message d'attente, barre de progression, etc): non			0
-		-interface cool (chargement fichier, controle du rendu): ok				2	29
-		-modification live: ok													1	30
-		-multi rendu (eventuellement script): ok								1	31
+		-interface cool (chargement fichier, controle du rendu): ok				2	30
+		-modification live: ok													1	31
+		-multi rendu (eventuellement script): ok								1	32
 		-objets automatiques (elice ADN, etc): non								0
--intermede (organisation du groupe): ok											1	32
+-intermede (organisation du groupe): ok											1	33
 -plus d'options:
 	-objets éxotiques:
 		-cube troué: non														0
@@ -73,7 +73,7 @@
 		-fichiers modelers: non													0
 		-en relief (tv 3d, occulus, etc): non									0
 		-spot non ponctuel (filament d'ampoule, ombre pas nette): non			0
-		-autres: a voir,  faut vendre											1	33
+		-autres: a voir,  faut vendre											1	34
 	-ruban de moebius: non														0
 	-caustic/global illumination: non											0
-	-c'est beau: ok																1	34
+	-c'est beau: ok																1	35

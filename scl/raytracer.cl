@@ -69,6 +69,7 @@ typedef struct		s_camera
 	float4			right;
 	float4			vpul;
 	float2			vp_size;
+	float			speed;
 }					t_camera;
 
 typedef struct		s_limit
@@ -202,7 +203,7 @@ inline float	local_length(float4 v)
 
 // for shadows we need a larger value
 #ifndef SHADOW_E
-# define SHADOW_E 0.1f
+# define SHADOW_E 0.01f
 #endif
 
 // maximum ray count
@@ -244,18 +245,13 @@ int				quadratic(float a, float b, float c, float2 *ret)
 
 int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
-	float d = DOT(obj->direction, ray->direction);
-
-	// facing the plane (d == 0)
-	if (d > -0.01f && d < 0.01f)
-		return (0);
-
-	float new_dist = DOT(obj->position + EPSILON - ray->origin, obj->direction) / d;
-
-	if (new_dist > EPSILON && (new_dist < *dist || *dist < 0.01f))
+	float4 p = obj->position - ray->origin;
+	float t = dot(p, obj->direction) / dot(ray->direction, obj->direction);
+	
+	if (t > 0 && t < *dist)
 	{
-		*dist = new_dist;
-		return (d > 0 ? -1 : 1);
+		*dist = t;
+		return (1);
 	}
 	return (0);
 }
@@ -279,33 +275,43 @@ int				rt_plan(__global t_obj *o, t_ray *ray)
 */
 int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
-	float4 pos = obj->position - ray->origin;
-	float2 t;
-	float a = DOT(ray->direction, ray->direction);
-	float b = 2.0f * DOT(ray->direction, pos);
-	float c = DOT(pos, pos) - obj->radius * obj->radius;
-	if(quadratic(a, b, c, &t))
+	float4 p = ray->origin - obj->position;
+	float r = obj->radius;
+	float b = dot(p, ray->direction);
+	float c = dot(p, p) - r * r;
+	c = b * b - c;
+	if(c > 0)
 	{
-		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+		c = sqrt(c);
+		float t = -b -c;
+		if (t > 0 && *dist > t)
 		{
-			if (t.x < 0.01)
-				*dist = 0.01;
-			else
-				*dist = t.x;
-			return (1);
+			*dist = t;
+			return (1); 
 		}
-		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+		else if ((t = -b + c) > 0 && *dist > t)
 		{
-			if (t.y < 0.01)
-				*dist = 0.01;
-			else
-				*dist = t.y;
+			*dist = t;
 			return (-1);
 		}
+		// if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
+		// {
+		// 	if (t.x < 0.01)
+		// 		*dist = 0.01;
+		// 	else
+		// 		*dist = t.x;
+		// 	return (1);
+		// }
+		// else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
+		// {
+		// 	if (t.y < 0.01)
+		// 		*dist = 0.01;
+		// 	else
+		// 		*dist = t.y;
+		// 	return (-1);
+		// }
 	}
 	return (0);
-
-//	return solve_quadratic(a, b, c, dist);
 }
 
 int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
@@ -341,6 +347,46 @@ int		cylinder_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 //	return solve_quadratic(a, b, c, dist);
 }
 
+// int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
+// {
+// 	float4 v = obj->direction;
+// 	float4 p = ray->origin - obj->position;
+// 	float dv = dot(ray->direction, v);
+// 	float dpv = dot(p, v);
+// 	float4 va = ray->direction - dv * v;
+// 	float4 vc = p - dpv * v;
+// 	float crad = cos(obj->radius * M_PI / 180.0f);
+// 	crad = crad * crad;
+// 	float srad = 1.0f - crad;
+// 	float a = crad * dot(va, va) - srad * dv * dv;
+// 	float b = 2.0f * dot(va, vc) * crad - 2.0f * srad * dv * dpv;
+// 	float c = crad * dot(vc, vc) - srad * dpv * dpv;
+// 	float dt = b * b - 4.0f * a * c;
+// 	if (dt < 0.0f)
+// 		return (0);
+// 	dt = sqrt(dt);
+// 	float t1 = (-b + dt) / (2.0f * a);
+// 	float t2 = (-b - dt) / (2.0f * a);
+// 	int ret = t1 < 0.0f ? -1 : 1;
+// 	t1 = t1 < 0.0f ? t2 : t1;
+// 	ret = t2 > t1 ? ret : -1;
+// 	t2 = t2 > t1 ? t1 : t2;
+// 	if (t2 < *dist) {
+// 		*dist = t2;
+// 		return (ret);
+// 	}
+// 	// 
+// 	// if (t2 > 0 && *dist > t2) {
+// 	// 	*dist = t2;
+// 	// 	return (1);
+// 	// }
+// 	// if (t1 > 0 && *dist > t1) {
+// 	// 	*dist = t1;
+// 	// 	return (-1);
+// 	// }
+// 	return (0);
+// }
+
 int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float4 pos = ray->origin - obj->position;
@@ -354,27 +400,6 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float a = DOT(dir, dir) - (r * dd * dd);
 	float b = 2.0f * (DOT(dir, pos) - (r * dd * xv));
 	float c = DOT(pos, pos) - (r * xv * xv);
-//	if(quadratic(a, b, c , &t))
-//	{
-//		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
-//		{
-//			if (t.x < 0.01)
-//				*dist = 0.01;
-//			else
-//				*dist = t.x;
-//			return (-1);
-//		}
-//		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
-//		{
-//			if (t.y < 0.01)
-//				*dist = 0.01;
-//			else
-//				*dist = t.y;
-//			return (1);
-//		}
-//	}
-//	return (0);
-
 	return solve_quadratic(a, b, c, dist);
 }
 
@@ -519,12 +544,12 @@ inline float4	get_normal(__global t_primitive *obj,
 			n = DOT(obj->direction, obj->position - point) * obj->direction + (point - obj->position);
 			break;
 		case CONE:
-			r = DOT(ray->direction, obj->direction) * ray->dist + DOT(ray->origin - obj->position, obj->direction);
-			n = point - obj->position - (1.0f + pow((float)tan(obj->radius * M_PI / 180.0f), 2)) * obj->direction * r;
-			// n = ray->origin - obj->position;
-			// r = cos(obj->radius * M_PI / 180.0);
-			// r = r * r;
-			// n = n - obj->direction * dot(n, obj->direction) / r;
+			// r = DOT(ray->direction, obj->direction) * ray->dist + DOT(ray->origin - obj->position, obj->direction);
+			// n = point - obj->position - (1.0f + pow((float)tan(obj->radius * M_PI / 180.0f), 2)) * obj->direction * r;
+			n = ray->origin - obj->position;
+			r = cos(obj->radius * M_PI / 180.0);
+			r = r * r;
+			n = n - obj->direction * dot(n, obj->direction) / r;
 			break;
 		case PARABOLOID:
 			n = point - obj->position - obj->direction * obj->radius;
@@ -553,15 +578,17 @@ inline float4	get_normal(__global t_primitive *obj,
 	return (NORMALIZE(n));
 }
 
-inline float2	texture_map(__global t_primitive *prim, float4 normal)
+inline float2	texture_map(__global t_primitive *prim, float4 p)
 {
 	float2 pos = (float2)(0, 0);
 
 	switch (prim->type)
 	{
 		case SPHERE:
-			pos.x = 0.5f + atan2(normal.z, normal.x) / (2.0f * M_PI);
-			pos.y = 0.5f + asinpi(normal.y);
+			p -= prim->position;
+			p /= prim->radius;
+			pos.x = 0.5f + atan2(p.z, p.x) / (2.0f * M_PI);
+			pos.y = 0.5f + asinpi(p.y);
 			break;
 		default:
 			return (float2)(-1);
@@ -569,9 +596,9 @@ inline float2	texture_map(__global t_primitive *prim, float4 normal)
 	return (pos);
 }
 
-inline float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 normal, __global t_img_info *info, __global int *raw_bmp, float4 col)
+inline float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 p, __global t_img_info *info, __global int *raw_bmp, float4 col)
 {
-	float2 pos = texture_map(prim, normal);
+	float2 pos = texture_map(prim, p);
 	if (pos.x == -1)
 		return (/*col*/ (float4)(1, 1, 1, 1));
 	if (tex->stretch.x != 0.0f && tex->stretch.y != 0.0f)
@@ -586,9 +613,9 @@ inline float4	color_texture(__global t_primitive *prim, __global t_texture *tex,
 }
 
 inline float4	color_perturbation(float4 color, __global t_primitive *prim,
-		t_pert_type pert, float4 normal)
+		t_pert_type pert, float4 p)
 {
-	float2 pos = texture_map(prim, normal);
+	float2 pos = texture_map(prim, p);
 
 	switch (pert)
 	{
@@ -601,7 +628,6 @@ inline float4	color_perturbation(float4 color, __global t_primitive *prim,
 			color *= clamp(fabs(cos((pos.x + pos.y) * 10 * CHECKER_SIZE)), 0.5f, 1.0f);
 			break;
 	}
-
 	return (color);
 }
 
@@ -672,6 +698,7 @@ float4		get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *a
 			if (dist_l > EPSILON && dist_l < dist)
 			{
 				scal = DOT(ray_l.direction, ray->direction);
+				scal = pow(scal, dist_l / 100);
 				if (scal > MIN_DIRECT)
 				{
 					c += (light.color * (scal - MIN_DIRECT) / (1.0f - MIN_DIRECT));
@@ -701,17 +728,12 @@ int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, 
 			*result = temp;
 		}
 	}
-	ray->color = get_light_color(ray, lights, argn, id_l);
+	if (ray->depth == 0)
+		ray->color = get_light_color(ray, lights, argn, id_l);
 	if (*id_l == -1)
 		*id_l = id;
 	return (id);
 }
-
-inline float4	input_ray(float4 dir, float4 norm)
-{
-	return (2 * DOT(-dir, norm) * norm - dir);
-}
-
 
 float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global t_primitive *obj, __global t_primitive *objects,
 	__global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn, float4 p,
@@ -738,65 +760,33 @@ float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global
 		}
 		ray_l.direction = NORMALIZE(ray_l.direction);
 		ray_l.origin = p + SHADOW_E * ray_l.direction;
+		int ret;
 		for (int cur = 0; cur < argn->nb_objects; cur++)
-		{
-			int ret;
 			if ((ret = intersect(&objects[cur], &ray_l, &dist)) != 0)
 			{
 				if (dist > EPSILON && dist < dist_l)
 				{
-					s *= materials[objects[ret].material].reflection != 0;
-/*					if(objects[cur].material.transparency > EPSILON)
-					{
-						t_ray tmray;
-						float4 hit = ray_l.direction * dist + ray_l.origin;
-						tmray.origin = hit;
-						float eta = 1.0 / objects[cur].material.refraction;
-						float e2 = eta * eta;
-						float4 normal = get_normal(&objects[cur], &objects[cur].material, &ray_l, hit, raw_bmp, img_info);
-						float c0i = dot(normal, -ray_l.direction);
-						e2 = 1 - e2 * (1 - c0i * c0i);
-						if (e2 < 0)
-							break;
-						e2 = eta * c0i - sqrt(e2);
-						tmray.direction = normalize(eta * ray_l.direction + e2 * normal);
-						if (intersect(&objects[cur], &tmray, &dist) == -1)
-						{
-							tmray.origin += dist * tmray.direction;
-							eta = objects[cur].material.refraction
-
-
-						}
-						int colid = intersect
-
-
-					}*/
-					if ( s < EPSILON)
+					s *= materials[objects[ret].material].reflection;
+					if (s < EPSILON)
 						break ;
 				}
 			}
-		}
 		float4 col = mat->color;
 		if (mat->texture.info_index != ULONG_MAX)
 		{
 			__global t_img_info *info = &img_info[mat->texture.info_index];
-			col = color_texture(obj, &mat->texture, normal, info, raw_bmp, col);
-//			c += col;
+			col = color_texture(obj, &mat->texture, p, info, raw_bmp, col);
 		}
-		else
-			c += light.color * col * argn->ambient;
+		c += light.color * col * argn->ambient;
 		if (s < EPSILON)
 			continue ;
 		float scale;
-		if ((scale = DOT(ray_l.direction, normal)) > 0 && mat->texture.info_index == ULONG_MAX)
+		if ((scale = DOT(ray_l.direction, normal)) > 0)
 			c += s * light.color * mat->diffuse * scale;
-		else if (scale > 0)
-			c += s * light.color * col * scale;
-//		float4 ir = NORMALIZE(2 * scale * normal - ray_l.direction);
-		float4 ir = (ray_l.direction - ray->direction) / 2;
-		if ((scale = DOT(ir, normal)))
-			c += s * light.color * mat->specular * pow(scale, mat->brightness) > 0 ? c : 0;
-	}
+		float4 ir = 2.0f * scale * normal - ray_l.direction;
+		if ((scale = DOT(ir, normal)) > 0)
+			c += s * light.color * mat->specular * pown(scale, 20 * mat->brightness);
+		}
 	c = clamp(c / (float)argn->nb_lights, 0.0f, 1.0f);
 	c = color_perturbation(c, obj, mat->perturbation.color, normal);
 	return (c);
@@ -893,20 +883,19 @@ __kernel void	rt_kernel(
 				float4 p = cur_ray->origin + cur_ray->dist * cur_ray->direction;
 				__global t_material *mat = &materials[objects[cur_id].material];
 				float4 normal = get_normal(&objects[cur_id], mat, cur_ray, p, raw_bmp, img_info);
-				if(mat->normal_map.info_index != ULONG_MAX)
-				{
-				__global t_img_info *info = &img_info[mat->normal_map.info_index];
-				float4 nm = color_texture(&objects[cur_id], &mat->normal_map, normal, info, raw_bmp, (float4)(0,0,0,0));
-				normal.x += nm.x * 2 - 1;
-				normal.y -= nm.y * 2 - 1;
-				if(nm.z < 0.5)
-					nm.z = 0.5;
-				normal.z += ((nm.z - 0.5) * 2) - 1;
-				normal = NORMALIZE(normal);
+				if(mat->normal_map.info_index != ULONG_MAX) {
+					__global t_img_info *info = &img_info[mat->normal_map.info_index];
+					float4 nm = color_texture(&objects[cur_id], &mat->normal_map, p, info, raw_bmp, (float4)(0,0,0,0));
+					normal.x += nm.x * 2 - 1;
+					normal.y -= nm.y * 2 - 1;
+					if(nm.z < 0.5)
+						nm.z = 0.5;
+					normal.z += ((nm.z - 0.5) * 2) - 1;
+					normal = NORMALIZE(normal);
 				}
 				cur_ray->color += get_color(cur_ray, normal, mat, objects + cur_id, objects, raw_bmp, img_info, lights, argn, p, materials);
 				cur_ray->origin = p;
-				if (cur_ray->depth >= argn->bounce_depth || argn->moving)
+				if (cur_ray->depth >= argn->bounce_depth || (cur_ray->depth == 1 && argn->moving))
 					continue;
 				float lum = mat->reflection;
 				float c0i = DOT(normal, -cur_ray->direction);

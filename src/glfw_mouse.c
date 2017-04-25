@@ -45,13 +45,13 @@ static void		new_pos(cl_float4 *item_pos, int x, int y, t_env *e)
 {
 	*item_pos = cl_float4_add(e->cam.pos, ft_vector_thales(e->cam.pos,
 	cl_float4_add(cl_float4_add(cl_float4_scale(e->cam.right,
-	(cl_float)(e->mouse.x - e->argn.screen_size.x / 2)),
+	(cl_float)(e->mouse.x - e->window.x / 2)),
 	cl_float4_scale(e->cam.up,
-	-(cl_float)(e->mouse.y - e->argn.screen_size.y / 2))),
+	-(cl_float)(e->mouse.y - e->window.y / 2))),
 	cl_float4_scale(e->cam.dir, e->cam.dist)),
 	cl_float4_sub(*item_pos, e->cam.pos), cl_float4_add(cl_float4_add(
-	cl_float4_scale(e->cam.right, (cl_float)(x - e->argn.screen_size.x / 2)),
-	cl_float4_scale(e->cam.up, -(cl_float)(y - e->argn.screen_size.y / 2))),
+	cl_float4_scale(e->cam.right, (cl_float)(x - e->window.x / 2)),
+	cl_float4_scale(e->cam.up, -(cl_float)(y - e->window.y / 2))),
 	cl_float4_scale(e->cam.dir, e->cam.dist))));
 }
 
@@ -74,6 +74,10 @@ void			toggle_cursor(t_env *e, int keycode)
 {
 	(void)keycode;
 	e->keys.cursor = !e->keys.cursor;
+	e->mouse.x = e->window.x / 2;
+	e->mouse.y = e->window.y / 2;
+	if (!e->keys.cursor)
+		glfwSetCursorPos(e->glfw.win, e->mouse.x, e->mouse.y);
 	glfwSetInputMode(e->glfw.win, GLFW_CURSOR, e->keys.cursor ?
 		GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 }
@@ -88,8 +92,8 @@ void			mouse_callback(GLFWwindow *window, double x, double y)
 		rotate(e, x - e->mouse.x, y - e->mouse.y, 0);
 	if (e->mouse.is_select && e->keys.cursor)
 		mouse_drag(e, x, y);
-	e->mouse.x = x;
-	e->mouse.y = y;
+	if (!e->keys.cursor)
+		glfwSetCursorPos(window, e->window.x / 2, e->window.y / 2);
 	if (!e->keys.cursor || e->mouse.is_select)
 		e->argn.moving = MOVING;
 }

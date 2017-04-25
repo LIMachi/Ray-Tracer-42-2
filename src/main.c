@@ -36,6 +36,8 @@ void	init(t_env *e)
 	calc_vpul(&e->cam);
 	e->glfw.focus = 1;
 	e->window = ft_point(e->argn.screen_size.x, e->argn.screen_size.y);
+	e->mouse.x = e->window.x / 2;
+	e->mouse.y = e->window.y / 2;
 	size = e->window.x * e->window.y;
 	e->prim_map = (t_ubmp){e->window, ft_malloc(size * 4)};
 	e->glfw.win = glfw_init(e, "RT", e->window.x, e->window.y);
@@ -69,6 +71,7 @@ int		main(const int argc, char **argv, char **env)
 	if ((fd = open(e.cmd.scene, O_RDONLY)) == -1)
 		ft_end(-1);
 	e.glfw.fps = 60;
+	e.cam.speed = 1;
 	parser(&e, src = ft_readfile(fd));
 	close(fd);
 	stat(e.cmd.scene, &e.cmd.status);
