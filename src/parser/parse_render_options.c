@@ -83,9 +83,16 @@ void				filter(void *ptr, void *data)
 
 void				parse_render_options(t_json_value *ro, t_env *e)
 {
-	ft_json_accesses(ro, "ro>a>i*<a>i*ro>>d#<o>d#ro>i*ro>i*ro>s#ro>b*ro>#",
-	"size", 0, &e->argn.screen_size.x, 1, &e->argn.screen_size.y, "lighting",
-	"ambient", clf, &e->argn.ambient, "direct", clf, &e->argn.direct, "antialias",
-	&e->argn.antialias, "bounce_depth", &e->argn.bounce_depth, "filter", filter,
-	&e->argn.filter, "stereoscopy", &e->argn.stereoscopy, "skybox", skybox, e);
+	ft_json_accesses(ro, "ro>a>i*<a>i*ro>>d#<o>d#ro>i*ro>i*ro>s#ro>b*ro>v#",
+		"size",
+			0, &e->argn.screen_size.x,
+			1, &e->argn.screen_size.y,
+		"lighting",
+			"ambient", clf, &e->argn.ambient,
+			"direct", clf, &e->argn.direct,
+		"antialias", &e->argn.antialias,
+		"bounce_depth", &e->argn.bounce_depth,
+		"filter", filter, &e->argn.filter,
+		"stereoscopy", &e->argn.stereoscopy,
+		"skybox", skybox, e);
 }

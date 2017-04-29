@@ -30,15 +30,27 @@ typedef enum			e_prim_type
 	INVALID = -1, SPHERE = 0, PLANE = 1, CONE = 2, CYLINDER = 3, PARABOLOID = 4
 }						t_prim_type;
 
+#define _TYPES (char*[5]){"sphere", "plane", "cone", "cylinder", "paraboloid"}
+#define TYPES (const char**)_TYPES
+#define NB_TYPES 5
+
 typedef enum			e_pert_type
 {
 	SINE = 1, CHECKERBOARD = 2
 }						t_pert_type;
 
+#define _PERTURBATIONS (char*[3]){"none", "sine", "checkerboard"}
+#define PERTURBATIONS (const char**)_PERTURBATIONS
+#define NB_PERTURBATIONS 3
+
 typedef enum			e_color_filter
 {
 	SEPIA = 1, GRAYSCALE = 2, CARTOON = 3
 }						t_color_filter;
+
+#define _FILTERS (char*[4]){"none", "sepia", "grayscale", "cartoon"}
+#define FILTERS (const char**)_FILTERS
+#define NB_FILTERS 4
 
 typedef struct			s_perturbation
 {
@@ -299,7 +311,7 @@ void					parse_camera(t_json_value *c, t_camera *cam);
 void					parse_lights(t_json_array *ar, t_env *e);
 void					parse_objects(t_json_array *ar, t_env *e);
 void					parse_render_options(t_json_value *ro, t_env *e);
-t_texture				parse_texture(t_json_value *t,
+void					parse_texture(t_json_value *t,
 									void **out_and_textures_holder);
 void					*parse_materials(t_json_object *obj, t_env *e);
 t_material				parse_material(t_json_value *m, t_material *out,
@@ -330,8 +342,7 @@ void					delete_rt_environement(t_env *e);
 void					load_file(t_env *e, const char *path);
 
 
-t_primitive				parse_object(t_json_value *o,
-	t_material_holder *materials, t_textures_holder *textures);
+t_primitive				parse_object(t_json_value *o, t_env *e);
 void					load_group(t_json_value *o, t_env *e);
 void					clv4(t_json_value *v, cl_float4 *vector);
 void					clv2(t_json_value *v, cl_float2 *vector);

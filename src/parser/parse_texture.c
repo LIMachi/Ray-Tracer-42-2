@@ -90,14 +90,15 @@ t_texture			parse_texture(t_json_value *t, t_texture default_return,
 }
 */
 
-t_texture			parse_texture(t_json_value *t, void **out_and_textures_holder)
+void			parse_texture(t_json_value *t, void **out_and_textures_holder)
 {
 	t_texture			*out;
 
 	out = out_and_textures_holder[0];
-	ft_json_accesses(t, "ro>a#ro>a#ro>s#", "stretch", clv2, &out->stretch,
-		"offset", clv2, &out->offset, "file", parse_texture_file,
-		out_and_textures_holder);
+	ft_json_accesses(t, "ro>a#ro>a#ro>s#",
+		"stretch", clv2, &out->stretch,
+		"offset", clv2, &out->offset,
+		"file", parse_texture_file, out_and_textures_holder);
 /*
 	paf_paf_paf_la_norm =
 		(t_json_value_type[2]){integer | number, integer | number};
@@ -116,5 +117,5 @@ t_texture			parse_texture(t_json_value *t, void **out_and_textures_holder)
 	parse_texture_0(&out, t, buff, out_and_textures_holder[1]);
 	*(t_texture*)out_and_textures_holder[0] = out;
 */
-	return (*(t_texture*)out_and_textures_holder[0]);
+//	return (*(t_texture*)out_and_textures_holder[0]);
 }

@@ -59,17 +59,24 @@ void						sf_perturbation_color(void *ptr, void *data)
 t_material					parse_material(t_json_value *m, t_material *out,
 											t_textures_holder *textures_holder)
 {
-	void	**tmp1 = (void*[2]){&out->texture, textures_holder};
-	void	**tmp2 = (void*[2]){&out->normal_map, textures_holder};
+	void	**tmp1;
+	void	**tmp2;
 
-	ft_json_accesses(m, "ro>d*ro>d*ro>>d*<o>s#ro>v#ro>v#ro>v#ro>N*ro>v#ro>v#",
-		"refraction", &out->refraction, "brightness", &out->brightness,
-		"perturbation", "normal", &out->perturbation.normal, "color",
-		sf_perturbation_color, &out->perturbation.color, "color", clv4,
-		&out->color, "diffuse", clv4, &out->diffuse, "specular", clv4,
-		&out->specular, "reflection", &out->reflection, "texture",
-		parse_texture, tmp1,
-		"normal_map", parse_texture, tmp2);
+	tmp1 = (void*[2]){&out->texture, textures_holder};
+	tmp2 = (void*[2]){&out->normal_map, textures_holder};
+	ft_json_accesses(m, "ro>d* ro>d* ro>>d* <o>s# ro>v# ro>v# ro>v# ro>N* ro>v# ro>v#",
+		"refraction", &out->refraction,
+		"brightness", &out->brightness,
+		"perturbation",
+			"normal", &out->perturbation.normal,
+			"color", sf_perturbation_color, &out->perturbation.color,
+		"color", clv4, &out->color,
+		"diffuse", clv4, &out->diffuse,
+		"specular", clv4, &out->specular,
+		"reflection", &out->reflection, //
+		"texture", parse_texture, tmp1,
+		"normal_map", parse_texture, tmp2
+			);
 	return (*out);
 }
 
@@ -116,7 +123,7 @@ inline static char			*new_material(t_json_pair *p, unsigned long i,
 	if (p == NULL || p->key == NULL || p->value == NULL || p->key->ptr == NULL
 		|| p->key->length == 0 || (out = ft_strdup(p->key->ptr)) == NULL)
 		return (NULL);
-//	parse_material(p->value, &materials->materials[ft_strcmp("default", out) ? i + 1 : 0], textures_holder);
+	parse_material(p->value, &materials->materials[ft_strcmp("default", out) ? i + 1 : 0], textures_holder);
 	return (out);
 }
 

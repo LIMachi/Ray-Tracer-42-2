@@ -85,8 +85,11 @@ void				vp_size(void *ptr, void *data)
 void				parse_camera(t_json_value *c, t_camera *cam)
 {
 	ft_json_accesses(c, "ro>v#ro>v#ro>v#ro>v#ro>v#ro>N#",
-		"position", clv4, &cam->pos, "direction", clv4, &cam->dir, "up", clv4,
-		&cam->up, "right", clv4, &cam->right, "vp_size", clv2, &cam->vp_size,
+		"position", clv4, &cam->pos,
+		"direction", clv4, &cam->dir,
+		"up", clv4, &cam->up,
+		"right", clv4, &cam->right,
+		"vp_size", clv2, &cam->vp_size,
 		"dist", clf, &cam->dist);
 	cam->origin_dir = (t_vector){.x = cam->dir.x, .y = cam->dir.y,
 								.z = cam->dir.z};

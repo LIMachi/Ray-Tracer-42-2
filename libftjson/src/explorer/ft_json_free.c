@@ -29,10 +29,10 @@ void	*ft_json_free_object(t_json_object **object)
 
 	if (object == NULL || *object == NULL)
 		return (NULL);
-	i = 0;
 	if ((*object)->pair != NULL)
 	{
-		while (i < (*object)->nb_pairs)
+		i = -1;
+		while (++i < (*object)->nb_pairs)
 			ft_json_free_pair(&(*object)->pair[i]);
 		(*object)->nb_pairs = 0;
 		ft_free((*object)->pair);
@@ -48,10 +48,10 @@ void	*ft_json_free_array(t_json_array **array)
 
 	if (array == NULL || *array == NULL)
 		return (NULL);
-	i = 0;
 	if ((*array)->value != NULL)
 	{
-		while (i < (*array)->nb_values)
+		i = -1;
+		while (++i < (*array)->nb_values)
 			ft_json_free_value(&(*array)->value[i]);
 		ft_free((*array)->value);
 		(*array)->value = NULL;

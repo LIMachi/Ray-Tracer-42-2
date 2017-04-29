@@ -2,30 +2,36 @@
 #include <stdlib.h>
 #include <libftjson.h>
 
+int ft_strcmp(char *s1, char *s2);
+int printf(const char *s, ...);
+
 inline static int	sf_json_accesses_access_right(t_jae *e, va_list ap)
 {
 	t_json_value	*tmp;
+	int				tmp1;
+	char			*tmp2;
 
 	if (e->error_stack)
-	{
 		++e->error_stack;
-		return (1);
-	}
-	if ((e->etype != object && e->etype != array) ||
+	else if ((e->etype != object && e->etype != array) ||
 			!ft_json_test_type(e->node, e->etype))
-		return (0);
+		e->error_stack = 1;
+	if (e->error_stack)
+		return (1 | va_arg(ap, size_t));
 	if (e->etype == object)
 	{
 		if ((tmp = ft_json_search_pair_in_object_c_string(e->node,
-				va_arg(ap, char *))) == NULL)
+				tmp2 = va_arg(ap, char *))) == NULL)
 			return (e->error_stack = 1);
+		printf("%s\n", tmp2);
 		e->node = tmp;
 	}
 	else
 	{
 		if ((tmp = ft_json_search_index_in_array(e->node,
-				va_arg(ap, int))) == NULL)
+				tmp1 = va_arg(ap, int))) == NULL)
 			return (e->error_stack = 1);
+		printf("%d\n", tmp1);
 		e->node = tmp;
 	}
 	return (1);
@@ -73,8 +79,6 @@ inline static int	sf_json_accesses_access(t_jae *e, const char c, va_list ap)
 	{
 		if (e->error_stack && --e->error_stack)
 			return (1);
-		if (e->node == NULL)
-			return (e->error_stack = 1);
 		return ((e->node = e->node->parent) == e->node);
 	}
 	if (c != '*' && c != '#')
@@ -82,7 +86,8 @@ inline static int	sf_json_accesses_access(t_jae *e, const char c, va_list ap)
 	tmp[0] = va_arg(ap, void*);
 	if (c == '#')
 		tmp[1] = va_arg(ap, void*);
-	if (e->etype != none && !ft_json_test_type(e->node, e->etype))
+	if (e->error_stack ||
+			(e->etype != none && !ft_json_test_type(e->node, e->etype)))
 		return (1);
 	if (c == '#')
 		sf_json_accesses_access_call(e, tmp);
@@ -93,6 +98,7 @@ inline static int	sf_json_accesses_access(t_jae *e, const char c, va_list ap)
 
 inline static int	sf_json_accesses_type_change(t_jae *e, const char c)
 {
+	printf("%c, es: %d\n", c, e->error_stack);
 	if (c == 'o')
 		return ((e->etype = object) == object);
 	if (c == 'a')
@@ -126,9 +132,12 @@ int					ft_json_accesses(const t_json_value *root,
 
 	if (root == NULL || form == NULL)
 		return (-1);
+//	if (root->parent->type == object && ft_strcmp(root->parent->obj->pair[0]->key->ptr, "type"))
+//		printf("debug\n");
 	va_start(ap, form);
 	e = (t_jae){.node = NULL, .etype = none, .error_stack = 0};
 	pos = -1;
+//	printf("\n");
 	while (form[++pos] != '\0')
 		if (form[pos] == 'r')
 			e = (t_jae){.node = (t_json_value*)root, .etype = e.etype,

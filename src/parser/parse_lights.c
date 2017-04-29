@@ -68,8 +68,9 @@ void					parse_lights(t_json_array *ar, t_env *e)
 	e->argn.nb_lights = ar->nb_values;
 	i = -1;
 	while (++i < ar->nb_values)
-		ft_json_accesses(ar->value[i], "ro>v#ro>v#", "position", clv4,
-			&e->lights[i].position, "color", clv4, &e->lights[i].color);
+		ft_json_accesses(ar->value[i], "ro>v#ro>v#",
+			"position", clv4, &e->lights[i].position,
+			"color", clv4, &e->lights[i].color);
 /*
 		e->lights[i] = (t_light){.position =
 		cl_vector_from_json_array0(ft_json_search_pair_in_object(ar->value[i],

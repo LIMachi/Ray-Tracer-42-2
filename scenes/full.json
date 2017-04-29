@@ -175,8 +175,8 @@
 		{
 			"type": "sphere",
 			"position": [0, 0, 200],
-			"radius": 20,
-			"material" : "cat",
+			"radius": 20.0,
+//			"material" : "cat",
 			"material":
 			{
 				"color": [0.6, 0.6, 0.6],
@@ -208,12 +208,12 @@
 				"high": [null, 0, null]
 			}
 		},
-		{
+/*		{
 			"type": "cube",
 			"position": [0, -100, 0],
 			"direction": [0, -1, 0],
 			"material": "cat"
-		},
+		},*/
 		{
 			"type": "plane",
 			"position": [0, -200, 0],

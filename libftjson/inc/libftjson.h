@@ -64,7 +64,16 @@ struct							s_json_value
 	t_json_value		*parent;
 	t_json_value_type	type;
 	unsigned			error;
-	void				*ptr;
+//	void				*ptr;
+	union
+	{
+		t_json_object		*obj;
+		t_json_array		*ar;
+		t_json_string		*str;
+		int					*i;
+		double				*d;
+		void				*ptr;
+	};
 };
 
 /*
