@@ -4,12 +4,12 @@
 		"size": [1920, 1080],
 		"lighting":
 		{
-			"ambient": 0.4,
+			"ambient": 0.2,
 			"direct": 1.0
 		},
 		"antialias": 1,
 		"bounce_depth": 8,
-		"filter": "grayscale",
+		"filter": "none",
 		"stereoscopy": false,
 		"skybox":
 		{

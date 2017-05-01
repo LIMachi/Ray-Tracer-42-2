@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:02:23 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:12:11 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/01 21:43:20 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,37 +49,37 @@ inline static cl_uint	parse_object_material(t_json_value *o, void **out_and_env)
 }
 */
 
-inline static void	parse_object_material(t_json_value *o, void **out_and_env)
+inline static void	parse_object_material(t_json_value *v, t_oe *oe)
 {
-	(void)o;
-	(void)out_and_env;
-/*	int		i;
-	t_env	*e;
+	(void)v;
+	(void)oe;
+	int		i;
+/*	t_env	*e;
 
 	if (o == NULL || o->ptr == NULL)
 		return (*(cl_uint*)out_and_env[0] = 0);
 	e = (t_env*)out_and_env[1];
-	if (o->type == object)
-	{
-		e->materials.materials = ft_reallocf(e->materials.materials,
-			sizeof(t_material) * e->materials.nb_materials,
-			sizeof(t_material) * (e->materials.nb_materials + 1));
-		e->materials.name = ft_reallocf(e->materials.name,
-			sizeof(char *) * e->materials.nb_materials,
-			sizeof(char *) * (e->materials.nb_materials + 1));
-		e->materials.name[e->materials.nb_materials] = NULL;
-		e->materials.materials[e->materials.nb_materials] = default_material();
-		parse_material(o, &e->materials.materials[e->materials.nb_materials], &e->textures);
-		return (e->materials.nb_materials++);
-	}
-	else if (o->type == string && ((t_json_string*)o->ptr)->ptr != NULL &&
-			(i = -1))
-		while (++i < e->materials.nb_materials)
-			if (e->materials.name[i] != NULL &&
-				!ft_strcmp(((t_json_string*)o->ptr)->ptr, e->materials.name[i]))
-				return (*(cl_uint*)out_and_env[0] = i + 1);
-	return (*(cl_uint*)out_and_env[0] = 0);
 */
+	if (v->type == object)
+	{
+		oe->e->materials.materials = ft_reallocf(oe->e->materials.materials,
+			sizeof(t_material) * oe->e->materials.nb_materials,
+			sizeof(t_material) * (oe->e->materials.nb_materials + 1));
+		oe->e->materials.name = ft_reallocf(oe->e->materials.name,
+			sizeof(char *) * oe->e->materials.nb_materials,
+			sizeof(char *) * (oe->e->materials.nb_materials + 1));
+		oe->e->materials.name[oe->e->materials.nb_materials] = NULL;
+		oe->e->materials.materials[oe->e->materials.nb_materials] = default_material();
+		parse_material(v, &oe->e->materials.materials[oe->e->materials.nb_materials], &oe->e->textures);
+		/*return (*/oe->e->materials.nb_materials++/*)*/;
+	}
+	else if (v->type == string && ((t_json_string*)v->ptr)->ptr != NULL &&
+			(i = -1))
+		while (++i < oe->e->materials.nb_materials)
+			if (oe->e->materials.name[i] != NULL &&
+				!ft_strcmp(((t_json_string*)v->ptr)->ptr, oe->e->materials.name[i]))
+				/*return (*/*oe->out = i + 1/*)*/;
+	//return (*oe->out = 0);
 }
 
 /*
@@ -147,8 +147,10 @@ t_primitive					parse_object(t_json_value *o, t_env *e)
 {
 	t_primitive		p;
 	t_ods			ods;
+	t_oe			oe;
 
-	ods = (t_ods){&p.type, TYPES, NB_TYPES};
+	ods = (t_ods){.out = &p.type, .dictionary = TYPES, .size = NB_TYPES};
+	oe = (t_oe){.out = &p.material, .e = e};
 	p = (t_primitive){.type = INVALID, .position = {.x = 0, .y = 0, .z = 0,
 		.w = 0}, .direction = {.x = 0, .y = 1, .z = 0, .w = 0}, .radius = 0,
 		.material = 0, .group_id = 0, .limit = {.relative = 1,
@@ -156,7 +158,7 @@ t_primitive					parse_object(t_json_value *o, t_env *e)
 		.low = {.x = -FLT_MAX, .y = -FLT_MAX, .z = -FLT_MAX, .w = 0}}};
 	ft_json_accesses(o, "ro>s#ro>v#ro>N#ro>v#ro>v#ro>>b*<o>v#<o>v#",
 		"type", jds, &ods,
-		"material", parse_object_material, (void*[2]){&p.material, e},
+		"material", parse_object_material, &oe,
 		"radius", clf, &p.radius,
 		"position", clv4, &p.position,
 		"direction", clv4, &p.direction,
@@ -233,7 +235,7 @@ void						parse_objects(t_json_array *ar, t_env *e)
 			if ((e->prim[e->argn.nb_objects] =
 					parse_object(ar->value[i], e)).type != INVALID)
 			 	++e->argn.nb_objects;
-			/*else
+			else
 				load_group(ar->value[i], e);
-		*/}
+		}
 }

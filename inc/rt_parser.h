@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 20:41:41 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:08:52 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/01 21:20:34 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ typedef struct			s_oth
 	t_texture			*out;
 	t_textures_holder	*th;
 }						t_oth;
+
+typedef struct			s_oe
+{
+	cl_uint				*out;
+	t_env				*e;
+}						t_oe;
 
 void					jds(char *str, t_ods *ods);
 void					clf(void *ptr, cl_float *data, t_json_value_type type);

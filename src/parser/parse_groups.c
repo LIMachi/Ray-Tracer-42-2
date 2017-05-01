@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 20:50:10 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 20:50:12 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/01 21:50:17 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,12 @@ inline static void	parse_group(t_json_array *ar, t_env *e,
 	g->nb_prims = ar->nb_values;
 	g->prim = ft_memalloc(sizeof(t_primitive) * ar->nb_values);
 	i = -1;
-/*	while (++i < ar->nb_values)
+	while (++i < ar->nb_values)
 		if (ft_json_test_type(ar->value[i], object))
-			g->prim[i] = parse_object(ar->value[i], &e->materials, &e->textures);
+			g->prim[i] = parse_object(ar->value[i], e);
 		else
 			g->prim[i] = null_primitive();
-*/}
+}
 
 void				parse_groups(t_json_value *v, t_env *e)
 {
