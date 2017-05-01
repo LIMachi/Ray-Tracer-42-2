@@ -253,7 +253,7 @@ int				quadratic(float a, float b, float c, float2 *ret)
 int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float d = DOT(obj->direction, ray->direction);
-
+	
 	// facing the plane (d == 0)
 //	if (d > -0.01f && d < 0.01f)
 //		return (0);
@@ -262,7 +262,7 @@ int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 
 	if (new_dist > EPSILON && (new_dist < *dist || *dist < 0.01f) && !limit(obj, ray->direction * new_dist + ray->origin, obj->limit.rotation))
 	{
-		*dist = t;
+		*dist = new_dist;
 		return (1);
 	}
 	return (0);
@@ -294,32 +294,19 @@ int		sphere_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	c = b * b - c;
 	if(c > 0)
 	{
-		if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.x + ray->origin, obj->limit.rotation))
+		c = sqrt(c);
+		float t = -b - c;
+		if (t > 0 && t < *dist && !limit(obj, ray->direction * t + ray->origin, obj->limit.rotation))
 		{
 			*dist = t;
-			return (1); 
+			return (1);
 		}
-		else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01) && !limit(obj, ray->direction * t.y + ray->origin, obj->limit.rotation))
+		t = -b + c;
+		if (t > 0 && t < *dist && !limit(obj, ray->direction * t + ray->origin, obj->limit.rotation))
 		{
 			*dist = t;
 			return (-1);
 		}
-		// if (t.x < t.y && t.x > 0.01 && (t.x < *dist || *dist <= 0.01))
-		// {
-		// 	if (t.x < 0.01)
-		// 		*dist = 0.01;
-		// 	else
-		// 		*dist = t.x;
-		// 	return (1);
-		// }
-		// else if (t.y > 0.01 && (t.y < *dist || *dist <= 0.01))
-		// {
-		// 	if (t.y < 0.01)
-		// 		*dist = 0.01;
-		// 	else
-		// 		*dist = t.y;
-		// 	return (-1);
-		// }
 	}
 	return (0);
 }
