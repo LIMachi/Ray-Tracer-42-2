@@ -6,14 +6,12 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:08:27 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/18 17:18:45 by pgourran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
-#include <rt_parser.h>
 
-/*
 inline static t_material	parse_material_0(t_json_value *m, t_material out,
 											t_textures_holder *textures_holder)
 {
@@ -39,60 +37,14 @@ inline static t_material	parse_material_0(t_json_value *m, t_material out,
 		(t_json_string){.length = 10, .ptr = "normal_map"});
 	out.normal_map = parse_texture(v, out.normal_map, textures_holder);
 	return (out);
-}*/
-
-/*
-void						sf_parse_texture(void *ptr, void *data)
-{
-	parse_texture(ptr, (t_texture){0, {{0}}, {{0}}}, data);
-}
-*/
-
-/*
-void						sf_perturbation_color(void *ptr, void *data)
-{
-	if (!ft_strcmp(ptr, "sine"))
-		*(cl_int*)data = SINE;
-	else if (!ft_strcmp(ptr, "checkerboard"))
-		*(cl_int*)data = CHECKERBOARD;
-	else
-		*(cl_int*)data = 0;
-}
-*/
-
-t_material					parse_material(t_json_value *m, t_material *out,
-											t_textures_holder *textures_holder)
-{
-	t_oth	oth1;
-	t_oth	oth2;
-	t_ods	ods;
-
-	oth1 = (t_oth){.out = &out->texture, .th = textures_holder};
-	oth2 = (t_oth){.out = &out->normal_map, .th = textures_holder};
-	ods = (t_ods){.out = (int*)&out->perturbation.color,
-				.dictionary = PERTURBATIONS, .size = NB_PERTURBATIONS};
-	ft_json_accesses(m, "ro>d*ro>d*ro>>d*<o>s#ro>v#ro>v#ro>v#ro>N*ro>v#ro>v#",
-		"refraction", &out->refraction,
-		"brightness", &out->brightness,
-		"perturbation",
-			"normal", &out->perturbation.normal,
-			"color", jds, &ods,
-		"color", clv4, &out->color,
-		"diffuse", clv4, &out->diffuse,
-		"specular", clv4, &out->specular,
-		"reflection", &out->reflection,
-		"texture", parse_texture, &oth1,
-		"normal_map", parse_texture, &oth2);
-	return (*out);
 }
 
-/*
 t_material					parse_material(t_json_value *m, t_material out,
 											t_textures_holder *textures_holder)
 {
 	t_json_value	*v[2];
 
-	if (!ft_json_test_type(m, object))
+	if (m == NULL || m->type != object || m->ptr == NULL)
 		return (out);
 	v[0] = ft_json_search_pair_in_object(m,
 		(t_json_string){.length = 10, .ptr = "refraction"});
@@ -115,7 +67,6 @@ t_material					parse_material(t_json_value *m, t_material out,
 	out.perturbation.color);
 	return (parse_material_0(m, out, textures_holder));
 }
-*/
 
 inline static char			*new_material(t_json_pair *p, unsigned long i,
 										t_material_holder *materials,
@@ -123,17 +74,14 @@ inline static char			*new_material(t_json_pair *p, unsigned long i,
 {
 	char	*out;
 
-	(void)i;
-	(void)materials;
-	(void)textures_holder;
 	if (p == NULL || p->key == NULL || p->value == NULL || p->key->ptr == NULL
 		|| p->key->length == 0 || (out = ft_strdup(p->key->ptr)) == NULL)
 		return (NULL);
-	parse_material(p->value, &materials->materials[ft_strcmp("default", out) ? i + 1 : 0], textures_holder);
+	materials->materials[ft_strcmp("default", out) ? i + 1 : 0] =
+		parse_material(p->value, default_material(), textures_holder);
 	return (out);
 }
 
-/*
 void						*parse_materials(t_json_value *m,
 											t_material_holder *materials,
 											t_textures_holder *textures_holder)
@@ -161,25 +109,5 @@ void						*parse_materials(t_json_value *m,
 		materials->name[i] = new_material(obj->pair[i], i, materials,
 										textures_holder);
 	materials->nb_materials = obj->nb_pairs + 1;
-	return (NULL);
-}
-*/
-
-void						*parse_materials(t_json_object *obj, t_env *e)
-{
-//	t_pair			*out;
-	unsigned long	i;
-
-	if (obj->nb_pairs == 0)
-		return (NULL);
-//	out = ft_memalloc(sizeof(t_pair) * obj->nb_pairs);
-	e->materials.materials = ft_memalloc(sizeof(t_material) * (obj->nb_pairs + 1));
-	e->materials.name = ft_memalloc(sizeof(char*) * (obj->nb_pairs + 1));
-	e->materials.materials[0] = default_material();
-	i = -1;
-	while (++i < obj->nb_pairs)
-		e->materials.name[i] = new_material(obj->pair[i], i, &e->materials,
-										&e->textures);
-	e->materials.nb_materials = obj->nb_pairs + 1;
 	return (NULL);
 }

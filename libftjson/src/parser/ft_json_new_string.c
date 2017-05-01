@@ -26,11 +26,11 @@ t_json_string	*ft_json_new_string(const char *src, const unsigned long length,
 		++len;
 	if (len == length || src[len] == '\0')
 		return (NULL);
-	if ((out = (t_json_string*)ft_malloc(sizeof(t_json_string))) == NULL)
+	if ((out = (t_json_string*)ft_memalloc(sizeof(t_json_string))) == NULL)
 		return (NULL);
 	out->length = len - *pos;
 	if ((out->ptr = ft_strndup(&src[*pos], out->length)) == NULL)
-		return (ft_free(out));
+		return (ft_json_free_string(&out));
 	*pos += out->length + 1;
 	return (out);
 }

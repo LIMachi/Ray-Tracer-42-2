@@ -11,7 +11,7 @@
 
 typedef enum		e_prim_type
 {
-	SPHERE = 0, PLANE = 1, CONE = 2, CYLINDER = 3, PARABOLOID = 4
+	INVALID = -1, SPHERE = 0, PLANE = 1, CONE = 2, CYLINDER = 3, PARABOLOID = 4
 }					t_prim_type;
 
 typedef enum		e_pert_type
@@ -88,6 +88,7 @@ typedef struct		s_primitive
 	float			radius;
 	uint			material;
 	t_limit			limit;
+	uint			group_id;
 }					t_primitive;
 
 typedef struct		s_light
@@ -253,7 +254,7 @@ int				quadratic(float a, float b, float c, float2 *ret)
 int		plane_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
 	float d = DOT(obj->direction, ray->direction);
-	
+
 	// facing the plane (d == 0)
 //	if (d > -0.01f && d < 0.01f)
 //		return (0);
@@ -355,7 +356,7 @@ int		cone_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	float4	d;
 	float4	x;
 	float	dd;
-	
+
 	d = normalize(-ray->direction);
 	odir = normalize(obj->direction);
 	dd = dot(d, odir);
@@ -434,7 +435,7 @@ int		paraboloid_intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 	odir = normalize(obj->direction);
 	x = obj->position - ray->origin;
 	k = 2;//tan(obj->radius / 180.0f * M_PI);
-	
+
 	float4 pos = ray->origin - obj->position;
 	float4 dir = -ray->direction;
 

@@ -1352,4 +1352,7 @@ void					ft_put_double(double v);
 void					ft_putnbr_bin_fd(unsigned long nbr, int fd);
 void					ft_putnbr_bin(unsigned long nbr);
 
+int						ft_dictionary_search(const char *str, const char **dict,
+											const int size);
+
 #endif

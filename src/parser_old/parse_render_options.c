@@ -6,14 +6,12 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 01:56:45 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:05:56 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/04/13 06:02:48 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <rt.h>
-#include <rt_parser.h>
 
-/*
 inline static void	parse_render_options_0(t_json_value *ro, t_argn *argn)
 {
 	t_json_value		*v[2];
@@ -64,40 +62,4 @@ void				parse_render_options(t_json_value *ro, t_argn *argn,
 	v = ft_json_search_pair_in_object(ro,
 		(t_json_string){.length = 6, .ptr = "skybox"});
 	argn->skybox = parse_texture(v, argn->skybox, textures);
-}*/
-
-/*
-void				filter(void *ptr, void *data)
-{
-	if (!ft_strcmp(ptr, "none"))
-		*(t_color_filter*)data = 0;
-	else if (!ft_strcmp(ptr, "sepia"))
-		*(t_color_filter*)data = SEPIA;
-	else if (!ft_strcmp(ptr, "grayscale"))
-		*(t_color_filter*)data = GRAYSCALE;
-	else if (!ft_strcmp(ptr, "cartoon"))
-		*(t_color_filter*)data = CARTOON;
-}
-*/
-
-void				parse_render_options(t_json_value *ro, t_env *e)
-{
-	t_ods	ods;
-	t_oth	oth;
-
-	ods = (t_ods){.out = (int*)&e->argn.filter,
-				.dictionary = FILTERS, .size = NB_FILTERS};
-	oth = (t_oth){.out = &e->argn.skybox, .th = &e->textures};
-	ft_json_accesses(ro, "ro>a>i*<a>i*ro>>d#<o>d#ro>i*ro>i*ro>s#ro>b*ro>v#",
-		"size",
-			0, &e->argn.screen_size.x,
-			1, &e->argn.screen_size.y,
-		"lighting",
-			"ambient", clf, &e->argn.ambient,
-			"direct", clf, &e->argn.direct,
-		"antialias", &e->argn.antialias,
-		"bounce_depth", &e->argn.bounce_depth,
-		"filter", jds, &ods,
-		"stereoscopy", &e->argn.stereoscopy,
-		"skybox", parse_texture, &oth);
 }

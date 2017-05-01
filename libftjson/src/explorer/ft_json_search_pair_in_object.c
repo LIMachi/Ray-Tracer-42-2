@@ -19,21 +19,15 @@ t_json_value	*ft_json_search_pair_in_object(const t_json_value *value,
 	unsigned long	i;
 	t_json_object	*obj;
 
-	if (value == NULL || value->type != object)
+	if (!ft_json_test_type(value, object))
 		return (NULL);
 	obj = (t_json_object*)value->ptr;
-	i = 0;
-	while (i < obj->nb_pairs)
-	{
+	i = -1;
+	while (++i < obj->nb_pairs)
 		if (obj->pair[i] != NULL && obj->pair[i]->key != NULL &&
-			obj->pair[i]->value != NULL && obj->pair[i]->value->ptr != NULL &&
-			obj->pair[i]->key->length == key.length &&
-			obj->pair[i]->key->ptr != NULL &&
-			ft_strcmp(obj->pair[i]->key->ptr, key.ptr) == 0)
-			break ;
-		++i;
-	}
-	if (i != obj->nb_pairs)
-		return (obj->pair[i]->value);
+				obj->pair[i]->key->length == key.length &&
+				obj->pair[i]->key->ptr != NULL &&
+				ft_strcmp(obj->pair[i]->key->ptr, key.ptr) == 0)
+			return (obj->pair[i]->value);
 	return (NULL);
 }

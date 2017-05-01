@@ -1,21 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   null_primitive.c                                   :+:      :+:    :+:   */
+/*   ft_json_pack_value.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/04/14 08:13:55 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 08:21:07 by hmartzol         ###   ########.fr       */
+/*   Created: 2017/01/17 17:47:23 by hmartzol          #+#    #+#             */
+/*   Updated: 2017/01/27 07:56:02 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <rt.h>
+#include <libftjson.h>
+#include <libft.h>
 
-t_primitive	null_primitive(void)
+t_json_value	*ft_json_pack_value(t_json_value *parent,
+									t_json_value_type type, void *ptr)
 {
-	return ((t_primitive){.type = INVALID, .position = {.v4 = {0, 0, 0, 0}},
-		.direction = {.v4 = {0, 0, 0, 0}}, .radius = 0, .material = 0,
-		.limit = {.relative = 0, .high = {.v4 = {0, 0, 0, 0}},
-		.low = {.v4 = {0, 0, 0, 0}}}});
+	t_json_value	*out;
+
+	if ((out = (t_json_value*)ft_memalloc(sizeof(t_json_value))) == NULL)
+		return (NULL);
+	out->type = type;
+	out->ptr = ptr;
+	out->parent = parent;
+	return (out);
 }

@@ -42,8 +42,8 @@ inline static int	add_texture(t_textures_holder *textures_holder)
 	return ((int)(size_t)ft_free(ubmp));
 }
 
-inline static void	parse_image(t_json_value *sp,
-								t_textures_holder *textures_holder)
+/*
+inline static void	parse_image(t_json_value *sp, t_textures_holder *textures_holder)
 {
 	t_json_string	*str;
 	char			buff[PATH_MAX];
@@ -70,69 +70,120 @@ inline static void	parse_image(t_json_value *sp,
 		++textures_holder->nb_info;
 	}
 }
+*/
 
-inline static void	parse_skybox(t_json_value *m,
-								t_textures_holder *textures_holder)
+inline static void	parse_image(char *str, t_textures_holder *textures_holder)
 {
-	t_json_value	*v;
+	char			buff[PATH_MAX];
+	int				i;
 
-	if (m == NULL || m->type != object || m->ptr == NULL)
+	ft_realpath(str, buff);
+	i = 0;
+	while (i < textures_holder->nb_info &&
+			ft_strcmp(buff, textures_holder->path[i]))
+		++i;
+	if (i != textures_holder->nb_info)
 		return ;
-	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 6, .ptr = "skybox"});
-	parse_image(ft_json_search_pair_in_object(v,
-		(t_json_string){.length = 4, .ptr = "file"}), textures_holder);
-}
-
-inline static void	parse_material_images(t_json_value *m,
-										t_textures_holder *textures_holder)
-{
-	t_json_value	*v;
-
-	if (m == NULL || m->type != object || m->ptr == NULL)
-		return ;
-	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 7, .ptr = "texture"});
-	parse_image(ft_json_search_pair_in_object(v,
-		(t_json_string){.length = 4, .ptr = "file"}), textures_holder);
-	v = ft_json_search_pair_in_object(m,
-		(t_json_string){.length = 10, .ptr = "normal_map"});
-	parse_image(ft_json_search_pair_in_object(v,
-		(t_json_string){.length = 4, .ptr = "file"}), textures_holder);
+	textures_holder->path = ft_reallocf(textures_holder->path,
+		sizeof(char**) * textures_holder->nb_info,
+		sizeof(char**) * (textures_holder->nb_info + 1));
+	textures_holder->info = ft_reallocf(textures_holder->info,
+		sizeof(t_img_info) * textures_holder->nb_info,
+		sizeof(t_img_info) * (textures_holder->nb_info + 1));
+	textures_holder->path[textures_holder->nb_info] = ft_strdup(buff);
+	(void)add_texture(textures_holder);
+	++textures_holder->nb_info;
 }
 
 /*
-** first, search and resolve all texture paths, then load all texture in a
-** 1dimension cl_int array while making info and make pairs betwen path and info
-** pairs will then be used when loading materials and objects
-*/
-
-void				parse_images(t_json_value *root,
-								t_textures_holder *textures_holder)
+inline static void	parse_primitive_group_images(t_json_value *m,
+								t_json_value_type t, t_textures_holder *th)
 {
-	t_json_value	*v;
-	t_json_object	*obj;
 	t_json_array	*ar;
 	unsigned long	i;
 
-	v = ft_json_search_pair_in_object(root,
-		(t_json_string){.length = 9, .ptr = "materials"});
-	if (v != NULL && v->type == object &&
-			(obj = (t_json_object*)v->ptr) != NULL && obj->nb_pairs != 0 &&
-			obj->pair != NULL && (i = -1))
+	(void)t;
+	if (!ft_json_test_type(m, array))
+		return ;
+	ar = (t_json_array*)m->ptr;
+	i = 0;
+	while (i < ar->nb_values)
+	{
+		parse_image(ft_json_acces_value(ar->value[i], NULL, "oo", "texture",
+			"file"), th);
+		parse_image(ft_json_acces_value(ar->value[i++], NULL, "oo",
+			"normal_map","file"), th);
+	}
+}*/
+
+inline static void	parse_primitive_group_images(t_json_array *ar,
+											t_textures_holder *textures)
+{
+	unsigned long	i;
+
+	i = -1;
+	(void)ar;
+	(void)textures;
+	// while (++i < ar->nb_values)
+	// 	ft_json_accesses(ar->value[i], "ro>>s#ro>>s#", "texture", "file",
+	// 		parse_image, textures, "normal_map", "file", parse_image, textures);
+}
+
+/*
+void				parse_images(t_json_value *root,
+								t_textures_holder *textures)
+{
+	t_json_value	*v;
+	t_json_object	*obj;
+	unsigned long	i;
+
+	v = ft_json_search_pair_in_object(root, ft_json_s_string("materials"));
+	if (v != NULL && v->type == object && (obj = (t_json_object*)v->ptr) != NULL
+			&& obj->nb_pairs != 0 && obj->pair != NULL && (i = -1))
 		while (++i < obj->nb_pairs)
 			if (obj->pair[i] != NULL)
-				parse_material_images(obj->pair[i]->value, textures_holder);
-	v = ft_json_search_pair_in_object(root,
-		(t_json_string){.length = 7, .ptr = "objects"});
-	if (v != NULL && v->type == array &&
-		(ar = (t_json_array*)v->ptr) != NULL && ar->nb_values != 0 &&
-		ar->value != NULL && (i = -1))
-		while (++i < ar->nb_values)
-			parse_material_images(ft_json_search_pair_in_object(ar->value[i],
-				(t_json_string){.length = 8, .ptr = "material"}),
-				textures_holder);
-	v = ft_json_search_pair_in_object(root,
-		(t_json_string){.length = 14, .ptr = "render_options"});
-	parse_skybox(v, textures_holder);
+			{
+				parse_image(ft_json_acces_value(obj->pair[i]->value, NULL, "oo",
+					"texture", "file"), textures);
+				parse_image(ft_json_acces_value(obj->pair[i]->value, NULL, "oo",
+					"normal_map", "file"), textures);
+			}
+	parse_primitive_group_images(ft_json_search_pair_in_object(root,
+		ft_json_s_string("objects")), textures);
+	v = ft_json_search_pair_in_object(root, ft_json_s_string("group"));
+	if (v != NULL && v->type == object && (obj = (t_json_object*)v->ptr) != NULL
+			&& obj->nb_pairs != 0 && obj->pair != NULL && (i = -1))
+		while (++i < obj->nb_pairs)
+			if (obj->pair[i] != NULL)
+				parse_primitive_group_images(obj->pair[i]->value, textures);
+	parse_image(ft_json_acces_value(root, NULL, "ooo", "render_options",
+		"skybox", "file"), textures);
+}
+*/
+
+void				parse_images(t_json_value *root,
+								t_textures_holder *textures)
+{
+	t_json_object	*obj;
+	unsigned long	i;
+
+	obj = NULL;
+	ft_json_accesses(root, "ro>*", "materials", &obj);
+	if (obj != NULL && obj->pair != NULL && (i = -1))
+		while (++i < obj->nb_pairs)
+			if (obj->pair[i] != NULL && ft_json_test_type(obj->pair[i]->value, object))
+				ft_json_accesses(obj->pair[i]->value, "ro>>s#ro>>s#", "texture",
+					"file", parse_image, textures, "normal_map", "file",
+					parse_image, textures);
+	ft_json_accesses(root, "ro>a#", "objects", parse_primitive_group_images,
+		textures);
+	obj = NULL;
+	ft_json_accesses(root, "ro>*", "group", &obj);
+	if (obj != NULL && obj->pair != NULL && (i = -1))
+		while (++i < obj->nb_pairs)
+			if (obj->pair[i] != NULL &&
+					ft_json_test_type(obj->pair[i]->value, array))
+				parse_primitive_group_images(obj->pair[i]->value->ptr, textures);
+	ft_json_accesses(root, "ro>>>s#", "render_options", "skybox", "file",
+		parse_image, textures);
 }

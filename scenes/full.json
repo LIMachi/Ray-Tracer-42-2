@@ -9,7 +9,7 @@
 		},
 		"antialias": 1,
 		"bounce_depth": 8,
-		"filter": "none",
+		"filter": "grayscale",
 		"stereoscopy": false,
 		"skybox":
 		{
@@ -67,7 +67,7 @@
 			}
 		}
 	},
-	"group":
+	"groups":
 	{
 		"cube":
 		[
