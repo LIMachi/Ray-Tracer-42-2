@@ -6,7 +6,7 @@
 /*   By: cchaumar <cchaumar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/14 01:19:11 by cchaumar          #+#    #+#             */
-/*   Updated: 2017/04/14 15:25:03 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/08 19:20:39 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void		opencl_render(t_env *e)
 			e->glfw.render, (t_f_cl_proc)process_ker_ret);
 	}
 	e->keys.updated = e->argn.moving;
+	debug(e);
 }
 
 void		handle_keys(t_key *keys, t_env *e)

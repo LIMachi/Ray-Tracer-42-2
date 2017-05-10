@@ -160,13 +160,15 @@
 			"material":
 			{
 				"color": [0.5, 0.5, 0.5],
-				"diffuse": 1.0,
-				"specular": 1.0,
-				"reflection": 0.5,
+				"diffuse": [0.5, 0.7, 0.4],
+				"specular": [0.3, 0.4, 0.3],
+				"reflection": 0.8,
+				"refraction": 1.0,
+				"brightness": 70.0,
 				"perturbation":
 				{
 					"normal": "none",
-					"color": "sine"
+					"color": "none"
 				}
 			},
 			"limit":

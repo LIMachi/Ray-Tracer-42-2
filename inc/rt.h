@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:07:54 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/10 07:17:21 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,15 @@
 # define D_DIR ((cl_float4){.x = 0, .y = 0, .z = 1, .w = 0})
 # define D_RAD 1.0f
 
+#define _BOOLEAN ((char*[2]){"false", "true"})
+#define BOOLEAN (const char**)_BOOLEAN
+
 typedef enum			e_prim_type
 {
 	INVALID = -1, SPHERE = 0, PLANE = 1, CONE = 2, CYLINDER = 3, PARABOLOID = 4
 }						t_prim_type;
 
-#define _TYPES (char*[5]){"sphere", "plane", "cone", "cylinder", "paraboloid"}
+#define _TYPES ((char*[5]){"sphere", "plane", "cone", "cylinder", "paraboloid"})
 #define TYPES (const char**)_TYPES
 #define NB_TYPES 5
 
@@ -39,7 +42,7 @@ typedef enum			e_pert_type
 	SINE = 1, CHECKERBOARD = 2
 }						t_pert_type;
 
-#define _PERTURBATIONS (char*[3]){"none", "sine", "checkerboard"}
+#define _PERTURBATIONS ((char*[3]){"none", "sine", "checkerboard"})
 #define PERTURBATIONS (const char**)_PERTURBATIONS
 #define NB_PERTURBATIONS 3
 
@@ -48,7 +51,7 @@ typedef enum			e_color_filter
 	SEPIA = 1, GRAYSCALE = 2, CARTOON = 3
 }						t_color_filter;
 
-#define _FILTERS (char*[4]){"none", "sepia", "grayscale", "cartoon"}
+#define _FILTERS ((char*[4]){"none", "sepia", "grayscale", "cartoon"})
 #define FILTERS (const char**)_FILTERS
 #define NB_FILTERS 4
 
@@ -324,5 +327,7 @@ void					increase(t_env *e, int keycode);
 void					delete_rt_environement(t_env *e);
 
 void					load_file(t_env *e, const char *path);
+
+void					debug(t_env *e);
 
 #endif

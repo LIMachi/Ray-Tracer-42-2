@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:01:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:08:27 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/08 17:56:44 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,16 +71,16 @@ t_material					parse_material(t_json_value *m, t_material *out,
 	oth2 = (t_oth){.out = &out->normal_map, .th = textures_holder};
 	ods = (t_ods){.out = (int*)&out->perturbation.color,
 				.dictionary = PERTURBATIONS, .size = NB_PERTURBATIONS};
-	ft_json_accesses(m, "ro>d*ro>d*ro>>d*<o>s#ro>v#ro>v#ro>v#ro>N*ro>v#ro>v#",
-		"refraction", &out->refraction,
-		"brightness", &out->brightness,
+	ft_json_accesses(m, "ro>N#ro>N#ro>>N#<o>s#ro>v#ro>v#ro>v#ro>N#ro>v#ro>v#",
+		"refraction", clf, &out->refraction,
+		"brightness", clf, &out->brightness,
 		"perturbation",
-			"normal", &out->perturbation.normal,
+			"normal", clf, &out->perturbation.normal,
 			"color", jds, &ods,
 		"color", clv4, &out->color,
 		"diffuse", clv4, &out->diffuse,
 		"specular", clv4, &out->specular,
-		"reflection", &out->reflection,
+		"reflection", clf, &out->reflection,
 		"texture", parse_texture, &oth1,
 		"normal_map", parse_texture, &oth2);
 	return (*out);
@@ -121,16 +121,17 @@ inline static char			*new_material(t_json_pair *p, unsigned long i,
 										t_material_holder *materials,
 										t_textures_holder *textures_holder)
 {
-	char	*out;
+	char		*str;
+	t_material	*out;
 
 	(void)i;
-	(void)materials;
-	(void)textures_holder;
 	if (p == NULL || p->key == NULL || p->value == NULL || p->key->ptr == NULL
-		|| p->key->length == 0 || (out = ft_strdup(p->key->ptr)) == NULL)
+		|| p->key->length == 0 || (str = ft_strdup(p->key->ptr)) == NULL)
 		return (NULL);
-	parse_material(p->value, &materials->materials[ft_strcmp("default", out) ? i + 1 : 0], textures_holder);
-	return (out);
+	out = &materials->materials[ft_strcmp("default", str) ? i + 1 : 0];
+	*out = default_material();
+	parse_material(p->value, out, textures_holder);
+	return (str);
 }
 
 /*
