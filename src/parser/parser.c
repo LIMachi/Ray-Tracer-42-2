@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/21 19:24:09 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 20:45:44 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/11 18:15:25 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void				parser(t_env *e, const char *src)
 
 	root = ft_json_parse_src(ft_str_clear_commentaries((char*)src));
 	parse_images(root, &e->textures);
-	ft_json_accesses(root, "ro>v#ro>v#ro>#r>a#ro>a#ro>a#",
+	ft_json_accesses(root, "ro>v#ro>v#ro>#r>a#ro>v#ro>a#",
 		"render_options", parse_render_options, e,
 		"camera", parse_camera, &e->cam,
 		"materials", parse_materials, e,

@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 09:15:54 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/04/14 15:37:06 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/11 18:12:33 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	kernel_init(t_env *e)
 		CL_MEM_WRITE_ONLY, GL_TEXTURE_2D, 0, e->glfw.tex, &err);
 	if (err)
 		ft_error(EINVAL, "couldnt create cl_mem from texture\n");
-	else
-		ft_printf("created mem object : %p\n", e->glfw.cl_tex);
+//	else
+//		ft_printf("created mem object : %p\n", e->glfw.cl_tex);
 	opencl_init(e, (size_t[2]){e->window.x, e->window.y});
 }
 

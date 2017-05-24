@@ -85,6 +85,7 @@ typedef struct		s_primitive
 	t_prim_type		type;
 	float4			position;
 	float4			direction;
+	float4			orientation;
 	float			radius;
 	uint			material;
 	t_limit			limit;
@@ -146,12 +147,14 @@ float4	get_normal(__global t_primitive *obj, __global t_material *mat, t_ray *ra
 float4	input_ray(float4 dir, float4 norm);
 float4	color_texture(__global t_primitive *prim, __global t_texture *tex, float4 normal, __global t_img_info *info, __global int *raw_bmp, float4 col);
 float4	skybox(__global t_texture *tex, t_ray ray, __global int *raw_bmp, __global t_img_info *img_info);
-int		color_to_int(float4 color);
+//int		color_to_int(float4 color);
 float4	int_to_color(int c);
 int		raytrace(t_ray *ray, __global t_argn *argn, __global t_primitive *objects, __global t_light *lights, int *result, int *l_id);
 int		limit(__global t_primitive *obj, float4 point, float4 rot);
-
+float	sq(float i);
 int		quadratic(float a, float b, float c, float2 *ret);
+float4	get_light_color(t_ray *ray, __global t_light *lights, __global t_argn *argn, int *l_id);
+float4		get_color(t_ray *ray,  float4 normal, __global t_material *mat, __global t_primitive *obj, __global t_primitive *objects, __global int *raw_bmp, __global t_img_info *img_info, __global t_light *lights, __global t_argn *argn, float4 p, __global t_material *materials);
 
 #if 0
 # define DOT local_dot
@@ -512,7 +515,7 @@ int		solve_quadratic(float a, float b, float c, float *dist, t_ray *ray, __globa
 	delta = sqrt(delta);
 	float x1 = (b - delta) / (2.0f * a);
 	float x2 = (b + delta) / (2.0f * a);
-	float4 hit;
+//	float4 hit;
 	if (x1 < x2 && x1 > 0.01f && !limit(obj, ray->direction * x2 + ray->origin, (float4)(0,0,0,0))) // use x2 if x1 is negative
 	{
 		if (x2 < 0.01f) // both are negative
@@ -555,9 +558,9 @@ inline int		limit(__global t_primitive *obj, float4 point, float4 rot)
 
 inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 {
-	int i = 0;
-	float4 raytmp = ray->origin;
-	float d = *dist;
+	int i;
+//	float4 raytmp = ray->origin;
+//	float d = *dist;
 	switch (obj->type)
 	{
 		case SPHERE:
@@ -575,6 +578,9 @@ inline int		intersect(__global t_primitive *obj, t_ray *ray, float *dist)
 		case PARABOLOID:
 			i = paraboloid_intersect(obj, ray, dist);
 			break;
+		case INVALID:
+		default:
+			i = 0;
 	}
 /*	float4 point = ray->direction * *dist + ray->origin;
 		if(limit(obj, point, (float4)(0,0,0,0)) && i)
@@ -648,6 +654,7 @@ inline float4	get_normal(__global t_primitive *obj,
 		case PARABOLOID:
 			n = point - obj->position - obj->direction * obj->radius;
 			break;
+		case INVALID:
 		default:
 			return (n);
 	}
@@ -655,7 +662,7 @@ inline float4	get_normal(__global t_primitive *obj,
 //	printf("%f ", mat->perturbation.normal);
 	if (mat->perturbation.normal > EPSILON)
 	{
-		float len = LENGTH(n);
+//		float len = LENGTH(n);
 //		n.y += COS(ray->origin.y / NORMAL_PERTURBATION_SIZE) * mat->perturbation.normal * (len / NORMAL_PERTURBATION_SIZE);
 		n.x = 20 * sin(n.y);
 	}
@@ -725,11 +732,13 @@ inline float4	color_perturbation(float4 color, __global t_primitive *prim,
 	return (color);
 }
 
+/*
 inline int		color_to_int(float4 color)
 {
 	color = clamp(color * 255.0f, 0.0f, 255.0f);
 	return (int)(((int)color.x << 16) + ((int)color.y << 8) + (int)color.z);
 }
+*/
 
 inline float4	int_to_color(int c)
 {
@@ -921,7 +930,7 @@ __kernel void	rt_kernel(
 	size_t i = get_global_id(0) * (1 + argn->moving);
 	size_t j = get_global_id(1) * (1 + argn->moving);
 	size_t l = get_global_size(0) * (1 + argn->moving);
-	size_t h = get_global_size(1) * (1 + argn->moving);
+//	size_t h = get_global_size(1) * (1 + argn->moving);
 
 	float d = (float)argn->moving;
 	float x = (float)i + 0.5f * d;

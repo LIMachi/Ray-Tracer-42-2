@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/26 02:02:23 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:43:20 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/24 06:20:03 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ t_primitive					parse_object(t_json_value *o, t_env *e)
 		.material = 0, .group_id = 0, .limit = {.relative = 1,
 		.high = {.x = FLT_MAX, .y = FLT_MAX, .z = FLT_MAX, .w = 0},
 		.low = {.x = -FLT_MAX, .y = -FLT_MAX, .z = -FLT_MAX, .w = 0}}};
-	ft_json_accesses(o, "ro>s#ro>v#ro>N#ro>v#ro>v#ro>>b*<o>v#<o>v#",
+	ft_json_accesses(o, "ro>s#ro>v#ro>N#ro>v#ro>v#ro>>b*<o>v#<o>v#ro>v#",
 		"type", jds, &ods,
 		"material", parse_object_material, &oe,
 		"radius", clf, &p.radius,
@@ -165,7 +165,8 @@ t_primitive					parse_object(t_json_value *o, t_env *e)
 		"limit",
 			"relative", &p.limit.relative,
 			"high", clv4, &p.limit.high,
-			"low", clv4, &p.limit.low);
+			"low", clv4, &p.limit.low,
+		"orientation", clv4, &p.orientation);
 
 /*	if ((p.type = ft_json_check_string(ft_json_search_pair_in_object_c_string(o,
 		"type"), 5, (char**)(size_t[5]){(size_t)"sphere", (size_t)"plane",

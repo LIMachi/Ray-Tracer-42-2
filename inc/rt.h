@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/15 00:05:50 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/10 07:17:21 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/24 06:20:30 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ typedef struct			s_primitive
 	t_prim_type			type;
 	cl_float4			position;
 	cl_float4			direction;
+	cl_float4			orientation;
 	cl_float			radius;
 	cl_uint				material;
 	t_limit				limit;

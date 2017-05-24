@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/01 20:50:10 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/01 21:50:17 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/11 18:21:31 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,23 @@ void				load_group(t_json_value *o, t_env *e) //try to load a group
 	unsigned long	i;
 	t_json_value	*v;
 
+	ft_printf("pomf 5\n");
 	v = ft_json_search_pair_in_object_c_string(o, "type");
 	if (!ft_json_test_type(v, string))
 		return ;
 	if (e->nb_group_constructors == 0)
 		return ;
+	ft_printf("pomf 6\n");
 	i = 0;
 	while (i < e->nb_group_constructors &&
 			ft_strcmp((char*)v->ptr, e->group_constructor[i].name))
 		++i;
 	if (i == e->nb_group_constructors)
 		return ;
+	ft_printf("pomf 7\n");
 	if (e->group_constructor[i].nb_prims == 0)
 		return ;
+	ft_printf("pomf 8\n");
 	e->group[e->nb_groups] = group_constructor(&e->group_constructor[i], e, i);
 }
 
@@ -64,6 +68,7 @@ inline static void	parse_group(t_json_array *ar, t_env *e,
 	unsigned long	i;
 
 	(void)e;
+	ft_printf("pomf 4\n");
 	g->nb_prims = ar->nb_values;
 	g->prim = ft_memalloc(sizeof(t_primitive) * ar->nb_values);
 	i = -1;
@@ -82,10 +87,13 @@ void				parse_groups(t_json_value *v, t_env *e)
 	e->nb_group_constructors = 0;
 	if (!ft_json_test_type(v, object))
 		return ;
+	ft_printf("pomf 1\n");
 	if ((obj = (t_json_object*)v->ptr)->nb_pairs <= 0)
 		return ;
+	ft_printf("pomf 2\n");
 	if ((e->group_constructor = ft_memalloc(sizeof(t_group_constructor) * obj->nb_pairs)) == NULL)
 		return ;
+	ft_printf("pomf 3\n");
 	e->nb_group_constructors = obj->nb_pairs;
 	i = -1;
 	while (++i < obj->nb_pairs)

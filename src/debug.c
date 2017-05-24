@@ -6,7 +6,7 @@
 /*   By: hmartzol <hmartzol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/05/08 17:59:00 by hmartzol          #+#    #+#             */
-/*   Updated: 2017/05/10 07:28:17 by hmartzol         ###   ########.fr       */
+/*   Updated: 2017/05/11 18:19:09 by hmartzol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ void		print_cl_int2(cl_int2 v)
 
 void		debug(t_env *e)
 {
+	(void)e;
+	/*
 	printf("\n\ndebuging environement structure at address: %p\n{\n", e);
 	printf("lights = %p\nprim = %p\n", e->lights, e->prim);
 	printf("materials = {\n\tnb_metrials = %d", e->materials.nb_materials);
@@ -118,6 +120,7 @@ void		debug(t_env *e)
 			printf("\t\t%d\n", e->group[i].prim_ids[j]);
 		printf("\t]\n");
 	}
-	printf("}\n");
+	printf("}\n");*/
+	printf("nb_group_constructors = %d\n", e->nb_group_constructors);
 	ft_end(0);
 }
